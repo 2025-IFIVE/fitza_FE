@@ -1,0 +1,39 @@
+/* NanumSquareNeoR */
+@font-face {
+  font-family: "NanumSquareNeo";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../public/fonts/NanumSquareNeoOTF-Lt.otf) format("opentype"),
+    url(../public/fonts/NanumSquareNeoTTF-aLt.woff2) format("woff2");
+}
+
+/* NanumSquareNeoM */
+@font-face {
+  font-family: "NanumSquareNeo";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(../public/fonts/NanumSquareNeoOTF-Rg.otf) format("opentype"),
+    url(../public/fonts/NanumSquareNeoTTF-bRg.woff2) format("woff2");
+}
+
+/* NanumSquareNeoSB */
+@font-face {
+  font-family: "NanumSquareNeo";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(../public/fonts/NanumSquareNeoOTF-Bd.otf) format("opentype"),
+    url(../public/fonts/NanumSquareNeoTTF-cBd.woff2) format("woff2");
+}
+
+/* NanumSquareNeoEB */
+@font-face {
+  font-family: "NanumSquareNeo";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(../public/fonts/NanumSquareNeoOTF-Eb.otf) format("opentype"),
+    url(../public/fonts/NanumSquareNeoTTF-dEb.woff2) format("woff2");
+}

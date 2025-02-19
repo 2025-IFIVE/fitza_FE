@@ -1,0 +1,25 @@
+img {
+  width: auto;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "NanumSquareNeo";
+  overflow-x: hidden;
+
+  min-height: 100vh;
+
+  @supports (-webkit-touch-callout: none) {
+    min-height: -webkit-fill-available;
+  }
+}
+
+a:link,
+a:visited {
+  text-decoration: none;
+}
+
+p {
+  margin: 0;
+}
