@@ -9,7 +9,7 @@ import Join from "./pages/Join";
 import SignUp from "./pages/SignUp";
 
 function App() {
-  return (
+  return (  
     <div className="App">
       <EnglishFontStyle /> {/* 여기에서 폰트 스타일 적용 */}
        <Routes>

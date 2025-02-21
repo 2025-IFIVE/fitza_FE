@@ -1,15 +1,19 @@
 import React from "react";
 import * as M from "../styles/MainStyle";
+import Footer from '../components/Footer'
+import TopBar from '../components/TopBar'
 
 function Main() {
   return (
-    <>
-      <M.Main>
-        여기는 메인
-        <M.font2>굵게</M.font2>
-      </M.Main>        
-              
-    </>
+    <M.Background>
+      <M.TopBox>
+        <TopBar />
+      </M.TopBox>
+
+      <M.BottomBox>
+        <Footer />
+      </M.BottomBox>
+    </M.Background>
   );
 }
 
