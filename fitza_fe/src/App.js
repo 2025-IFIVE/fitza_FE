@@ -7,6 +7,7 @@ import Main from "./pages/Main";
 import Splash from "./pages/Splash";
 import Join from "./pages/Join";
 import SignUp from "./pages/SignUp";
+import MyCloset_1 from "./pages/MyCloset_1";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route exact path="/splash" element={<Splash />} />
         <Route exact path="/join" element={<Join />} />
         <Route exact path="/signup" element={<SignUp />} />
+        <Route exact path="/mycloset_1" element={<MyCloset_1 />} />
       </Routes>
     </div>
   );
