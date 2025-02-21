@@ -7,16 +7,18 @@ import Main from "./pages/Main";
 import Splash from "./pages/Splash";
 import Join from "./pages/Join";
 import SignUp from "./pages/SignUp";
+import Mypage from "./pages/Mypage";
 
 function App() {
-  return (  
+  return (
     <div className="App">
       <EnglishFontStyle /> {/* 여기에서 폰트 스타일 적용 */}
-       <Routes>
+      <Routes>
         <Route exact path="/main" element={<Main />} />
         <Route exact path="/splash" element={<Splash />} />
         <Route exact path="/join" element={<Join />} />
         <Route exact path="/signup" element={<SignUp />} />
+        <Route exact path="/mypage" element={<Mypage />} />
       </Routes>
     </div>
   );
