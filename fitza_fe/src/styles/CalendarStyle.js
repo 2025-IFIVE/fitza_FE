@@ -78,6 +78,10 @@ export const TitleBox1 = styled.div`
   background-color: rgba(206, 150, 148, 0.25); /* #CE9694 */
   width: 100%;
   padding: 0.1px;
+  display: flex;
+  justify-content: space-between;
+  //align-items: center; /* 세로 중앙 정렬 */
+
 `;
 
 export const Title1 = styled.div`
@@ -89,65 +93,27 @@ export const Title1 = styled.div`
   margin:0;
 `;
 
-export const ClosetScroll = styled.div`
-  display: flex; /*closetItem 가로방향 정렬*/
-  overflow-x: auto; /* 가로 스크롤 활성화 */
-  scroll-snap-type: x mandatory; /* 부드러운 스크롤(closetItem단위로 움직임) */
-  white-space: nowrap; /*줄바꿈 금지*/
-  //gap: 10px; /*closetItem 사이 간격*/
-  width: 100%; 
-  height : 50%;
-  padding-top:20px;
-  padding-bottom:20px;
-  scroll-behavior: smooth; /* 부드러운 스크롤 효과 */
-  margin-left:10px;
-  
-  &::-webkit-scrollbar {
-    height: 0px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    display: none; /*스크롤바 숨기기*/
-  }
-`;
-
-export const ClosetItem = styled.div`
-  flex: 0 0 120px; /* 크기 고정 (200px 너비 유지) */
-  height: 200px; /* 세로 크기 고정 */
-  background-color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  border-radius: 40%;
-  scroll-snap-align: start;
-  overflow: hidden; /* 아이템이 영역을 넘지 않도록 숨김 */
-  margin-right:10px;
-  box-sizing: border-box; /*테두리 안쪽으로*/
-  border: 1px solid #ddd; /* 테두리*/
-
-  img {
-    width: 70%;
-    height: 50%;
-    object-fit: cover; /* 이미지를 박스에 맞게 자름 */
-  }
-`;
-
-export const TitleBox2 = styled.div`
-  background-color: rgba(206, 150, 148, 0.25); /* #CE9694 */
-  width: 100%;
-  padding: 0.1px;
-`;
-
-export const Title2 = styled.div`
+export const Register = styled.div`
   color: #000; /* 검은색 */
   font-size: 15px;
   padding-left: 10px;
   padding-top:5px;
   padding-bottom:5px;
   margin:0;
+`;
+
+export const RegisterContainer = styled.div`
+  display: flex;
+  align-items: center; /*세로중앙정렬*/
+  gap: 3px;
+  padding-right: 10px;
+
+  img {
+    width: 20px; /* 크기 고정 */
+    height: auto; /* 비율 유지 */
+    vertical-align: middle; /* 텍스트와 같은 높이로 정렬 */
+    display: flex;
+  }
 `;
 
 

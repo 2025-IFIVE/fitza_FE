@@ -7,7 +7,7 @@ import Main from "./pages/Main";
 import Splash from "./pages/Splash";
 import Join from "./pages/Join";
 import SignUp from "./pages/SignUp";
-
+import Calendar from "./pages/Calendar";
 function App() {
   return (  
     <div className="App">
@@ -17,6 +17,7 @@ function App() {
         <Route exact path="/splash" element={<Splash />} />
         <Route exact path="/join" element={<Join />} />
         <Route exact path="/signup" element={<SignUp />} />
+        <Route exact path="/calendar" element={<Calendar />} />
       </Routes>
     </div>
   );
