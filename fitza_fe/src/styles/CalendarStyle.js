@@ -55,24 +55,25 @@ export const Container = styled.div`
 
 export const Header = styled.div`
   width: 100%; 
+  display:flex;
+  align-items: center;
+  justify-content: center; /* Header 전체를 가로로 중앙 정렬 */
 `;
 
 export const Logo = styled.div`
-  position: relative; 
+  position: absolute; 
   left: 10px; /* Logo를 왼쪽으로 배치 */
   font-size: 33px;
-  font-weight: bold;
   color: black;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  margin: 0;
 `;
-/*
-export const Hr = styled.hr`
-  width:100%;
-  margin-top:1.5%;
-  color:#0000004f;
-`;*/
+
+export const Title= styled.div`
+  position: relative; 
+  font-size: 17px;
+  color: black;
+  padding-top: 20px;
+  padding-bottom: 20px; 
+`;
 
 export const TitleBox1 = styled.div`
   background-color: rgba(206, 150, 148, 0.25); /* #CE9694 */

@@ -15,6 +15,7 @@ function Calendar() {
       <C.Container>
         <C.Header>
               <C.Logo>FITZA</C.Logo>
+              <C.Title>캘린더</C.Title>
         </C.Header>
         <C.TitleBox1>
           <C.Title1>2025.02.16</C.Title1>

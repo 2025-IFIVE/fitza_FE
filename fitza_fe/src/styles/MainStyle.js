@@ -61,7 +61,7 @@ export const Logo = styled.div`
   position: relative; 
   left: 10px; /* Logo를 왼쪽으로 배치 */
   font-size: 33px;
-  font-weight: bold;
+  //font-weight: bold;
   color: black;
   padding-top: 10px;
   padding-bottom: 10px;
