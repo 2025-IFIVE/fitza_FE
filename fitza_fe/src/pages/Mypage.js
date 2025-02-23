@@ -48,6 +48,8 @@ function Mypage() {
                     <MP.Logo>FITZA</MP.Logo>
                     <MP.Title>마이페이지</MP.Title>
                 </MP.Header>
+
+
                 <MP.BodytypeBox>
                     <MP.BodytypeImage>
                         <MP.BodytypeImage>
@@ -72,6 +74,7 @@ function Mypage() {
                         {bodyType === "hour" && <div>시계태엽 체형에 맞는 스타일 추천!</div>}
                     </MP.BodytypeText>
                 </MP.BodytypeBox>
+
                 <MP.ClickBox>
                     <MP.Click to="/statistic">
                         <img src={chartIcon} alt="통계 아이콘" style={{ width: '20px', height: '20px' }} /> 통계

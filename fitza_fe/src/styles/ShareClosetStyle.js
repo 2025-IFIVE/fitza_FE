@@ -47,24 +47,25 @@ export const BottomBox = styled.div`
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
 `;
 
-/* 헤더 부분분 */
+export const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 export const Header = styled.div`
   width: 100%; 
-  display: flex;
-  align-items: center; // 세로 가운데 정렬
+  display:flex;
+  align-items: center;
+  justify-content: center; /* Header 전체를 가로로 중앙 정렬 */
 `;
-//이전 버튼
+
 export const Back = styled.div`
-  position: relative;
-  left: 10px; /* 이전 버튼을 왼쪽으로 배치 */
-  padding-top: 10px; 
-  padding-bottom: 10px;
-  margin: 0;
-  
-  img {
-    width:20px;  /* 너비 설정 */
-    height: 20px; /* 높이 설정 */
-  }
+  position: absolute; 
+  left: 10px; /* Logo를 왼쪽으로 배치 */
+  font-size: 33px;
+  color: black;
 `;
 
 export const Title = styled.div`
@@ -74,7 +75,6 @@ export const Title = styled.div`
   padding-top: 20px;
   padding-bottom: 20px; 
 `;
-
 
 /* 각 메뉴 버튼*/
 export const ClickBox = styled.div`

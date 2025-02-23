@@ -14,22 +14,22 @@ function Calendar() {
 
       <C.Container>
         <C.Header>
-              <C.Logo>FITZA</C.Logo>
-              <C.Title>캘린더</C.Title>
+          <C.Logo>FITZA</C.Logo>
+          <C.Title>캘린더</C.Title>
         </C.Header>
         <C.TitleBox1>
           <C.Title1>2025.02.16</C.Title1>
           <C.RegisterContainer>
             <C.Register>옷 기록하기</C.Register>
             <Link to="/Main">
-                <img src={smallPlus} alt="plus" className="plusImage" />
+              <img src={smallPlus} alt="plus" className="plusImage" />
             </Link>
           </C.RegisterContainer>
         </C.TitleBox1>
       </C.Container>
 
       <C.BottomBox>
-      <Footer />
+        <Footer />
       </C.BottomBox>
     </C.Background>
   );

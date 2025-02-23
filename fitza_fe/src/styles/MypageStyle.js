@@ -8,27 +8,27 @@ export const Background = styled.div`
   align-items: center;
   width: 100%;
   min-height: 100vh; /* 최소 높이를 뷰포트 전체로 설정 */
-  background-color: #f9f9f9; /* 배경색 */
-  padding-top: 50px; /* 탑바 높이만큼 여백 */
+  background-color: #ffffff; /* 배경색 */
+  padding-top: 60px; /* 탑바 높이만큼 여백 */
   padding-bottom: 60px; /* 푸터 높이만큼 여백 */
+  overflow-x: hidden; /*옆에 여백 숭기기*/
 `;
 
 /* 탑바를 감싸는 박스 */
 export const TopBox = styled.div`
   width: 100%;
-  height: 50px; /* 탑바 높이 */
+  height: 60px; /* 탑바 높이 */
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
-  background-color: #AD8574; /* 푸터와 같은 색 */
+  background-color:#AD8574; /* 푸터와 같은 색 */
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: bold;
   font-size: 18px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 /* 푸터를 감싸는 박스 */
@@ -46,6 +46,7 @@ export const BottomBox = styled.div`
   padding: 0 10px;
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
 `;
+
 export const Container = styled.div`
   width: 100%;
   display: flex;
@@ -55,7 +56,6 @@ export const Container = styled.div`
 
 export const Header = styled.div`
   width: 100%; 
-  margin-top: 10px; /* 상단 여백 추가 */
   display:flex;
   align-items: center;
   justify-content: center; /* Header 전체를 가로로 중앙 정렬 */
@@ -69,14 +69,14 @@ export const Logo = styled.div`
 `;
 
 export const Title = styled.div`
-  font-family: 'NanumSquareNeo';
-  font-weight: bold;
+font-family: 'NanumSquareNeo';
   position: relative; 
   font-size: 17px;
   color: black;
   padding-top: 20px;
   padding-bottom: 20px; 
 `;
+
 
 /* 각 메뉴 버튼*/
 export const ClickBox = styled.div`
@@ -110,7 +110,6 @@ export const Click = styled(Link)`
     color: rgb(255, 255, 255); /* 원하는 색상으로 변경 */
     background-color: rgba(206, 150, 148, 0.5); /* 배경색도 추가 가능 */
   }
-
   img {
     margin-right: 10px; /* 이미지와 텍스트 사이에 여백 */
   }
