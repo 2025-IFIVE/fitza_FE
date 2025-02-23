@@ -67,7 +67,7 @@ export const Logo = styled.div`
   color: black;
 `;
 
-export const Title= styled.div`
+export const Title = styled.div`
   position: relative; 
   font-size: 17px;
   color: black;

@@ -43,62 +43,53 @@ function Mypage() {
                 <TopBar />
             </MP.TopBox>
 
-
-
-            <MP.Header>
-                <MP.Logo>FITZA</MP.Logo>
-                <MP.Title>마이페이지</MP.Title>
-            </MP.Header>
-
-            <MP.BodytypeBox>
-                <MP.BodytypeImage>
+            <MP.Container>
+                <MP.Header>
+                    <MP.Logo>FITZA</MP.Logo>
+                    <MP.Title>마이페이지</MP.Title>
+                </MP.Header>
+                <MP.BodytypeBox>
                     <MP.BodytypeImage>
-                        {/* 조건에 맞는 이미지 렌더링 */}
-                        {bodyType === "round" && <img src={round} alt="round typess" />}
-                        {bodyType === "tri" && <img src={tri} alt="triangle typess" />}
-                        {bodyType === "square" && <img src={square} alt="square typess" />}
-                        {bodyType === "invertTri" && <img src={invertTri} alt="inverse triangle typess" />}
-                        {bodyType === "hour" && <img src={hour} alt="hourglass typess" />}
+                        <MP.BodytypeImage>
+                            {/* 조건에 맞는 이미지 렌더링 */}
+                            {bodyType === "round" && <img src={round} alt="round typess" />}
+                            {bodyType === "tri" && <img src={tri} alt="triangle typess" />}
+                            {bodyType === "square" && <img src={square} alt="square typess" />}
+                            {bodyType === "invertTri" && <img src={invertTri} alt="inverse triangle typess" />}
+                            {bodyType === "hour" && <img src={hour} alt="hourglass typess" />}
+                        </MP.BodytypeImage>
                     </MP.BodytypeImage>
-
-                </MP.BodytypeImage>
-                <MP.BodytypeText>
-                    <div>{nickname}님의 체형은 {bodyType} 체형입니다.</div>
-                    <div></div>
-                    <div>{bodyType} 체형</div>
-                    <div></div>
-                    {/* 조건에 맞는 텍스트를 다르게 표시 */}
-                    {bodyType === "round" && <div>라운드 체형에 맞는 스타일 추천!</div>}
-                    {bodyType === "tri" && <div>삼각형 체형에 맞는 스타일 추천!</div>}
-                    {bodyType === "square" && <div>사각형 체형에 맞는 스타일 추천!</div>}
-                    {bodyType === "invertTri" && <div>역삼각형 체형에 맞는 스타일 추천!</div>}
-                    {bodyType === "hour" && <div>시계태엽 체형에 맞는 스타일 추천!</div>}
-
-
-                </MP.BodytypeText>
-
-            </MP.BodytypeBox>
-
-            <MP.ClickBox>
-                <MP.Click to="/statistic">
-                    <img src={chartIcon} alt="통계 아이콘" style={{ width: '20px', height: '20px' }} /> 통계
-                </MP.Click>
-                <MP.Click to="/calendar">
-                    <img src={calendarIcon} alt="캘린더 아이콘" style={{ width: '20px', height: '20px' }} /> 캘린더
-                </MP.Click>
-                <MP.Click to="/size">
-                    <img src={sizeIcon} alt="체형측정 아이콘" style={{ width: '26px', height: '16px', transform: 'translateX(-5px)', marginRight: '5px' }} /> 체형측정
-                </MP.Click>
-                <MP.Click to="/closet">
-                    <img src={closetIcon} alt="공유옷장 아이콘" style={{ width: '20px', height: '20px' }} /> 공유 옷장
-                </MP.Click>
-                <MP.Click to="/person">
-                    <img src={personIcon} alt="개인정보 아이콘" style={{ width: '20px', height: '18px' }} /> 개인정보
-                </MP.Click>
-            </MP.ClickBox>
-
-
-
+                    <MP.BodytypeText>
+                        <div>{nickname}님의 체형은 {bodyType} 체형입니다.</div>
+                        <div></div>
+                        <div>{bodyType} 체형</div>
+                        <div></div>
+                        {/* 조건에 맞는 텍스트를 다르게 표시 */}
+                        {bodyType === "round" && <div>라운드 체형에 맞는 스타일 추천!</div>}
+                        {bodyType === "tri" && <div>삼각형 체형에 맞는 스타일 추천!</div>}
+                        {bodyType === "square" && <div>사각형 체형에 맞는 스타일 추천!</div>}
+                        {bodyType === "invertTri" && <div>역삼각형 체형에 맞는 스타일 추천!</div>}
+                        {bodyType === "hour" && <div>시계태엽 체형에 맞는 스타일 추천!</div>}
+                    </MP.BodytypeText>
+                </MP.BodytypeBox>
+                <MP.ClickBox>
+                    <MP.Click to="/statistic">
+                        <img src={chartIcon} alt="통계 아이콘" style={{ width: '20px', height: '20px' }} /> 통계
+                    </MP.Click>
+                    <MP.Click to="/calendar">
+                        <img src={calendarIcon} alt="캘린더 아이콘" style={{ width: '20px', height: '20px' }} /> 캘린더
+                    </MP.Click>
+                    <MP.Click to="/size">
+                        <img src={sizeIcon} alt="체형측정 아이콘" style={{ width: '26px', height: '16px', transform: 'translateX(-5px)', marginRight: '5px' }} /> 체형측정
+                    </MP.Click>
+                    <MP.Click to="/sharecloset">
+                        <img src={closetIcon} alt="공유옷장 아이콘" style={{ width: '20px', height: '20px' }} /> 공유 옷장
+                    </MP.Click>
+                    <MP.Click to="/person">
+                        <img src={personIcon} alt="개인정보 아이콘" style={{ width: '20px', height: '18px' }} /> 개인정보
+                    </MP.Click>
+                </MP.ClickBox>
+            </MP.Container>
 
             <MP.BottomBox>
                 <Footer />

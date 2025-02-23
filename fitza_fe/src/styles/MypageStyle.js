@@ -46,33 +46,37 @@ export const BottomBox = styled.div`
   padding: 0 10px;
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
 `;
+export const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
-/* FITZA로고 */
 export const Header = styled.div`
   width: 100%; 
-  display: flex;
-  align-items: center; // 세로 가운데 정렬
+  margin-top: 10px; /* 상단 여백 추가 */
+  display:flex;
+  align-items: center;
+  justify-content: center; /* Header 전체를 가로로 중앙 정렬 */
 `;
 
 export const Logo = styled.div`
-  position: relative; 
+  position: absolute; 
   left: 10px; /* Logo를 왼쪽으로 배치 */
   font-size: 33px;
-  //font-weight: bold;
   color: black;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  margin: 0;
-`;
-export const Title = styled.div`
-  color: #000; /* 검은색 */
-  font-family: 'NanumSquareNeo'; /* 폰트 지정 */
-  font-size: 20px;
-  padding: 5px 10px;
-  margin: 0 auto; /* 가로 가운데 정렬 */
-  text-align: center; /* 내부 텍스트 중앙 정렬 */
 `;
 
+export const Title = styled.div`
+  font-family: 'NanumSquareNeo';
+  font-weight: bold;
+  position: relative; 
+  font-size: 17px;
+  color: black;
+  padding-top: 20px;
+  padding-bottom: 20px; 
+`;
 
 /* 각 메뉴 버튼*/
 export const ClickBox = styled.div`
