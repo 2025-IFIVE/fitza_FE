@@ -11,8 +11,8 @@
 }
 
 .footerImage {
-  width: 30px; /* 아이콘 크기 */
-  height: 30px;
+  width: 25px; /* 아이콘 크기 */
+  height: 25px;
   padding: 10px;
   transition: transform 0.2s ease-in-out;
 }
