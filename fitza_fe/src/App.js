@@ -9,6 +9,7 @@ import Join from "./pages/Join";
 import SignUp from "./pages/SignUp";
 import Mypage from "./pages/Mypage";
 import Calendar from "./pages/Calendar";
+import ShareCloset from "./pages/ShareCloset";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route exact path="/signup" element={<SignUp />} />
         <Route exact path="/mypage" element={<Mypage />} />
         <Route exact path="/calendar" element={<Calendar />} />
+        <Route exact path="/sharecloset" element={<ShareCloset />} />
       </Routes>
     </div>
   );
