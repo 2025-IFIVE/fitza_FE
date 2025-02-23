@@ -10,6 +10,13 @@ function Main() {
         <TopBar />
       </M.TopBox>
 
+      <M.Container>
+        <M.Header_>
+              <M.Logo>FITZA</M.Logo>
+              <M.Hr></M.Hr>
+        </M.Header_>
+      </M.Container>
+
       <M.BottomBox>
         <Footer />
       </M.BottomBox>

@@ -1,24 +1,60 @@
 import styled from "styled-components";
+export const Background = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh; /* 최소 높이를 뷰포트 전체로 설정 */
+  background-color: #f9f9f9; /* 배경색 */
+  padding-top: 50px; /* 탑바 높이만큼 여백 */
+  padding-bottom: 60px; /* 푸터 높이만큼 여백 */
+`;
 
 export const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 15px;
+`;
+
+/* 탑바를 감싸는 박스 */
+export const TopBox = styled.div`
+  width: 100%;
+  height: 50px; /* 탑바 높이 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background-color: #AD8574; /* 푸터와 같은 색 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+export const Container2 = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  position:relative;
+  justify-content: space-between;
+  margin-top:1.5%;
 `;
 
 export const Header_ = styled.div`
   width: 100%;
-  display: flex;
   justify-content: center; /* Title을 가운데 정렬 */
   align-items: center;
   position: relative; /* Logo의 위치를 조정하기 위해 필요 */
-  border-bottom: 1px solid #0000004f; /* 아래에 검은 선 추가 */
 `;
 
 export const Logo = styled.h1`
-  position: absolute; /* Logo를 절대 위치로 설정 */
+  /* Logo를 절대 위치로 설정 */
+  position:absolute;
   left: 10px; /* Logo를 왼쪽으로 배치 */
   font-size: 24px;
   font-weight: bold;
@@ -29,6 +65,7 @@ export const Logo = styled.h1`
 export const Title = styled.h2`
   font-size: 18px;
   color: black;
+  margin:auto;
 `;
 
 export const WeatherSection = styled.div`
@@ -75,3 +112,10 @@ export const CoordiCard = styled.div`
     font-size: 14px;
   }
 `;
+
+export const Hr = styled.hr`
+  width:100%;
+  margin-top:2%;
+  color:#0000004f;
+`;
+

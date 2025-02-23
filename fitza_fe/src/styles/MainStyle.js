@@ -27,7 +27,6 @@ export const TopBox = styled.div`
   color: white;
   font-weight: bold;
   font-size: 18px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 /* 푸터를 감싸는 박스 */
@@ -44,4 +43,30 @@ export const BottomBox = styled.div`
   justify-content: space-around; /* 아이콘을 균등 배치 */
   padding: 0 10px;
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+export const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+`;
+
+export const Header_ = styled.div`
+  width: 100%;
+`;
+
+export const Logo = styled.h1`
+  position: relative; /* Logo를 절대 위치로 설정 */
+  left: 10px; /* Logo를 왼쪽으로 배치 */
+  font-size: 24px;
+  font-weight: bold;
+  color: black;
+`;
+
+export const Hr = styled.hr`
+  width:100%;
+  margin-top:2%;
+  color:#0000004f;
 `;
