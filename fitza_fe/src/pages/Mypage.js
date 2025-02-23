@@ -52,7 +52,15 @@ function Mypage() {
 
             <MP.BodytypeBox>
                 <MP.BodytypeImage>
-                    <img src={round} alt="round typess" />
+                    <MP.BodytypeImage>
+                        {/* 조건에 맞는 이미지 렌더링 */}
+                        {bodyType === "round" && <img src={round} alt="round typess" />}
+                        {bodyType === "tri" && <img src={tri} alt="triangle typess" />}
+                        {bodyType === "square" && <img src={square} alt="square typess" />}
+                        {bodyType === "invertTri" && <img src={invertTri} alt="inverse triangle typess" />}
+                        {bodyType === "hour" && <img src={hour} alt="hourglass typess" />}
+                    </MP.BodytypeImage>
+
                 </MP.BodytypeImage>
                 <MP.BodytypeText>
                     <div>{nickname}님의 체형은 {bodyType} 체형입니다.</div>
