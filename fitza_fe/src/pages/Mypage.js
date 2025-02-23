@@ -1,15 +1,18 @@
 import React from "react";
 import * as MP from "../styles/MypageStyle";
+import Footer from '../components/Footer'
+import TopBar from '../components/TopBar'
 
 function Mypage() {
     return (
-        <>
-            <Header />
-            <MP.Main>
-                여기는 마이페이지
-            </MP.Main>
-            <Footer />
-        </>
+        <MP.Background>
+            <MP.TopBox>
+                <TopBar />
+            </MP.TopBox>
+            <MP.BottomBox>
+                <Footer />
+            </MP.BottomBox>
+        </MP.Background>
     );
 }
 
