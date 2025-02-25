@@ -133,6 +133,12 @@ export const TodayTotal = styled.div`
   text-align: left;
   font-size: 11px;
 `;
+
+//친구 찾는 링크
+export const FriendLink = styled(Link)`
+  display: inline;  /* 이미지 크기만큼 공간 차지 */
+`;
+
 //친구 찾기
 export const Friends = styled.div`
   display: flex;
@@ -458,5 +464,72 @@ export const TagList = styled.div`
     gap: 10px;
 `;
 
+/* ================================================================
+===================================================================
+
+                   오늘의 코디 페이지 
+
+===================================================================
+=================================================================*/
+// 하얀색 칸2 (프로필 코디 전체 컨테이너)
+export const WhiteBox2 = styled.div`
+  display: flex;  /* Flexbox 사용 */
+  flex-direction: column;  /* 세로로 정렬 */
+  align-items: center;  /* 수평 중앙 정렬 */
+  font-family: 'NanumSquareNeo';
+  width: 100%;
+  padding: 10px;
+  margin: 2px;
+  box-sizing: border-box;
+  background-color: rgb(255, 255, 255);
+`;
 
 
+//오늘의 코디, 코디 목록을 감싸는 박스 
+export const ToggleBox = styled.div`
+    font-family: 'NanumSquareNeo';
+    display: flex;  /* Flexbox 사용 */
+    justify-content: center;  /* 좌우 중앙 정렬 */
+    align-items: center;  /* 세로 중앙 정렬 */
+    width: 100%;  /* 전체 가로 공간을 차지하도록 설정 */
+    padding-bottom: 10px;
+`;
+
+//토글 버튼 스타일 
+export const ToggleButton = styled.div`
+    font-family: 'NanumSquareNeo';
+    font-size: 12px;  /* 숫자 값으로 설정 */
+    color: rgba(93, 64, 55, 1);  /* 글씨 색깔 설정 */
+    text-align: center;  /* 중앙 정렬 */
+    cursor: pointer;  /* 클릭 가능한 느낌 */
+    margin: 5px;  /* 버튼들 간의 간격 */
+
+    /* isActive prop을 사용해 클릭 시 스타일 변경 */
+    font-weight: ${(props) => (props.isActive ? 'bold' : 'normal')};  /* 글씨체 두꺼워짐 */
+`;
+
+//오늘의 코디, 코디 목록 요소들 정렬하는 박스
+export const ContentBox2 = styled.div`
+    font-family: 'NanumSquareNeo';
+
+`;
+
+export const RecentOutfit = styled.div`
+    font-family: 'NanumSquareNeo';
+`;
+
+export const OutfitList = styled.div`
+    font-family: 'NanumSquareNeo';
+`;
+
+
+
+
+
+/* ================================================================
+===================================================================
+
+                   코디 목록 보기 페이지 
+
+===================================================================
+=================================================================*/
