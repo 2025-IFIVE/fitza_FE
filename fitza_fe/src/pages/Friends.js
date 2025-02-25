@@ -1,34 +1,132 @@
-import React, { useState } from "react";
-import * as C from "../styles/FriendsStyle";
+import React, { useState, useEffect } from "react";
+import * as F from "../styles/FriendsStyle";
 import Footer from '../components/Footer'
 import TopBar from '../components/TopBar'
 import { Link, useNavigate } from "react-router-dom";
 import smallPlus from '../img/smallPlus.png';
+import axios from 'axios';
 
 function Friends() {
+
+    const [friends, setFriends] = useState([
+        { id: 1, name: "홍길동" },
+        { id: 2, name: "김철수" },
+        { id: 3, name: "박영희" },
+    ]);  // 친구 목록 상태
+    const [searchTerm, setSearchTerm] = useState("");  // 검색어 상태
+    const [showModal, setShowModal] = useState(false);  // 모달 표시 상태
+    const [friendNumber, setFriendNumber] = useState("");  // 입력받은 친구 번호
+    const [newFriend, setNewFriend] = useState(null);  // 추가된 친구 정보
+    const navigate = useNavigate();
+
+
+    useEffect(() => {
+        // 백엔드에서 친구 목록을 가져오는 API 호출 (예시)
+        axios.get("/api/friends")
+            .then(response => setFriends(response.data))
+            .catch(error => console.error("친구 목록 가져오기 실패", error));
+    }, [newFriend]);  // 새로운 친구가 추가될 때마다 목록 갱신
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const handleAddFriend = () => {
+        setShowModal(true);  // 친구 추가 모달 열기
+    };
+
+    const handleAddFriendNumber = () => {
+        if (!friendNumber) return;
+
+        // 친구 번호로 친구 정보를 가져오는 API 호출
+        axios.post("/api/add-friend", { friendNumber })
+            .then(response => {
+                setNewFriend(response.data);  // 추가된 친구 정보 상태에 저장
+                setShowModal(false);  // 모달 닫기
+                setFriendNumber("");  // 번호 입력 초기화
+            })
+            .catch(error => {
+                console.error("친구 추가 실패", error);
+                setShowModal(false);
+            });
+    };
+
+    const filteredFriends = friends.filter(friend =>
+        friend.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+
+
     return (
-        <C.Background>
-            <C.TopBox>
+        <F.Background>
+            <F.TopBox>
                 <TopBar />
-            </C.TopBox>
+            </F.TopBox>
 
-            <C.Container>
-                <C.Header>
-                    <C.Title>친구 목록</C.Title>
-                </C.Header>
-                <C.TitleBox1>
-                    <C.Title1>내 옷장 ᐳ 친구 목록</C.Title1>
-                    <C.RegisterContainer>
-                        <C.Register>친구 추가하기</C.Register>
-                        <img src={smallPlus} alt="plus" />
-                    </C.RegisterContainer>
-                </C.TitleBox1>
-            </C.Container>
+            <F.Container>
+                <F.Header>
+                    <F.Title>친구 목록</F.Title>
+                </F.Header>
+                <F.TitleBox1>
+                    <F.Title1>내 옷장 ᐳ 친구 목록</F.Title1>
+                    <F.RegisterContainer>
+                        <F.Register  >친구 추가하기</F.Register>
 
-            <C.BottomBox>
+                        <F.AddFnd onClick={handleAddFriend}>
+                            <img src={smallPlus} alt="plus" />
+                        </F.AddFnd>
+
+                    </F.RegisterContainer>
+                </F.TitleBox1>
+
+                <F.Search>
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        placeholder="친구를 이름으로 검색"
+                    />
+                </F.Search>
+
+                <F.FriendList>
+                    {filteredFriends.length > 0 ? (
+                        filteredFriends.map((friend) => (
+                            <F.FriendItem key={friend.id}>
+                                <Link to={`/friend/${friend.id}`}>
+                                    {friend.name}
+                                </Link>
+                            </F.FriendItem>
+                        ))
+                    ) : (
+                        <p>친구가 없습니다.</p>
+                    )}
+                </F.FriendList>
+            </F.Container>
+
+            <F.BottomBox>
                 <Footer />
-            </C.BottomBox>
-        </C.Background>
+            </F.BottomBox>
+
+
+            {/* 친구 추가 모달 */}
+            {showModal && (
+                <F.Modal>
+                    <div>
+                        <h3>친구 번호 입력</h3>
+                        <input
+                            type="text"
+                            value={friendNumber}
+                            onChange={(e) => setFriendNumber(e.target.value)}
+                            placeholder="친구 번호"
+                        />
+                        <button onClick={handleAddFriendNumber}>친구 추가</button>
+                        <button onClick={() => setShowModal(false)}>닫기</button>
+                    </div>
+                </F.Modal>
+            )}
+
+
+        </F.Background>
     );
 }
 
