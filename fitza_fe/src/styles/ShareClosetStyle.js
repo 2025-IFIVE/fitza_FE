@@ -156,19 +156,32 @@ export const WhiteBox = styled.div`
   background-color: rgb(255, 255, 255);
 `;
 
-// 프사 (왼쪽 정렬)
+// 프로필 이미지 박스
 export const ProfImg = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100px; /* 프사 크기 지정 */
   height: 100px; /* 프사 크기 지정 */
-  border-radius: 10%; /* 원형 */
+  border-radius: 20px; //카드창에서 보이는 사각형 (모달창 사각형 아님)
   background-color: rgb(230, 230, 230); /* 테스트용 배경색 */
   margin-right: 10px; /* 프로필 텍스트와 간격 */
+
+    img {
+    width: 100%;  /* 이미지 크기를 부모 div에 맞추기 */
+    height: 100%;  /* 이미지 크기를 부모 div에 맞추기 */
+    object-fit: cover;  /* 비율을 유지하면서 영역에 맞게 잘리도록 */
+    border-radius: 20px;  
+  }
+    /* 텍스트 스타일 */
+  .no-image-text {
+    font-size: 12px;  /* 글씨 크기 줄이기 */
+    color: gray;  /* 텍스트 색상 지정 */
+    text-align: center;  /* 텍스트 중앙 정렬 */
+  }
 `;
 
-// 프사 옆에 소개 (세로 정렬 & 오른쪽 정렬)
+// 프로필 텍스트 박스
 export const ProfTxt = styled.div`
   display: flex;
   flex-direction: column; /* 세로 정렬 */
@@ -181,12 +194,39 @@ export const ProfTxt = styled.div`
   background-color: rgb(255, 255, 255);
 `;
 
+// 이름, 아이콘 감싸는 박스
+export const NameBox = styled.div`
+  display: flex;
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: 8px; /* 요소들 사이 여백 추가 */
+`;
+
+
 // 이름 텍스트 효과
 export const Name = styled.div`
   font-size: 18px;
   font-weight: bold; /* 두껍게 */
   color: #5D4037; /* 갈색 */
   padding: 1px 0; /* 위 아래 패딩 1px */
+`;
+
+// 다운로드 아이콘
+export const Down = styled.div`
+  width: 20px;  /* 원하는 너비 */
+  height: 20px; /* 원하는 높이 */
+  object-fit: contain; /* 이미지 비율을 유지하면서 크기 맞추기 */
+  margin: 0px 5px;
+  position: relative; //이미지가 조금 떠있어서 아래로 내리기 위해해
+  top: 3px; //relative 와 top 적용
+`;
+// 편집 아이콘
+export const Edit = styled.div`
+  width: 20px;  /* 원하는 너비 */
+  height: 20px; /* 원하는 높이 */
+  object-fit: contain; /* 이미지 비율을 유지하면서 크기 맞추기 */
+  margin: 0px 5px;
+  position: relative; //이미지가 조금 떠있어서 아래로 내리기 위해해
+  top: 3px; //relative 와 top 적용
 `;
 
 // 소개 텍스트 효과
@@ -196,19 +236,173 @@ export const Intro = styled.div`
   padding: 5px 0px; /* 위 아래 패딩 1px */
 `;
 
-// 태그 박스스
+// 태그 박스
 export const Tag = styled.div`
   display: flex; /* 가로로 정렬 */
   flex-wrap: wrap; /* 태그들이 넘치면 줄바꿈 */
   gap: 5px; /* 태그 사이 간격 */
 `;
 
-// 태그 요소소
+// 태그 요소
 export const TagItem = styled.div`
   font-size: 13px;
   padding: 3px 7px;
   border: 1px solid #5D4037; /* 테두리 갈색 */
   background-color:rgb(255, 243, 243); /* 배경 핑크 */
   border-radius: 50px; /* 모서리 둥글게 */
+`;
+
+
+// 모달 전체를 감싸는 박스 
+export const ModalOverlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+`;
+
+// 이게 진짜 모달창 
+export const ModalContent = styled.div`
+    font-family: 'NanumSquareNeo';
+    background: white;
+    border: 2px solid #AD8574;
+    padding: 20px;
+    border-radius: 20px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+// 프로필 이미지 미리보기 박스
+export const ProfileImageBox = styled.div`
+  display: flex;
+  flex-direction: column;  /* 세로로 정렬 */
+  justify-content: center;  /* 세로축 중앙 정렬 */
+  align-items: center;  /* 가로축 중앙 정렬 */
+  margin-bottom: 20px;
+  font-size: 10px;
+`;
+
+
+// 프로필 이미지 미리보기
+export const ProfileImagePreview = styled.div`
+  width: 100px;  /* 정사각형 크기 */
+  height: 100px;  /* 정사각형 크기 */
+  object-fit: cover;  /* 이미지가 영역을 덮으면서 비율을 유지하며 잘리도록 */
+  border-radius: 20px;  /* 원형 모양으로 만들고 싶다면 추가 */
+  background-color: lightgray;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 100%;  /* 이미지 크기를 부모 div에 맞추기 */
+    height: 100%;  /* 이미지 크기를 부모 div에 맞추기 */
+    object-fit: cover;  /* 비율을 유지하면서 영역에 맞게 잘리도록 */
+    border-radius: 20px;  /* 원형 모양으로 만들기 */
+  }
+`;
+
+
+
+// 입력 박스 스타일 (닉네임)
+export const InputBox = styled.div`
+  display: flex;
+  font-family: 'NanumSquareNeo';
+  margin-bottom: 15px;
+  align-items: center; /* 세로 정렬 */
+  
+  /* 닉네임 텍스트 스타일 */
+  span {
+    font-size: 14px;  /* 텍스트 크기 조정 */
+    margin-right: 10px; /* input과 텍스트 사이의 간격 */
+    white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
+  }
+
+  input {
+    font-family: 'NanumSquareNeo';
+    width: 100%;
+    padding: 8px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    line-height: 18px; /* 텍스트가 가운데 정렬되도록 */
+    vertical-align: middle; /* 텍스트가 위로 올라가는 걸 방지 */
+    height: 10px; /* 적절한 높이 설정 */
+    resize: none; /* 입력창 크기 조절을 막습니다 */
+  }
+`;
+
+
+// 텍스트 영역 스타일 (자기소개)
+export const TextareaBox = styled.div`
+  display: flex;
+  font-family: 'NanumSquareNeo';
+  margin-bottom: 15px;
+
+  /* 코멘트 텍스트 스타일 */
+  span {
+    font-size: 14px;  /* 텍스트 크기 조정 */
+    margin-right: 10px; /* input과 텍스트 사이의 간격 */
+    white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
+    display: flex; /* 플렉스 컨테이너로 설정 */
+    align-items: center; /* 세로로 가운데 정렬 */
+    height: 40px; /* 텍스트 영역의 높이에 맞게 설정 */
+  }
+
+  textarea {
+    font-family: 'NanumSquareNeo';
+    width: 100%;
+    padding: 8px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    line-height: 18px; /* 텍스트가 가운데 정렬되도록 */
+    vertical-align: middle; /* 텍스트가 위로 올라가는 걸 방지 */
+    min-height: 30px; /* 최소 높이 설정 */
+    height: auto; /* 내용에 따라 자동으로 높이가 조절되도록 설정 */
+    resize: vertical; /* 세로 크기만 조절할 수 있게 설정 */
+  }
+`;
+
+
+
+export const ButtonBox = styled.div`
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+`;
+
+export const SaveButton = styled.button`
+    background:rgba(93, 64, 55);
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+
+    &:hover {
+        background:rgba(93, 64, 55, 0.8);
+`;
+
+export const CancelButton = styled.button`
+    background:rgba(93, 64, 55);
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+
+    &:hover {
+        background:rgba(93, 64, 55, 0.8);
 `;
 

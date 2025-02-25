@@ -1,60 +1,83 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import * as SC from "../styles/ShareClosetStyle";
-import Footer from '../components/Footer'
-import TopBar from '../components/TopBar'
-import { useEffect, useState } from "react";
-import axios from 'axios';
+import Footer from "../components/Footer";
+import TopBar from "../components/TopBar";
+import axios from "axios";
 
-// 이미지 주소 넣는 곳
-//메뉴 아이콘
-import backIcon from '../img/backButton.png';
-import friends from '../img/shareClosetPage_friends.png';
+// 이미지 주소
+import backIcon from "../img/backButton.png";
+import friends from "../img/shareClosetPage_friends.png";
+import down from "../img/shareClosetPage_download.png";
+import edit from "../img/shareClosetPage_edit.png";
 
 function ShareCloset() {
-    //닉네임과 체형 정보 관리리
-    const [nickname, setNickname] = useState('');
-    const [bodyType, setBodyType] = useState('');
+    /* 상태 관리 */
+    const [nickname, setNickname] = useState(""); // 닉네임
+    const [bodyType, setBodyType] = useState(""); // 체형
+    const [profileImage, setProfileImage] = useState(null); // 프로필 이미지
+    const [intro, setIntro] = useState(""); // 자기소개
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 편집 모달
+    const [today, setToday] = useState(0); // 오늘 방문자 수
+    const [total, setTotal] = useState(0); // 총 방문자 수
 
+    /* 사용자 프로필 정보 가져오기 */
     useEffect(() => {
-        // 예시 API 호출
-        fetch('/api/user-profile') // 여기에 실제 백엔드 API URL을 넣어야 함
+        fetch("/api/user-profile")
             .then(response => response.json())
             .then(data => {
-                setNickname(data.nickname); // 응답에서 닉네임과 체형 정보를 받아옴
+                setNickname(data.nickname);
                 setBodyType(data.bodyType);
+                setIntro(data.intro || "");
+                setProfileImage(data.profileImage || null);
             })
-            .catch(error => console.error('Error fetching data:', error));
+            .catch(error => console.error("Error fetching user data:", error));
     }, []);
 
-
-    // 방문자 수 상태 관리
-    const [today, setToday] = useState(0);
-    const [total, setTotal] = useState(0);
-
-    // 컴포넌트가 처음 렌더링될 때 백엔드에서 데이터를 받아오는 로직
+    /* 방문자 수 가져오기 */
     useEffect(() => {
-        // 데이터 요청 (백엔드에서 방문자 수 받아오기)
-        axios.get('/api/visitor-count') // 여기에 실제 API URL을 넣어주세요
+        axios.get("/api/visitor-count")
             .then(response => {
-                // 응답에서 오늘 방문자 수와 총 방문자 수 추출하여 상태 업데이트
                 setToday(response.data.today);
                 setTotal(response.data.total);
             })
             .catch(error => {
-                console.error('Error fetching visitor data:', error);
+                console.error("Error fetching visitor data:", error);
             });
-    }, []); // 빈 배열을 넣으면 컴포넌트가 마운트될 때 한 번만 호출
+    }, []);
+
+    /* 이미지 다운로드 함수 */
+    const handleDownload = () => {
+        if (profileImage) {
+            const link = document.createElement("a");
+            link.href = profileImage; // 프로필 이미지 URL
+            link.download = "profile-image.jpg"; // 저장될 파일명
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            alert("다운로드할 프로필 이미지가 없습니다.");
+        }
+    };
+
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setProfileImage(imageUrl);
+        }
+    };
 
 
+    /* 모달 열기/닫기 */
+    const openEditModal = () => setIsEditModalOpen(true);
+    const closeEditModal = () => setIsEditModalOpen(false);
 
     return (
         <SC.Background>
-
             <SC.TopBox>
                 <TopBar />
             </SC.TopBox>
-
 
             <SC.Container>
                 <SC.Header>
@@ -76,11 +99,19 @@ function ShareCloset() {
                             </SC.TopBox2>
                             <SC.WhiteBox>
                                 <SC.ProfImg>
-                                    사용자에게 사진을 입력 받는 칸
+                                    {profileImage ? (
+                                        <img src={profileImage} alt="profile" />
+                                    ) : (
+                                        <div className="no-image-text">프로필 사진을 <br></br> 등록해주세요</div>
+                                    )}
                                 </SC.ProfImg>
                                 <SC.ProfTxt>
-                                    <SC.Name>{nickname} 이름</SC.Name>
-                                    <SC.Intro>사용자가 자기 소개 하는 칸 (최대 50자)</SC.Intro>
+                                    <SC.NameBox>
+                                        <SC.Name>{nickname} </SC.Name>
+                                        <SC.Down onClick={handleDownload}> <img src={down} alt="download" /></SC.Down>
+                                        <SC.Edit onClick={openEditModal}> <img src={edit} alt="edit" /> </SC.Edit>
+                                    </SC.NameBox>
+                                    <SC.Intro>{intro || "자기소개가 없습니다."}</SC.Intro>
                                     <SC.Tag>
                                         <SC.TagItem>스트릿</SC.TagItem>
                                         <SC.TagItem>캐주얼</SC.TagItem>
@@ -88,22 +119,85 @@ function ShareCloset() {
                                     </SC.Tag>
                                 </SC.ProfTxt>
                             </SC.WhiteBox>
-                            <SC.WhiteBox>
-                                dfsfd
-                            </SC.WhiteBox>
                         </SC.GrayBox>
-
-
                     </SC.DashandBox>
                 </SC.ContentBox>
-
             </SC.Container>
-
-
 
             <SC.BottomBox>
                 <Footer />
             </SC.BottomBox>
+
+
+            {/* 편집 모달 */}
+            {isEditModalOpen && (
+                <SC.ModalOverlay>
+                    <SC.ModalContent>
+                        <h3>프로필 편집</h3>
+                        <SC.ProfileImageBox>
+                            {/* 프로필 사진 수정 */}
+                            <SC.ProfileImagePreview>
+                                {profileImage ? (
+                                    <img src={profileImage} alt="프로필 이미지" className="profile-image-preview" />
+                                ) : (
+                                    <div>현재 프로필 사진이 없습니다</div>
+                                )}
+                            </SC.ProfileImagePreview>
+                            {/* 커스터마이즈된 파일 선택 버튼 */}
+                            <label
+                                htmlFor="file-upload"
+                                style={{
+                                    cursor: 'pointer',
+                                    color: 'black',
+                                    fontSize: '10px', // 글씨 크기
+                                    textAlign: 'center', // 텍스트 중앙 정렬
+                                    backgroundColor: 'white',
+                                }}
+
+                            >
+                                갤러리에서 프로필 사진 등록하기 ▶
+                            </label>
+                            <input
+                                type="file"
+                                id="file-upload"
+                                accept="image/*"
+                                onChange={handleImageUpload} // 이미지 업로드 핸들러
+                                style={{ display: 'none' }} // 기본 input을 숨깁니다
+                            />
+                        </SC.ProfileImageBox>
+
+                        {/* 닉네임 입력 */}
+                        <SC.InputBox>
+                            <span>닉네임</span>
+                            <input
+                                type="text"
+                                value={nickname}
+                                onChange={(e) => setNickname(e.target.value)}
+                                placeholder={nickname}
+                            />
+                        </SC.InputBox>
+
+                        {/* 자기소개 입력 */}
+                        <SC.TextareaBox>
+                            <span>코멘트</span>
+                            <textarea
+                                value={intro}
+                                onChange={(e) => setIntro(e.target.value)}
+                                placeholder={intro}
+                                maxLength={50}
+                            />
+                        </SC.TextareaBox>
+
+                        {/* 버튼들 */}
+                        <SC.ButtonBox>
+                            <SC.SaveButton onClick={closeEditModal}>저장</SC.SaveButton>
+                            <SC.CancelButton onClick={closeEditModal}>취소</SC.CancelButton>
+                        </SC.ButtonBox>
+                    </SC.ModalContent>
+                </SC.ModalOverlay>
+            )
+            }
+
         </SC.Background >
     );
 }
