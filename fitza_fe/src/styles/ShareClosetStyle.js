@@ -234,6 +234,7 @@ export const Intro = styled.div`
   font-size: 13px;
   color: #5D4037; /* 갈색 */
   padding: 5px 0px; /* 위 아래 패딩 1px */
+  margin: 10px 0px;
 `;
 
 // 태그 박스
@@ -247,11 +248,19 @@ export const Tag = styled.div`
 export const TagItem = styled.div`
   font-size: 13px;
   padding: 3px 7px;
-  border: 1px solid #5D4037; /* 테두리 갈색 */
+  border: 1.2px solid rgb(96, 96, 96); /* 테두리 갈색 */
   background-color:rgb(255, 243, 243); /* 배경 핑크 */
   border-radius: 50px; /* 모서리 둥글게 */
 `;
 
+
+/* ================================================================
+===================================================================
+
+                   여기가 모달 박스의 안에 있는는 스타일
+
+===================================================================
+=================================================================*/
 
 // 모달 전체를 감싸는 박스 
 export const ModalOverlay = styled.div`
@@ -323,6 +332,7 @@ export const InputBox = styled.div`
   
   /* 닉네임 텍스트 스타일 */
   span {
+      width: 50px;
     font-size: 14px;  /* 텍스트 크기 조정 */
     margin-right: 10px; /* input과 텍스트 사이의 간격 */
     white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
@@ -351,6 +361,7 @@ export const TextareaBox = styled.div`
 
   /* 코멘트 텍스트 스타일 */
   span {
+    width: 50px;
     font-size: 14px;  /* 텍스트 크기 조정 */
     margin-right: 10px; /* input과 텍스트 사이의 간격 */
     white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
@@ -375,13 +386,14 @@ export const TextareaBox = styled.div`
 `;
 
 
-
+// 저장, 취소 버튼 박스 
 export const ButtonBox = styled.div`
     display: flex;
     gap: 10px;
     margin-top: 15px;
 `;
 
+// 저장 버튼 
 export const SaveButton = styled.button`
     background:rgba(93, 64, 55);
     color: white;
@@ -394,6 +406,7 @@ export const SaveButton = styled.button`
         background:rgba(93, 64, 55, 0.8);
 `;
 
+// 취소 버튼 
 export const CancelButton = styled.button`
     background:rgba(93, 64, 55);
     color: white;
@@ -405,4 +418,45 @@ export const CancelButton = styled.button`
     &:hover {
         background:rgba(93, 64, 55, 0.8);
 `;
+
+// 태그 추가하는 박스 
+export const InputTagBox = styled.div`
+  display: flex;
+  font-family: 'NanumSquareNeo';
+  margin-bottom: 15px;
+
+  /* 코멘트 텍스트 스타일 */
+  span {
+    width: 50px;
+    font-size: 14px;  /* 텍스트 크기 조정 */
+    margin-right: 10px; /* input과 텍스트 사이의 간격 */
+    white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
+    display: flex; /* 플렉스 컨테이너로 설정 */
+    align-items: center; /* 세로로 가운데 정렬 */
+    height: 40px; /* 텍스트 영역의 높이에 맞게 설정 */
+  }
+
+  textarea {
+    font-family: 'NanumSquareNeo';
+    width: 100%;
+    padding: 8px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    line-height: 18px; /* 텍스트가 가운데 정렬되도록 */
+    vertical-align: middle; /* 텍스트가 위로 올라가는 걸 방지 */
+    min-height: 30px; /* 최소 높이 설정 */
+    height: auto; /* 내용에 따라 자동으로 높이가 조절되도록 설정 */
+    resize: vertical; /* 세로 크기만 조절할 수 있게 설정 */
+  }
+`;
+
+// styles/ShareClosetStyle.js
+export const TagList = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+`;
+
+
 

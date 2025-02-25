@@ -15,11 +15,19 @@ function ShareCloset() {
     /* 상태 관리 */
     const [nickname, setNickname] = useState(""); // 닉네임
     const [bodyType, setBodyType] = useState(""); // 체형
+
+
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 편집 모달
     const [profileImage, setProfileImage] = useState(null); // 프로필 이미지
     const [intro, setIntro] = useState(""); // 자기소개
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 편집 모달
+    const [tag, setTag] = useState('');  // 태그 입력 필드 값
+    const [tags, setTags] = useState([]); // 태그 배열 상태
+
+
     const [today, setToday] = useState(0); // 오늘 방문자 수
     const [total, setTotal] = useState(0); // 총 방문자 수
+
+
 
     /* 사용자 프로필 정보 가져오기 */
     useEffect(() => {
@@ -60,6 +68,12 @@ function ShareCloset() {
         }
     };
 
+
+    /* 모달 열기/닫기 */
+    const openEditModal = () => setIsEditModalOpen(true);
+    const closeEditModal = () => setIsEditModalOpen(false);
+
+    /* 프사 바꾸기 */
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -68,10 +82,19 @@ function ShareCloset() {
         }
     };
 
+    // 태그 입력 후 엔터 누를 때
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && tag.trim() !== '') {
+            setTags((prevTags) => [...prevTags, tag.trim()]);
+            setTag(''); // 입력 필드 비우기
+        }
+    };
 
-    /* 모달 열기/닫기 */
-    const openEditModal = () => setIsEditModalOpen(true);
-    const closeEditModal = () => setIsEditModalOpen(false);
+    // 태그 삭제
+    const handleTagDelete = (tagToDelete) => {
+        setTags(tags.filter((item) => item !== tagToDelete));
+    };
+
 
     return (
         <SC.Background>
@@ -113,9 +136,12 @@ function ShareCloset() {
                                     </SC.NameBox>
                                     <SC.Intro>{intro || "자기소개가 없습니다."}</SC.Intro>
                                     <SC.Tag>
-                                        <SC.TagItem>스트릿</SC.TagItem>
-                                        <SC.TagItem>캐주얼</SC.TagItem>
-                                        <SC.TagItem>러블리</SC.TagItem>
+                                        {tags.map((tag, index) => (
+                                            <SC.TagItem key={index}>
+                                                {tag}
+                                                <span onClick={() => handleTagDelete(tag)} style={{ cursor: 'pointer', marginLeft: '5px' }}>X</span>
+                                            </SC.TagItem>
+                                        ))}
                                     </SC.Tag>
                                 </SC.ProfTxt>
                             </SC.WhiteBox>
@@ -187,6 +213,24 @@ function ShareCloset() {
                                 maxLength={50}
                             />
                         </SC.TextareaBox>
+
+                        <SC.InputTagBox>
+                            <span>태그</span>
+                            <textarea
+                                value={tag}
+                                onChange={(e) => setTag(e.target.value)}
+                                placeholder="태그를 입력하고 엔터를 누르세요"
+                                onKeyPress={handleKeyPress} // 엔터 키 이벤트 처리
+                            />
+                        </SC.InputTagBox>
+                        <SC.TagList>
+                            {tags.map((item, index) => (
+                                <SC.Tag key={index}>
+                                    {item}
+                                    <span onClick={() => handleTagDelete(item)}>X</span>
+                                </SC.Tag>
+                            ))}
+                        </SC.TagList>
 
                         {/* 버튼들 */}
                         <SC.ButtonBox>
