@@ -6,6 +6,12 @@ import { Link, useNavigate } from "react-router-dom";
 import smallPlus from '../img/smallPlus.png';
 import axios from 'axios';
 
+
+
+// 이미지 주소
+import find from "../img/friendspage_find.png";
+
+
 function Friends() {
 
     const [friends, setFriends] = useState([
@@ -80,28 +86,36 @@ function Friends() {
                 </F.TitleBox1>
 
                 <F.Search>
-                    <input
+                    <F.SearchInput
                         type="text"
                         value={searchTerm}
-                        onChange={handleSearchChange}
-                        placeholder="친구를 이름으로 검색"
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="친구 이름을 입력하세요"
                     />
+
+                    <F.Find >
+                        <F.FindImg>
+                            <img src={find} alt="find" />
+                        </F.FindImg>
+                    </F.Find>
                 </F.Search>
 
                 <F.FriendList>
                     {filteredFriends.length > 0 ? (
                         filteredFriends.map((friend) => (
-                            <F.FriendItem key={friend.id}>
-                                <Link to={`/friend/${friend.id}`}>
-                                    {friend.name}
-                                </Link>
+                            <F.FriendItem to={`/friend/${friend.id}`} key={friend.id}>
+                                {friend.name}
                             </F.FriendItem>
                         ))
                     ) : (
                         <p>친구가 없습니다.</p>
                     )}
                 </F.FriendList>
-            </F.Container>
+
+
+
+
+            </F.Container >
 
             <F.BottomBox>
                 <Footer />
@@ -109,24 +123,30 @@ function Friends() {
 
 
             {/* 친구 추가 모달 */}
-            {showModal && (
-                <F.Modal>
-                    <div>
-                        <h3>친구 번호 입력</h3>
-                        <input
-                            type="text"
-                            value={friendNumber}
-                            onChange={(e) => setFriendNumber(e.target.value)}
-                            placeholder="친구 번호"
-                        />
-                        <button onClick={handleAddFriendNumber}>친구 추가</button>
-                        <button onClick={() => setShowModal(false)}>닫기</button>
-                    </div>
-                </F.Modal>
-            )}
+            {
+                showModal && (
+                    <F.ModalOverlay>
+                        <F.ModalContent>
+                            <h3>친구 번호 입력</h3>
+                            <F.TextareaBox>
+                                <input
+                                    type="text"
+                                    value={friendNumber}
+                                    onChange={(e) => setFriendNumber(e.target.value)}
+                                    placeholder="- 없이 입력해주세요"
+                                />
+                            </F.TextareaBox>
+                            <F.ButtonBox>
+                                <F.SaveButton onClick={handleAddFriendNumber}>친구 추가</F.SaveButton>
+                                <F.CancelButton onClick={() => setShowModal(false)}>닫기</F.CancelButton>
+                            </F.ButtonBox>
+                        </F.ModalContent>
+                    </F.ModalOverlay>
+                )
+            }
 
 
-        </F.Background>
+        </F.Background >
     );
 }
 
