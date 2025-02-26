@@ -8,7 +8,7 @@ export const Background = styled.div`
   width: 100%;
   min-height: 100vh; /* 최소 높이를 뷰포트 전체로 설정 */
   background-color: #ffffff; /* 배경색 */
-  padding-top: 60px; /* 탑바 높이만큼 여백 */
+  padding-top: 30px; /* 탑바 높이만큼 여백 */
   padding-bottom: 60px; /* 푸터 높이만큼 여백 */
   overflow-x: hidden; /*옆에 여백 숭기기*/
 `;
@@ -16,7 +16,7 @@ export const Background = styled.div`
 /* 탑바를 감싸는 박스 */
 export const TopBox = styled.div`
   width: 100%;
-  height: 60px; /* 탑바 높이 */
+  height: 30px; /* 탑바 높이 */
   position: fixed;
   top: 0;
   left: 0;

@@ -1,13 +1,7 @@
 import styled from "styled-components";
 
 // 화면 바깥 배경색을 위한 글로벌 스타일
-export const BackgroundWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  height: 100vh;
-  background-color: #f5f5f5; /* 기본 배경색 */
-`;
+
 
 // 회원가입 페이지 컨테이너 (반응형 적용)
 export const SignUpContainer = styled.div`

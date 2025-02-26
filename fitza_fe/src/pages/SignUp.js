@@ -50,7 +50,6 @@ function SignUp() {
   };
 
   return (
-    <S.BackgroundWrapper>
       <S.SignUpContainer>
       <S.TopBox />
         <S.InnerDiv>
@@ -127,7 +126,6 @@ function SignUp() {
           </S.Form>
         </S.InnerDiv>
       </S.SignUpContainer>
-    </S.BackgroundWrapper>
   );
 }
 
