@@ -7,7 +7,6 @@ import smallPlus from '../img/smallPlus.png';
 import axios from 'axios';
 
 
-
 // 이미지 주소
 import find from "../img/friendspage_find.png";
 import backIcon from "../img/backButton.png";

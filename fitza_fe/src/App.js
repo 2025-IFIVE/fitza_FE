@@ -11,6 +11,7 @@ import Mypage from "./pages/Mypage";
 import Calendar from "./pages/Calendar";
 import ShareCloset from "./pages/ShareCloset";
 import Friends from "./pages/Friends";
+import FindFriends from "./pages/FindFriends";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route exact path="/calendar" element={<Calendar />} />
         <Route exact path="/sharecloset" element={<ShareCloset />} />
         <Route exact path="/friends" element={<Friends />} />
+        <Route exact path="/findfriends" element={<FindFriends />} />
       </Routes>
     </div>
   );

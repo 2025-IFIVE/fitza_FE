@@ -122,6 +122,16 @@ export const RegisterContainer = styled.div`
   }
 `;
 
+export const Back = styled.div`
+  position: absolute; 
+  left: 10px; /* Logo를 왼쪽으로 배치 */
+    img {
+    width: 20px;  /* 원하는 너비 */
+    height: 20px; /* 원하는 높이 */
+    object-fit: contain; /* 이미지 비율을 유지하면서 크기 맞추기 */
+  }
+`;
+
 /* =====================================================================
 ========================================================================
 
