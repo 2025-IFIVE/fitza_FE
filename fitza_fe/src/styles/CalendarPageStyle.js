@@ -140,7 +140,7 @@ export const CalendarWrapper = styled.div`
     //align-items: center;
     font-size: 0.5rem;  /* 글자 크기 조정 */
     padding-top: 0px;
-    color: black; //이거 없애면 파란색,빨간색색
+    color: black; //이거 없애면 파란색,빨간색
   }  
   /* 선택된 날짜에 대한 스타일 */
   .react-calendar__tile--active {
