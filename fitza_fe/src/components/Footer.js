@@ -22,7 +22,7 @@ const Footer = () => {
         <Link to="/Plus">
           <img src={plusButton} alt="Plus" className="footerImage" />
         </Link>
-        <Link to="/Calendar">
+        <Link to="/CalendarPage">
           <img src={calendarButton} alt="Calendar" className="footerImage" />
         </Link>
         <Link to="/Mypage">

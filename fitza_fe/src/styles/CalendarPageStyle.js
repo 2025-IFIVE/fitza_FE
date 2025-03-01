@@ -8,7 +8,7 @@ export const Background = styled.div`
   width: 100%;
   min-height: 100vh; /* 최소 높이를 뷰포트 전체로 설정 */
   background-color: #ffffff; /* 배경색 */
-  padding-top: 60px; /* 탑바 높이만큼 여백 */
+  padding-top: 30px; /* 탑바 높이만큼 여백 */
   padding-bottom: 60px; /* 푸터 높이만큼 여백 */
   overflow-x: hidden; /*옆에 여백 숭기기*/
 `;
@@ -16,7 +16,7 @@ export const Background = styled.div`
 /* 탑바를 감싸는 박스 */
 export const TopBox = styled.div`
   width: 100%;
-  height: 60px; /* 탑바 높이 */
+  height: 30px; /* 탑바 높이 */
   position: fixed;
   top: 0;
   left: 0;
@@ -67,7 +67,7 @@ export const Logo = styled.div`
   color: black;
 `;
 
-export const Title = styled.div`
+export const Title= styled.div`
   position: relative; 
   font-size: 17px;
   color: black;
@@ -117,4 +117,51 @@ export const RegisterContainer = styled.div`
   }
 `;
 
+export const CalendarWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  margin: 10px;
+  //height: calc(100vh - 200px); /* 상단과 하단 공간을 제외한 나머지 공간을 차지 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .react-calendar {
+    width: 100%;
+
+    max-width: 800px;
+  }
+
+   /* 날짜 칸 크기 조정 */
+  .react-calendar__tile {
+    height: 100px;  /* 높이를 늘려서 더 길게 설정 */
+    display: flex;
+    justify-content: center;
+    //align-items: center;
+    font-size: 0.5rem;  /* 글자 크기 조정 */
+    padding-top: 0px;
+    color: black; //이거 없애면 파란색,빨간색색
+  }  
+  /* 선택된 날짜에 대한 스타일 */
+  .react-calendar__tile--active {
+    background-color: #CE9694 !important;
+    color: white;
+  }
+
+  /* 오늘 날짜에 대한 스타일 */
+  .react-calendar__tile--now {
+    background-color: #F3D3D1;
+    color: black;
+
+  }
+    /* 날짜 클릭 시 hover 효과 */
+  .react-calendar__tile:hover {
+    background-color: #F3D3D1;
+  }
+  
+  .react-calendar__navigation__label {
+    color:black;
+    font-size: 1.0rem;
+  }
+`;
 

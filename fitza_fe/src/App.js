@@ -9,10 +9,12 @@ import Join from "./pages/Join";
 import SignUp from "./pages/SignUp";
 import MyCloset_1 from "./pages/MyCloset_1";
 import Mypage from "./pages/Mypage";
-import Calendar from "./pages/Calendar";
+import CalendarPage from "./pages/CalendarPage";
 import ShareCloset from "./pages/ShareCloset";
 import Friends from "./pages/Friends";
 import FindFriends from "./pages/FindFriends";
+import CalendarDetail from "./pages/CalendarDetail";
+import CalendarCreate from "./pages/CalendarCreate";
 
 function App() {
   return (
@@ -25,10 +27,12 @@ function App() {
         <Route exact path="/signup" element={<SignUp />} />
         <Route exact path="/mycloset_1" element={<MyCloset_1 />} />
         <Route exact path="/mypage" element={<Mypage />} />
-        <Route exact path="/calendar" element={<Calendar />} />
+        <Route exact path="/calendarpage" element={<CalendarPage />} />
         <Route exact path="/sharecloset" element={<ShareCloset />} />
         <Route exact path="/friends" element={<Friends />} />
         <Route exact path="/findfriends" element={<FindFriends />} />
+        <Route exact path="/calendardetail" element={<CalendarDetail />} />
+        <Route exact path="/calendarcreate" element={<CalendarCreate />} />
       </Routes>
     </div>
   );
