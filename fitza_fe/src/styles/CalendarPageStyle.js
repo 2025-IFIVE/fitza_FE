@@ -88,7 +88,7 @@ export const TitleBox1 = styled.div`
 export const Title1 = styled.div`
   color: #000; /* 검은색 */
   font-size: 15px;
-  padding-left: 10px;
+  padding-left: 15px;
   padding-top:5px;
   padding-bottom:5px;
   margin:0;
@@ -119,7 +119,7 @@ export const RegisterContainer = styled.div`
 
 export const CalendarWrapper = styled.div`
   width: 100%;
-  height: 100%;
+  //height: 100%;
   margin: 10px;
   //height: calc(100vh - 200px); /* 상단과 하단 공간을 제외한 나머지 공간을 차지 */
   display: flex;
@@ -128,24 +128,24 @@ export const CalendarWrapper = styled.div`
 
   .react-calendar {
     width: 100%;
-
     max-width: 800px;
   }
 
    /* 날짜 칸 크기 조정 */
   .react-calendar__tile {
-    height: 100px;  /* 높이를 늘려서 더 길게 설정 */
+    aspect-ratio: 1 / 1.7;
     display: flex;
-    justify-content: center;
-    //align-items: center;
-    font-size: 0.5rem;  /* 글자 크기 조정 */
-    padding-top: 0px;
-    color: black; //이거 없애면 파란색,빨간색
+    flex-direction:column;
+    //justify-content: center;
+    align-items: center;
+    font-size: 0.7rem;  /* 글자 크기 조정 */
+    padding-top: 2px;
+    //color: black; //이거 없애면 파란색,빨간색
   }  
   /* 선택된 날짜에 대한 스타일 */
   .react-calendar__tile--active {
-    background-color: #CE9694 !important;
-    color: white;
+    //background-color: #F3D3D1;
+    color: black;
   }
 
   /* 오늘 날짜에 대한 스타일 */
@@ -156,12 +156,101 @@ export const CalendarWrapper = styled.div`
   }
     /* 날짜 클릭 시 hover 효과 */
   .react-calendar__tile:hover {
-    background-color: #F3D3D1;
+    background-color: #F2F2F2;
   }
   
   .react-calendar__navigation__label {
     color:black;
     font-size: 1.0rem;
   }
+
+  /* 잘리는 날짜 색상 변경 */
+  .react-calendar__month-view__days__day--neighboringMonth {
+    color: #ccc !important; /* 연한 회색 */
+  }
+
+  /* 토요일 */
+  .react-calendar__month-view__days__day:nth-child(7n + 6) {
+    color: black;
+  }
+  /* 일요일 */
+  .react-calendar__month-view__days__day:nth-child(7n) {
+    color: black;
+  }
+  /* 월~금 (검정색 또는 원하는 색상) */
+  .react-calendar__month-view__days__day:not(:nth-child(7n)):not(:nth-child(7n+6)) {
+    color: black; /* 원하는 색으로 변경 가능 */
+  }
+
+
 `;
 
+export const TileImage = styled.img`
+  width: 100%;
+  height: 90%;
+  margin-top: 0px;
+  object-fit: cover;
+`;
+
+
+
+export const OftenTitle = styled.div`
+  font-size: 14px;
+  //font-weight: bold;
+  color: #000;
+  margin-top: 15px;
+  margin-bottom:5px;
+  padding-left: 20px;
+  //text-align: left; //왼쪽 정렬 
+  width: 100%;
+`;
+
+export const OftenContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  //align-items: center;
+  padding: 5px 0;
+  //background-color: rgba(206, 150, 148, 0.15); /* 옅은 배경 */
+`;
+
+export const OftenItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 30%; /* 각 아이템의 크기 */
+`;
+
+export const OftenCateg = styled.div`
+  font-size: 14px;
+  color: #000;
+  margin-bottom: 5px;
+  text-align: left; /* 왼쪽 정렬 */
+  width: 90%; /* 부모 요소의 전체 너비를 차지하여 왼쪽 정렬 유지 */
+`;
+
+export const OftenImage = styled.div`
+  width: 90%;  /* 이미지 크기 조절 */
+  aspect-ratio: 1 / 1; /* 정사각형 비율 유지 */
+  object-fit: cover;
+  border-radius: 8px; /* 둥근 모서리 */
+  background-color: #F2F2F2;
+`;
+
+export const OftenCount = styled.div`
+  font-size: 14px;
+  color: #555;
+  margin-top: 5px;
+  width: 90%;
+  text-align: right;
+`;
+
+export const LoadingText = styled.div`
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+  width: 100%;
+  padding: 20px;
+`;

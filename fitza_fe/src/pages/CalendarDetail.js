@@ -2,13 +2,15 @@ import React from "react";
 import * as C from "../styles/CalendarDetailStyle";
 import Footer from '../components/Footer';
 import TopBar from '../components/TopBar';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import smallPlus from '../img/smallPlus.png';
 import backButton from '../img/backButton.png';
 import calendar_black from '../img/calendar_black.png';
 
 function CalendarDetail() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const selectedDate = location.state?.selectedDate || "날짜 선택 안됨";
 
   return (
     <C.Background>
@@ -25,12 +27,7 @@ function CalendarDetail() {
         </C.Header>
 
         <C.TitleBox1>
-          <C.dateContainer>
-            <Link to="/CalendarModal">
-              <img src={calendar_black} alt="calendar_black" className="calendar_black" />
-            </Link>
-            <C.Title1>2025.02.16</C.Title1>
-          </C.dateContainer>
+          <C.Title1>{selectedDate}</C.Title1>
           <C.RegisterContainer>
             <C.Register>수정하기</C.Register>
             <Link to="/Camera">

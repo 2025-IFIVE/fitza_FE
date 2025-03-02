@@ -98,7 +98,7 @@ function CalendarCreate() {
           <C.BackButton onClick={() => navigate(-1)}>
             <img src={backButton} alt="뒤로 가기" />
           </C.BackButton>
-          <C.Title>옷 기록하기</C.Title>
+          <C.Title>코디 기록하기</C.Title>
         </C.Header>
 
         <C.TitleBox1>
