@@ -12,7 +12,7 @@ import Mypage from "./pages/Mypage";
 import CalendarPage from "./pages/CalendarPage";
 import ShareCloset from "./pages/ShareCloset";
 import Friends from "./pages/Friends";
-import FindFriends from "./pages/FindFriends";
+import FriendCloset from "./pages/FriendCloset";
 import CalendarDetail from "./pages/CalendarDetail";
 import CalendarCreate from "./pages/CalendarCreate";
 
@@ -30,7 +30,7 @@ function App() {
         <Route exact path="/calendarpage" element={<CalendarPage />} />
         <Route exact path="/sharecloset" element={<ShareCloset />} />
         <Route exact path="/friends" element={<Friends />} />
-        <Route exact path="/findfriends" element={<FindFriends />} />
+        <Route exact path="/friendcloset" element={<FriendCloset />} />
         <Route exact path="/calendardetail" element={<CalendarDetail />} />
         <Route exact path="/calendarcreate" element={<CalendarCreate />} />
       </Routes>

@@ -132,6 +132,8 @@ export const TodayTotal = styled.div`
   margin-left: 10px;
   text-align: left;
   font-size: 11px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 `;
 
 //친구 찾는 링크
