@@ -10,6 +10,8 @@ import backIcon from "../img/backButton.png";
 import friends from "../img/shareClosetPage_friends.png";
 import down from "../img/shareClosetPage_download.png";
 import edit from "../img/shareClosetPage_edit.png";
+import addoutfitbutton from "../img/shareClosetPage_addoutfitbutton.png";
+
 
 function ShareCloset() {
     /* 상태 관리 */
@@ -116,6 +118,7 @@ function ShareCloset() {
     };
 
 
+
     return (
         <SC.Background>
             <SC.TopBox>
@@ -181,15 +184,37 @@ function ShareCloset() {
                                 <SC.ContentBox2>
                                     {showTodayOutfit && (
                                         <SC.RecentOutfit>
-                                            {/* 오늘의 코디 내용을 여기에 추가 */}
-                                            코디 등록 버튼
+                                            {/* 최근 코디를 여기에 추가 */}
+                                            <SC.OutfitBox3>
+                                                <div>오늘의 날짜</div>
+                                                <div>여기에 오늘의 코디 사진</div>
+                                            </SC.OutfitBox3>
                                         </SC.RecentOutfit>
                                     )}
 
                                     {showOutfitList && (
                                         <SC.OutfitList>
                                             {/* 코디 목록 내용을 여기에 추가 */}
-                                            코디 목록
+                                            <SC.OutfitBox1>
+                                                <div>코디 등록하기</div>
+                                                <SC.AddOutfitButton>
+                                                    <img src={addoutfitbutton} alt="addoutfitbutton" />
+                                                </SC.AddOutfitButton>
+                                            </SC.OutfitBox1>
+
+                                            <SC.OutfitBox2>
+                                                <div>1월 3일</div>
+                                                <div>여기에 코디 사진</div>
+                                            </SC.OutfitBox2>
+                                            <SC.OutfitBox2>
+                                                <div>1월 4일</div>
+                                                <div>여기에 코디 사진</div>
+                                            </SC.OutfitBox2>
+                                            <SC.OutfitBox2>
+                                                <div>1월 5일</div>
+                                                <div>여기에 코디 사진</div>
+                                            </SC.OutfitBox2>
+
                                         </SC.OutfitList>
                                     )}
                                 </SC.ContentBox2>

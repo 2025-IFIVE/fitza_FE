@@ -510,6 +510,14 @@ export const ToggleButton = styled.div`
     font-weight: ${(props) => (props.isActive ? 'bold' : 'normal')};  /* 글씨체 두꺼워짐 */
 `;
 
+/* ================================================================
+===================================================================
+
+              코디 목록 박스들로 나타나는 부분분
+
+===================================================================
+=================================================================*/
+
 //오늘의 코디, 코디 목록 요소들 정렬하는 박스
 export const ContentBox2 = styled.div`
     font-family: 'NanumSquareNeo';
@@ -518,20 +526,72 @@ export const ContentBox2 = styled.div`
 
 export const RecentOutfit = styled.div`
     font-family: 'NanumSquareNeo';
-`;
 
+`;
 export const OutfitList = styled.div`
-    font-family: 'NanumSquareNeo';
+    display: flex;
+    flex-wrap: wrap; /* 요소들이 넘칠 경우 줄 바꿈 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    gap: 10px; /* 요소 간 간격 */
 `;
 
 
 
 
+export const OutfitBox3 = styled.div`
 
-/* ================================================================
-===================================================================
+    font-family: 'NanumSquareNeo';
+    font-size: 11px; /* 원하는 크기로 조정 */
+    color: #D19492;
+    display: flex;
+    flex-direction: column; /* 내부 요소들을 세로 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    width: 200px; /* 필요에 따라 조정 */
+    height: 200px;
+    background-color: rgb(200, 200, 200, 0.1);
+    border-radius: 20px; /* 둥근 테두리 */
+    text-align: center;
+`;
 
-                   코디 목록 보기 페이지 
 
-===================================================================
-=================================================================*/
+export const OutfitBox1 = styled.div`
+    font-family: 'NanumSquareNeo';
+    font-size: 11px; /* 원하는 크기로 조정 */
+    color: #D19492;
+    display: flex;
+    flex-direction: column; /* 내부 요소들을 세로 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    width: 100px; /* 필요에 따라 조정 */
+    height: 100px;
+    border: 2px dotted #D19492; /* 점선 핑크색 테두리 */
+    border-radius: 20px; /* 둥근 테두리 */
+    text-align: center;
+`;
+
+export const AddOutfitButton = styled.div`
+    font-family: 'NanumSquareNeo';
+    width: 40px; /* 크기만 지정 */
+    height: 40px;
+    background: none;
+    border: none;
+    margin-top: 10px;
+    cursor: pointer;
+`;
+
+export const OutfitBox2 = styled.div`
+    font-family: 'NanumSquareNeo';
+    font-size: 11px; /* 원하는 크기로 조정 */
+    color: #D19492;
+    display: flex;
+    flex-direction: column; /* 내부 요소들을 세로 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    width: 100px; /* 필요에 따라 조정 */
+    height: 100px;
+    border: 2px solid  #D19492; /* 점선 핑크색 테두리 */
+    border-radius: 20px; /* 둥근 테두리 */
+    text-align: center;
+`;

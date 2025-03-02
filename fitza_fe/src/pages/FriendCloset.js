@@ -10,6 +10,8 @@ import backIcon from "../img/backButton.png";
 import friends from "../img/shareClosetPage_friends.png";
 import down from "../img/shareClosetPage_download.png";
 import edit from "../img/shareClosetPage_edit.png";
+import addoutfitbutton from "../img/shareClosetPage_addoutfitbutton.png";
+
 
 function ShareCloset() {
     /* 상태 관리 */
@@ -116,6 +118,7 @@ function ShareCloset() {
     };
 
 
+
     return (
         <SC.Background>
             <SC.TopBox>
@@ -127,16 +130,19 @@ function ShareCloset() {
                     <SC.Back onClick={handleBackClick}>
                         <img src={backIcon} alt="back" />
                     </SC.Back>
-                    <SC.Title>친구 옷장</SC.Title>
+                    <SC.Title>옷장 공유</SC.Title>
                 </SC.Header>
 
                 <SC.ContentBox>
-                    <div style={{ fontFamily: "NanumSquareNeo", fontSize: "15px", fontWeight: "bold", color: 'white' }} >{nickname}의 옷장</div>
+                    <div>{nickname}의 옷장</div>
                     <SC.DashandBox>
                         <SC.GrayBox>
                             <SC.TopBox2>
                                 <SC.TodayTotal>TODAY {today} TOTAL {total}</SC.TodayTotal>
                                 <SC.Friends>
+                                    <SC.FriendLink to="/friends">
+                                        <img src={friends} alt="find friends" />
+                                    </SC.FriendLink>
                                 </SC.Friends>
                             </SC.TopBox2>
                             <SC.WhiteBox>
@@ -144,14 +150,14 @@ function ShareCloset() {
                                     {profileImage ? (
                                         <img src={profileImage} alt="profile" />
                                     ) : (
-                                        <div className="no-image-text">프로필 사진이 <br></br> 없습니다</div>
+                                        <div className="no-image-text">프로필 사진을 <br></br> 등록해주세요</div>
                                     )}
                                 </SC.ProfImg>
                                 <SC.ProfTxt>
                                     <SC.NameBox>
                                         <SC.Name>{nickname} </SC.Name>
                                         <SC.Down onClick={handleDownload}> <img src={down} alt="download" /></SC.Down>
-
+                                        <SC.Edit onClick={openEditModal}> <img src={edit} alt="edit" /> </SC.Edit>
                                     </SC.NameBox>
                                     <SC.Intro>{intro || "자기소개가 없습니다."}</SC.Intro>
                                     <SC.Tag>
@@ -178,15 +184,37 @@ function ShareCloset() {
                                 <SC.ContentBox2>
                                     {showTodayOutfit && (
                                         <SC.RecentOutfit>
-                                            {/* 오늘의 코디 내용을 여기에 추가 */}
-                                            코디 등록 버튼
+                                            {/* 최근 코디를 여기에 추가 */}
+                                            <SC.OutfitBox3>
+                                                <div>오늘의 날짜</div>
+                                                <div>여기에 오늘의 코디 사진</div>
+                                            </SC.OutfitBox3>
                                         </SC.RecentOutfit>
                                     )}
 
                                     {showOutfitList && (
                                         <SC.OutfitList>
                                             {/* 코디 목록 내용을 여기에 추가 */}
-                                            코디 목록
+                                            <SC.OutfitBox1>
+                                                <div>코디 등록하기</div>
+                                                <SC.AddOutfitButton>
+                                                    <img src={addoutfitbutton} alt="addoutfitbutton" />
+                                                </SC.AddOutfitButton>
+                                            </SC.OutfitBox1>
+
+                                            <SC.OutfitBox2>
+                                                <div>1월 3일</div>
+                                                <div>여기에 코디 사진</div>
+                                            </SC.OutfitBox2>
+                                            <SC.OutfitBox2>
+                                                <div>1월 4일</div>
+                                                <div>여기에 코디 사진</div>
+                                            </SC.OutfitBox2>
+                                            <SC.OutfitBox2>
+                                                <div>1월 5일</div>
+                                                <div>여기에 코디 사진</div>
+                                            </SC.OutfitBox2>
+
                                         </SC.OutfitList>
                                     )}
                                 </SC.ContentBox2>
