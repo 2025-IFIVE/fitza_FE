@@ -134,7 +134,10 @@ function ShareCloset() {
                 </SC.Header>
 
                 <SC.ContentBox>
-                    <div>{nickname}의 옷장</div>
+                    <div style={{ fontFamily: "NanumSquareNeo", fontSize: "15px", fontWeight: "bold", color: "white" }}>
+                        {nickname}의 옷장
+                    </div>
+
                     <SC.DashandBox>
                         <SC.GrayBox>
                             <SC.TopBox2>
