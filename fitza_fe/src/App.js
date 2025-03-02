@@ -8,6 +8,8 @@ import Splash from "./pages/Splash";
 import Join from "./pages/Join";
 import SignUp from "./pages/SignUp";
 import MyCloset_1 from "./pages/MyCloset_1";
+import MyCloset_2 from "./pages/MyCloset_2";
+import MyCloset_3 from "./pages/MyCloset_3";
 import Mypage from "./pages/Mypage";
 import Calendar from "./pages/Calendar";
 import ShareCloset from "./pages/ShareCloset";
@@ -22,6 +24,8 @@ function App() {
         <Route exact path="/join" element={<Join />} />
         <Route exact path="/signup" element={<SignUp />} />
         <Route exact path="/mycloset_1" element={<MyCloset_1 />} />
+        <Route exact path="/mycloset_2" element={<MyCloset_2 />} />
+        <Route exact path="/mycloset_3" element={<MyCloset_3 />} />
         <Route exact path="/mypage" element={<Mypage />} />
         <Route exact path="/calendar" element={<Calendar />} />
         <Route exact path="/sharecloset" element={<ShareCloset />} />
