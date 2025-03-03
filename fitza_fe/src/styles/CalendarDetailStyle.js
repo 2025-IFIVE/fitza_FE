@@ -89,24 +89,10 @@ export const TitleBox1 = styled.div`
 export const Title1 = styled.div`
   color: #000;
   font-size: 15px;
-  padding-left: 5px;
+  padding-left: 15px;
   padding-top:5px;
   padding-bottom:5px;
   margin:0;
-`;
-
-export const dateContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  padding-left: 10px;
-
-  img {
-    width: 25px;
-    height: auto;
-    vertical-align: middle;
-    display: flex;
-  }
 `;
 
 export const Register = styled.div`

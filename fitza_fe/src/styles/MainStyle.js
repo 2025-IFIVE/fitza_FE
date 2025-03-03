@@ -100,7 +100,7 @@ export const ClosetScroll = styled.div`
   padding-top:20px;
   padding-bottom:20px;
   scroll-behavior: smooth; /* 부드러운 스크롤 효과 */
-  margin-left:10px;
+  margin-left: 10px;
   
   &::-webkit-scrollbar {
     height: 0px;
@@ -114,8 +114,8 @@ export const ClosetScroll = styled.div`
 `;
 
 export const ClosetItem = styled.div`
-  flex: 0 0 120px; /* 크기 고정 (200px 너비 유지) */
-  height: 200px; /* 세로 크기 고정 */
+  height: 30vh; /* 전체 화면 높이의 30% */
+  width: calc(30vh * 2 / 3); /* 높이의 2/3 비율로 너비 설정 */
   background-color: #ffffff;
   display: flex;
   align-items: center;
@@ -123,15 +123,16 @@ export const ClosetItem = styled.div`
   font-size: 14px;
   border-radius: 40%;
   scroll-snap-align: start;
-  overflow: hidden; /* 아이템이 영역을 넘지 않도록 숨김 */
-  margin-right:10px;
-  box-sizing: border-box; /*테두리 안쪽으로*/
-  border: 1px solid #ddd; /* 테두리*/
+  overflow: hidden;
+  margin-right: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
 
   img {
     width: 70%;
-    height: 50%;
-    object-fit: cover; /* 이미지를 박스에 맞게 자름 */
+    height: 70%;
+    object-fit: cover;
   }
 `;
 
@@ -148,6 +149,56 @@ export const Title2 = styled.div`
   padding-top:5px;
   padding-bottom:5px;
   margin:0;
+`;
+
+export const NewsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0;
+`;
+
+export const NewsItem = styled.div`
+  width: 90%;
+  //max-width: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #ddd; /* 테두리 추가 */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  padding: 10px;
+`;
+
+export const NewsImage = styled.img`
+  width: 40%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 15px;
+  border: 1px solid #ddd; /* 테두리 추가 */
+`;
+
+export const NewsContent = styled.div`
+  flex: 1;
+  text-align: left;
+`;
+
+export const NewsTitle = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+`;
+
+export const NewsDescription = styled.div`
+  font-size: 14px;
+  color: gray;
+  margin-top: 5px;
 `;
 
 

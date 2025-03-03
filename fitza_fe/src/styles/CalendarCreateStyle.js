@@ -133,8 +133,8 @@ export const RegisterContainer = styled.div`
 `;
 
 export const Board = styled.div`
-  width: 85%;
-  max-width: 500px;
+  width: 80%;
+  max-width: 700px;
   aspect-ratio: 1 / 1.1;
   background: #fff;
   border: 1px solid #CE9694;
@@ -149,7 +149,7 @@ export const ButtonContainer = styled.div`
   display: flex;
   gap: 10px;
   justify-content: flex-end; /* 오른쪽 정렬 */
-  width: 85%; /* Board와 동일한 너비 적용 */
+  width: 80%; /* Board와 동일한 너비 적용 */
 `;
 
 
