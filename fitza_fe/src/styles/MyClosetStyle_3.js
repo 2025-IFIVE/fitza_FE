@@ -105,6 +105,8 @@ export const ImageContainer = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 20px;
+  width: 100%;
+  max-width: 500px;
 
   img {
     max-width: 100%;
@@ -181,5 +183,83 @@ export const RecBoxImage = styled.img`
   transform: translate(-50%, -50%);
   width: 70%;  /* 이미지 크기 조정 */
   height: auto; /* 이미지 비율 유지 */
+`;
+
+export const CategorySection = styled.div`
+  width: 85%;
+  max-width: 410px;
+  margin-top: 70px;
+  margin-bottom: 10px;
+  background-color: #fff0f0;
+  border-radius: 25px;
+  padding: 15px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 400px) {
+    width: 85%;
+    padding-right: 10px;
+  }
+`;
+
+export const CategoryTitle = styled.div`
+  font-size: 18px;
+  font-weight: normal;
+  margin:5px 8px;
+  border-bottom: 1.2px solid #ccc;
+  padding-bottom: 10px;
+`;
+
+export const CategoryItem = styled.div`
+display: inline-block;
+padding: 4px 10px;
+margin: 4px;
+border-radius: 25px;  /* 둥근 모서리 적용 */
+border: ${({ selected }) => (selected ? "1.5px solid black" : "1.5px solid #787575")};
+background-color: ${({ selected }) => (selected ? "#EEEAEA" : "white")};
+color: ${({ selected }) => (selected ? "black" : "#787575")};
+cursor: pointer;
+transition: all 0.3s ease;
+
+&:hover {
+  background-color: ${({ selected }) => (selected ? "#EEEAEA" : "white")};
+}
+`;
+
+export const CategoryItems = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap; /* 넘치면 다음 줄로 이동 */
+  align-items: flex-start; /* 박스 크기가 자동으로 늘어나지 않게 설정 */
+  gap: 0px;
+`;
+
+export const SubCategoryItems = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap; /* 넘치면 다음 줄로 이동 */
+  align-items: flex-start; /* 박스 크기가 자동으로 늘어나지 않게 설정 */
+  gap: 0px;
+`;
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: 400px;
+`;
+
+export const EditButton = styled.button`
+  margin-top: 5px;
+  margin-bottom: 30px;
+  padding: 8px 15px;
+  font-size: 16px;
+  background-color: #CE9694;
+  color: black;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  &:hover {
+    background-color: #8d6b64;
+  }
 `;
 
