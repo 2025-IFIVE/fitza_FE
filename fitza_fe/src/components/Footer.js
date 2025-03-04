@@ -10,6 +10,16 @@ import plusButton from '../img/plusButton.png';
 const Footer = () => {
   const navigate = useNavigate();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+  
+  const handleOptionClick = () => {
+    navigate("/main");
+    closeModal();
+  };
+
   return (
     <>
       <footer className="footer">
@@ -19,9 +29,9 @@ const Footer = () => {
         <Link to="/MyCloset_1">
           <img src={closetButton} alt="MyCloset_1" className="footerImage" />
         </Link>
-        <Link to="/Plus">
+        <button className="footerPlusButton" onClick={openModal}>
           <img src={plusButton} alt="Plus" className="footerImage" />
-        </Link>
+        </button>
         <Link to="/CalendarPage">
           <img src={calendarButton} alt="Calendar" className="footerImage" />
         </Link>
@@ -29,6 +39,17 @@ const Footer = () => {
           <img src={mypageButton} alt="Mypage" className="footerImage" />
         </Link>
       </footer>
+
+      {isModalOpen && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-button" onClick={handleOptionClick}>옷 등록</button>
+            <button className="modal-button" onClick={handleOptionClick}>코디 등록</button>
+            <button className="modal-button" onClick={handleOptionClick}>체형 분석</button>
+            <button className="close-button" onClick={closeModal}>닫기</button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
