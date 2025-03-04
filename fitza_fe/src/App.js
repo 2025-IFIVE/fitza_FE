@@ -17,6 +17,7 @@ import Friends from "./pages/Friends";
 import FindFriends from "./pages/FindFriends";
 import CalendarDetail from "./pages/CalendarDetail";
 import CalendarCreate from "./pages/CalendarCreate";
+import ClothesRegistration from "./pages/ClothesRegistration";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route exact path="/findfriends" element={<FindFriends />} />
         <Route exact path="/calendardetail" element={<CalendarDetail />} />
         <Route exact path="/calendarcreate" element={<CalendarCreate />} />
+        <Route exact path="/clothesRegistration" element={<ClothesRegistration />} />
       </Routes>
     </div>
   );
