@@ -25,6 +25,16 @@ function Mypage() {
     const [bodyType, setBodyType] = useState('');
 
     useEffect(() => {
+
+
+        //더미데이터 예시
+        const dummyData = {
+            nickname: '홍길동',
+            bodyType: 'tri',
+        };
+        setNickname(dummyData.nickname);
+        setBodyType(dummyData.bodyType);
+
         // 예시 API 호출
         fetch('/api/user-profile') // 여기에 실제 백엔드 API URL을 넣어야 함
             .then(response => response.json())
@@ -51,27 +61,39 @@ function Mypage() {
 
 
                 <MP.BodytypeBox>
+
                     <MP.BodytypeImage>
-                        <MP.BodytypeImage>
-                            {/* 조건에 맞는 이미지 렌더링 */}
-                            {bodyType === "round" && <img src={round} alt="round typess" />}
-                            {bodyType === "tri" && <img src={tri} alt="triangle typess" />}
-                            {bodyType === "square" && <img src={square} alt="square typess" />}
-                            {bodyType === "invertTri" && <img src={invertTri} alt="inverse triangle typess" />}
-                            {bodyType === "hour" && <img src={hour} alt="hourglass typess" />}
-                        </MP.BodytypeImage>
+                        {/* 조건에 맞는 이미지 렌더링 */}
+                        {bodyType === "round" && <img src={round} alt="round typess" />}
+                        {bodyType === "tri" && <img src={tri} alt="triangle typess" />}
+                        {bodyType === "square" && <img src={square} alt="square typess" />}
+                        {bodyType === "invertTri" && <img src={invertTri} alt="inverse triangle typess" />}
+                        {bodyType === "hour" && <img src={hour} alt="hourglass typess" />}
                     </MP.BodytypeImage>
+
                     <MP.BodytypeText>
-                        <div>{nickname}님의 체형은 {bodyType} 체형입니다.</div>
+                        {/* 조건에 맞는 텍스트를 다르게 표시 1 */}
+                        {bodyType === "round" && <div>{nickname}님의 체형은 라운드 체형입니다.</div>}
+                        {bodyType === "tri" && <div>{nickname}님의 체형은 삼각형 체형입니다.</div>}
+                        {bodyType === "square" && <div>{nickname}님의 체형은 사각형형 체형입니다.</div>}
+                        {bodyType === "invertTri" && <div>{nickname}님의 체형은 역삼각형형 체형입니다.</div>}
+                        {bodyType === "hour" && <div>{nickname}님의 체형은 모래시계 체형입니다.</div>}
                         <div></div>
-                        <div>{bodyType} 체형</div>
+
+                        {/* 조건에 맞는 텍스트를 다르게 표시 3 */}
+                        {bodyType === "round" && <div>라운드 체형: </div>}
+                        {bodyType === "tri" && <div>삼각형 체형: </div>}
+                        {bodyType === "square" && <div>사각형 체형: </div>}
+                        {bodyType === "invertTri" && <div>역삼각형 체형: </div>}
+                        {bodyType === "hour" && <div>모래시계 체형: </div>}
                         <div></div>
-                        {/* 조건에 맞는 텍스트를 다르게 표시 */}
-                        {bodyType === "round" && <div>라운드 체형에 맞는 스타일 추천!</div>}
-                        {bodyType === "tri" && <div>삼각형 체형에 맞는 스타일 추천!</div>}
-                        {bodyType === "square" && <div>사각형 체형에 맞는 스타일 추천!</div>}
-                        {bodyType === "invertTri" && <div>역삼각형 체형에 맞는 스타일 추천!</div>}
-                        {bodyType === "hour" && <div>시계태엽 체형에 맞는 스타일 추천!</div>}
+
+                        {/* 조건에 맞는 텍스트를 다르게 표시 3 */}
+                        {bodyType === "round" && <div>라운드 체형에 어울리는 추천 스타일</div>}
+                        {bodyType === "tri" && <div>삼각형 체형에 어울리는 추천 스타일</div>}
+                        {bodyType === "square" && <div>사각형 체형에 어울리는 추천 스타일</div>}
+                        {bodyType === "invertTri" && <div>역삼각형 어울리는 추천 스타일</div>}
+                        {bodyType === "hour" && <div>시계태엽 체형에 어울리는 추천 스타일</div>}
                     </MP.BodytypeText>
                 </MP.BodytypeBox>
 

@@ -9,7 +9,7 @@ export const Background = styled.div`
   width: 100%;
   min-height: 100vh; /* 최소 높이를 뷰포트 전체로 설정 */
   background-color: #ffffff; /* 배경색 */
-  padding-top: 60px; /* 탑바 높이만큼 여백 */
+  padding-top: 30px; /* 탑바 높이만큼 여백 */
   padding-bottom: 60px; /* 푸터 높이만큼 여백 */
   overflow-x: hidden; /*옆에 여백 숭기기*/
 `;
@@ -17,7 +17,7 @@ export const Background = styled.div`
 /* 탑바를 감싸는 박스 */
 export const TopBox = styled.div`
   width: 100%;
-  height: 60px; /* 탑바 높이 */
+  height: 30px; /* 탑바 높이 */
   position: fixed;
   top: 0;
   left: 0;
@@ -117,6 +117,7 @@ export const Click = styled(Link)`
 
 /* 체형 정보 박스스*/
 export const BodytypeBox = styled.div`
+  font-size: 11px;
     background-color: rgba(255, 255, 255, 0.25); /* #CE9694 */
     width: 70%;
     padding: 1px;
@@ -125,18 +126,24 @@ export const BodytypeBox = styled.div`
     align-items: flex-start; /* 왼쪽 정렬 */
     border: 3.2px solid rgba(206, 150, 148); /* 테두리 색깔 추가 */
     border-radius: 10px; /* 테두리 반지름 추가 */
+    margin: 10px;
 `;
-
 export const BodytypeImage = styled.div`
-    width: 30%;
-    height: auto; /* 높이는 자동으로 조정 */
+    width: 100px;  /* 고정된 가로 크기 */
+    height: 200px; /* 고정된 세로 크기 */
     padding: 10px;
     display: flex;
     flex-direction: column; /* 세로 방향으로 정렬 */
     align-items: flex-start; /* 왼쪽 정렬 */
-    aspect-ratio: 1 / 2; /* 1:2 비율 유지 */
-    object-fit: cover; /* 이미지가 비율에 맞게 잘리거나 확대됨 */
+
+    .img {
+        width: 100%; /* 부모 div에 맞게 이미지 크기 조정 */
+        height: 100%; /* 부모 div에 맞게 이미지 높이 고정 */
+        object-fit: cover; /* 이미지가 비율에 맞게 잘리거나 확대됨 */
+    }
 `;
+
+
 export const BodytypeText = styled.div`
   font-family: 'NanumSquareNeo';
   padding: 10px;
