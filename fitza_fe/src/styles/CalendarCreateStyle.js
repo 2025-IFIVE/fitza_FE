@@ -160,7 +160,30 @@ export const Board = styled.div`
   justify-content: center;
   margin-top: 15px;
   border-radius: 20px;
+  flex-wrap: wrap; /* 추가: 줄 바꿈 허용 */
+  gap: 10px; /* 섹션 간 간격을 조정 */
 `;
+
+export const Section = styled.div`
+  width: 30%;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+`;
+
+export const ImagePlaceholder = styled.p`
+  font-size: 14px;
+  color: #bbb;
+  text-align: center;
+  margin: 0;
+  padding: 5px;
+`;
+
 
 export const ButtonContainer = styled.div`
   display: flex;
@@ -272,4 +295,3 @@ export const ImageBox = styled.div`
     object-fit: cover;  /* 이미지가 비율을 유지하면서 셀에 꽉 차도록 */
   }
 `;
-
