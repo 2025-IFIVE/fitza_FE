@@ -11,6 +11,7 @@ function CalendarDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const selectedDate = location.state?.selectedDate || "날짜 선택 안됨";
+  const coordiName = location.state?.coordiName || "코디 이름 없음";
 
   return (
     <C.Background>
@@ -35,6 +36,8 @@ function CalendarDetail() {
             </Link>
           </C.RegisterContainer>
         </C.TitleBox1>
+
+        <C.CoordiName>{coordiName}</C.CoordiName>
 
         <C.Board></C.Board>
         <C.EditButton>수정하기</C.EditButton>

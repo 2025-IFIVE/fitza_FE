@@ -132,16 +132,33 @@ export const RegisterContainer = styled.div`
   }
 `;
 
+export const CoordiNameInput = styled.input`
+  width: 50%;
+  max-width: 500px;
+  margin-top: 15px;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  font-size: 15px;
+  //border: 1px solid #CE9694;
+  border: none;
+  border-bottom: 1px solid #CE9694; /* 아래쪽 테두리만 적용 */
+  border-radius: 0px;
+  outline: none;
+  text-align: center;
+  background-color: #ffffff;
+  box-sizing: border-box; //paddingborder포함 너비계산
+`;
+
 export const Board = styled.div`
-  width: 80%;
-  max-width: 700px;
+  width: 85%;
+  max-width: 500px;
   aspect-ratio: 1 / 1.1;
   background: #fff;
   border: 1px solid #CE9694;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 30px;
+  margin-top: 15px;
   border-radius: 20px;
 `;
 
@@ -149,7 +166,8 @@ export const ButtonContainer = styled.div`
   display: flex;
   gap: 10px;
   justify-content: flex-end; /* 오른쪽 정렬 */
-  width: 80%; /* Board와 동일한 너비 적용 */
+  max-width: 500px;
+  width: 85%; /* Board와 동일한 너비 적용 */
 `;
 
 

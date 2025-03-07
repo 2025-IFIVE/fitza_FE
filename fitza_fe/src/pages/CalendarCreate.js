@@ -15,6 +15,7 @@ import "react-calendar/dist/Calendar.css";
 function CalendarCreate() {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState('상의');  // 기본 탭을 '상의'로 설정
+  const [coordiName, setCoordiName] = useState(""); // 코디 이름 상태 추가
   const navigate = useNavigate();
 
   const handleEditButtonClick = () => {
@@ -150,6 +151,13 @@ function CalendarCreate() {
           }}         
           >닫기</button>
         </Modal>
+        {/* 코디 이름 입력 필드 */}
+        <C.CoordiNameInput
+          type="text"
+          placeholder="코디 이름을 입력하세요"
+          value={coordiName}
+          onChange={(e) => setCoordiName(e.target.value)}
+        />
 
         <C.Board></C.Board>
         <C.ButtonContainer>

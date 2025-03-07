@@ -118,6 +118,22 @@ export const RegisterContainer = styled.div`
   }
 `;
 
+export const CoordiName = styled.div`
+  width: 50%;
+  max-width: 500px;
+  margin-top: 15px;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  font-size: 15px;
+  border: none;
+  border-bottom: 1px solid #CE9694;
+  text-align: center;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  color: black;
+`;
+
+
 export const Board = styled.div`
   width: 85%;
   max-width: 500px;
