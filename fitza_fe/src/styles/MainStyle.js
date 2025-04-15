@@ -97,8 +97,8 @@ export const ClosetScroll = styled.div`
   //gap: 10px; /*closetItem 사이 간격*/
   width: 100%; 
   height : 50%;
-  padding-top:20px;
-  padding-bottom:20px;
+  padding-top:10px;
+  padding-bottom:10px;
   scroll-behavior: smooth; /* 부드러운 스크롤 효과 */
   margin-left: 10px;
   
@@ -156,7 +156,7 @@ export const NewsContainer = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 20px 0;
+  padding: 10px 0;
 `;
 
 export const NewsItem = styled.div`
