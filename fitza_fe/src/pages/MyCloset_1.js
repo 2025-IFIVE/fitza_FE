@@ -103,7 +103,7 @@ const MyCloset_1 = () => {
     }
   };
 
-  const categories = ["상의", "하의", "아우터", "원피스", "신발", "가방", "패션소품"];
+  const categories = ["상의", "하의", "아우터", "원피스", "신발", "모자", "기타"];
 
   const imageMap = {
     1: sampleCoordi1,

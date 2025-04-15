@@ -29,7 +29,7 @@ function App() {
         <Route exact path="/join" element={<Join />} />
         <Route exact path="/signup" element={<SignUp />} />
         <Route exact path="/mycloset_1" element={<MyCloset_1 />} />
-        <Route exact path="/mycloset_2" element={<MyCloset_2 />} />
+        <Route path="/category/:categoryName" element={<MyCloset_2 />} />
         <Route exact path="/mycloset_3" element={<MyCloset_3 />} />
         <Route exact path="/mypage" element={<Mypage />} />
         <Route exact path="/calendarpage" element={<CalendarPage />} />

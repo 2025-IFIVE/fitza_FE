@@ -14,7 +14,8 @@ function MyCloset_3() {
   const navigate = useNavigate(); // navigate 훅 사용
   const location = useLocation(); // useLocation 훅을 사용하여 상태값 가져오기
   const imageSrc = location.state?.imageSrc; // 전달받은 이미지 정보
-
+  const category = location.state?.category || "상의";
+  
   const [isEditing, setIsEditing] = useState(false);
 
   const categoryData = {
@@ -23,7 +24,6 @@ function MyCloset_3() {
     아우터: ["코트", "패딩", "가디건", "무스탕","블루종","야구잠바","자켓","조끼","집업","야상","라이더자켓","후리스","경량패딩","기타"],
     원피스: ["캐주얼원피스", "미니원피스", "티셔츠원피스", "셔츠원피스", "니트원피스","후드원피스","자켓원피스","멜빵원피스","점프슈트","파티원피스","기타"],
     신발: ["스니커즈", "슬립온", "운동화", "로퍼", "플랫슈즈","힐","샌들","샌들힐","슬리퍼","뮬","부츠","워커","어그부츠","등산화","기타"],
-    가방: ["토트백", "숄더백", "크로스백", "에코백", "백팩","보스턴백","클러치","캐리어","기타"],
     모자: ["캡", "비니", "베레모", "페도라", "기타"],
     기타: ["홈웨어", "헤어악세사리", "안경/선글라스", "스카프", "목도리","시계","장갑","양말","벨트","지갑","기타"]
   };
@@ -180,7 +180,7 @@ function MyCloset_3() {
         </M.Header>
 
         <M.TitleBox1>
-          <M.Title1>{`내 옷장 > 상의 > 옷 정보`}</M.Title1>
+          <M.Title1>{`내 옷장 > ${category} > 옷 정보`}</M.Title1>
         </M.TitleBox1>
 
         <M.ImageContainer>
