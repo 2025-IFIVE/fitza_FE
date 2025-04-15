@@ -26,8 +26,8 @@ function Main() {
 
   const newsItems = [
     { id: 1, image: news1, title: "올여름, 당신이 입지 않을 것들", description: "다가오는 패션 트렌드를 확인해보세요." },
-    { id: 2, image: news2, title: "2025년 봄/여름 미디 드레스와 가장 잘 어울리는 스니커즈 조합!", description: "시원한 여름을 위한 스타일링 팁!" },
-    { id: 3, image: news3, title: "올 봄, 새 옷 구매보다 효과적인 스타일링 팁", description: "친환경 패션 아이템을 만나보세요." },
+    { id: 2, image: news2, title: "2025년 봄/여름 미디 드레스와 가장 잘 어울리는 스니커즈 조합!", description: "편안하면서도 스타일을 살릴 수 있는 스니커즈 매치" },
+    { id: 3, image: news3, title: "올 봄, 새 옷 구매보다 효과적인 스타일링 팁", description: "옷장 속 아이템만으로 새로운 룩을 연출하세요." },
   ];
 
 
