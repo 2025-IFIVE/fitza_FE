@@ -21,7 +21,7 @@ export const Container = styled.div`
 
 export const TopBox = styled.div`
   width: 100%;
-  height: 50px;
+  height: 30px;
   position: fixed;
   top: 0;
   left: 0;

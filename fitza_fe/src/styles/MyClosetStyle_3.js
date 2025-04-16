@@ -15,7 +15,7 @@ export const Background = styled.div`
 /* 탑바를 감싸는 박스 */
 export const TopBox = styled.div`
   width: 100%;
-  height: 60px; /* 탑바 높이 */
+  height: 30px; /* 탑바 높이 */
   position: fixed;
   top: 0;
   left: 0;
