@@ -189,7 +189,8 @@ export const TileImage = styled.img`
   width: 100%;
   height: 90%;
   margin-top: 0px;
-  object-fit: cover;
+  //object-fit: cover;
+  object-fit: contain;
 `;
 
 
@@ -231,7 +232,7 @@ export const OftenCateg = styled.div`
   width: 90%; /* 부모 요소의 전체 너비를 차지하여 왼쪽 정렬 유지 */
 `;
 
-export const OftenImage = styled.div`
+export const OftenImage = styled.img`
   width: 90%;  /* 이미지 크기 조절 */
   aspect-ratio: 1 / 1; /* 정사각형 비율 유지 */
   object-fit: cover;

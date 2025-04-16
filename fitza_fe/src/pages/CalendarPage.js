@@ -4,10 +4,30 @@ import Footer from '../components/Footer'
 import TopBar from '../components/TopBar'
 import { Link, useNavigate } from "react-router-dom";
 import smallPlus from '../img/smallPlus.png';
-import dummyCoordi from '../img/sample-coordi-1.png';
+
+import dummyCoordi1 from '../img/sam1.jpg';
+import dummyCoordi2 from '../img/sam2.jpg';
+import dummyCoordi3 from '../img/sam3.jpg';
+import dummyCoordi4 from '../img/sam4.jpg';
+import dummyCoordi5 from '../img/sam5.jpg';
+import dummyCoordi6 from '../img/sam6.jpg';
+import dummyCoordi7 from '../img/sam7.jpg';
+import dummyCoordi8 from '../img/sam8.jpg';
+import dummyCoordi9 from '../img/sam9.jpg';
+import dummyCoordi10 from '../img/sam10.jpg';
+import dummyCoordi11 from '../img/sam11.jpg';
+import dummyCoordi12 from '../img/sam12.jpg';
+import dummyCoordi13 from '../img/sam13.jpg';
+import dummyCoordi14 from '../img/sam14.jpg';
+
 
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css'; // 스타일 import
+
+//더미데이터
+import img2 from '../img/img6.png';
+import img8 from '../img/img8.png';
+import img9 from '../img/img9.png';
 
 function CalendarPage() {
 
@@ -22,25 +42,35 @@ function CalendarPage() {
   const [mostWorn, setMostWorn] = useState(null); // 더미 데이터 사용
   const [outfits, setOutfits] = useState({}); // 날짜별 코디 데이터
 
+  //자주 입은 옷 더미데이터터
+  const dummyMostWorn = [
+    { category: "상의", image: img2, count: 10 },
+    { category: "하의", image: img8, count: 8 },
+    { category: "기타", image: img9, count: 5 },
+  ];
   useEffect(() => {
     // 오늘 날짜를 'YYYY.MM.DD' 형식으로 가져오기
     const today = new Date();
     const formattedDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
     setCurrentDate(formattedDate);
-    
-    //자주 입은 옷 더미데이터터
-    const dummyData = {
-      "상의": { image: "/images/top1.jpg", count: 10 },
-      "하의": { image: "/images/bottom1.jpg", count: 8 },
-      "기타": { image: "/images/shoes1.jpg", count: 5 }
-    };
-    setMostWorn(dummyData); // 더미 데이터 저장
+  
 
     // 더미 데이터 - 날짜별 코디 이미지
     const outfitData = {
-      "2025-03-01": dummyCoordi,
-      "2025-03-02": dummyCoordi,
-      "2025-03-03": dummyCoordi
+      "2025-04-01": dummyCoordi1,
+      "2025-04-02": dummyCoordi2,
+      "2025-04-03": dummyCoordi3,
+      "2025-04-04": dummyCoordi4,
+      "2025-04-08": dummyCoordi5,
+      "2025-04-10": dummyCoordi6,
+      "2025-04-11": dummyCoordi7,
+      "2025-04-13": dummyCoordi8,
+      "2025-04-14": dummyCoordi9,
+      "2025-04-16": dummyCoordi10,
+      "2025-04-18": dummyCoordi11,
+      "2025-04-22": dummyCoordi12,
+      "2025-04-23": dummyCoordi13,
+      "2025-04-25": dummyCoordi14
     };
     setOutfits(outfitData);
   }, []); // 컴포넌트가 마운트될 때 한 번만 실행
@@ -90,17 +120,13 @@ function CalendarPage() {
 
         <C.OftenTitle>가장 많이 입은 옷</C.OftenTitle>
         <C.OftenContainer>
-          {mostWorn ? (
-            ["상의", "하의", "기타"].map((category, index) => (
-              <C.OftenItem key={index}>
-                <C.OftenCateg>{category}</C.OftenCateg>
-                <C.OftenImage src={mostWorn[category].image} alt={category} />
-                <C.OftenCount>{mostWorn[category].count}회 착용</C.OftenCount>
-              </C.OftenItem>
-            ))
-          ) : (
-            <C.LoadingText>로딩 중...</C.LoadingText>
-          )}
+          {dummyMostWorn.map((item, index) => (
+            <C.OftenItem key={index}>
+              <C.OftenCateg>{item.category}</C.OftenCateg>
+              <C.OftenImage src={item.image} alt={item.category} />
+              <C.OftenCount>{item.count}회 착용</C.OftenCount>
+            </C.OftenItem>
+          ))}
         </C.OftenContainer>
       </C.Container>
 
