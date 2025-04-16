@@ -12,6 +12,12 @@ import down from "../img/shareClosetPage_download.png";
 import edit from "../img/shareClosetPage_edit.png";
 import addoutfitbutton from "../img/shareClosetPage_addoutfitbutton.png";
 
+//샘플링 이미지들
+import sam14 from '../img/sam14.jpg';
+import sam13 from '../img/sam13.jpg';
+import sam12 from '../img/sam12.jpg';
+
+
 
 function ShareCloset() {
     /* 상태 관리 */
@@ -189,8 +195,8 @@ function ShareCloset() {
                                         <SC.RecentOutfit>
                                             {/* 최근 코디를 여기에 추가 */}
                                             <SC.OutfitBox3>
-                                                <div>오늘의 날짜</div>
-                                                <div>여기에 오늘의 코디 사진</div>
+                                                {/* 여기에 오늘의 코디 사진 */}
+                                                <img src={sam14} alt="샘플 이미지" style={{ height: '200px' }} />
                                             </SC.OutfitBox3>
                                         </SC.RecentOutfit>
                                     )}
@@ -206,16 +212,12 @@ function ShareCloset() {
                                             </SC.OutfitBox1>
 
                                             <SC.OutfitBox2>
-                                                <div>1월 3일</div>
-                                                <div>여기에 코디 사진</div>
+                                                <div>4월 16일</div>
+                                                <img src={sam13} alt="샘플 이미지" style={{ height: '70px' }} />
                                             </SC.OutfitBox2>
                                             <SC.OutfitBox2>
-                                                <div>1월 4일</div>
-                                                <div>여기에 코디 사진</div>
-                                            </SC.OutfitBox2>
-                                            <SC.OutfitBox2>
-                                                <div>1월 5일</div>
-                                                <div>여기에 코디 사진</div>
+                                                <div>4월 17일</div>
+                                                <img src={sam12} alt="샘플 이미지" style={{ height: '70px' }} />
                                             </SC.OutfitBox2>
 
                                         </SC.OutfitList>
