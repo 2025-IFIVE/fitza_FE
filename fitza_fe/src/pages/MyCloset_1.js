@@ -5,9 +5,9 @@ import * as M from "../styles/MyClosetStyle_1";
 import TopBar from '../components/TopBar';
 import Footer from '../components/Footer';
 
-import sampleCoordi1 from "../img/sample-coordi-1.png";
-import sampleCoordi2 from "../img/sample-coordi-2.png";
-import sampleCoordi3 from "../img/sample-coordi-3.png";
+import sampleCoordi1 from "../img/domi5.jpg";
+import sampleCoordi2 from "../img/domi6.jpg";
+import sampleCoordi3 from "../img/domi13.jpg";
 import dailycodiExImg from "../img/dailycodi_ex-img.png";
 
 const MyCloset_1 = () => {

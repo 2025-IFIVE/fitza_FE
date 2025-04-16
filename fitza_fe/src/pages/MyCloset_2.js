@@ -15,10 +15,16 @@ import img4 from "../img/img4.png";
 import img5 from "../img/img5.png";
 import img6 from "../img/img6.png";
 import img7 from "../img/img7.png";
+import domi30 from "../img/domi30.PNG";
+import domi31 from "../img/domi31.PNG";
+import domi32 from "../img/domi32.PNG";
+import domi34 from "../img/domi34.PNG";
+import domi35 from "../img/domi35.PNG";
+
 
 // 이미지 리스트 매핑 (카테고리별 더미 이미지)
 const dummyImagesByCategory = {
-  상의: ["image1.jpg", "image2.jpg", "image3.jpg"],
+  상의: ["image3.jpg", "image7.jpg","domi30.PNG","domi31.PNG","domi32.PNG","domi34.PNG","domi35.PNG"],
   하의: ["image4.jpg", "image5.jpg"],
   아우터: ["image6.jpg", "image7.jpg"],
   원피스: ["image1.jpg"],
@@ -36,7 +42,13 @@ const imageMap = {
   "image5.jpg": img5,
   "image6.jpg": img6,
   "image7.jpg": img7,
+  "domi30.PNG": domi30,
+  "domi31.PNG": domi31,
+  "domi32.PNG": domi32,
+  "domi34.PNG": domi34,
+  "domi35.PNG": domi35,
 };
+
 
 function MyCloset_2() {
   const navigate = useNavigate();
