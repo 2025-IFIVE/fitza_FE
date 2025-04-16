@@ -101,7 +101,7 @@ function Mypage() {
                     <MP.Click to="/statistic">
                         <img src={chartIcon} alt="통계 아이콘" style={{ width: '20px', height: '20px' }} /> 통계
                     </MP.Click>
-                    <MP.Click to="/calendar">
+                    <MP.Click to="/calendarpage">
                         <img src={calendarIcon} alt="캘린더 아이콘" style={{ width: '20px', height: '20px' }} /> 캘린더
                     </MP.Click>
                     <MP.Click to="/size">
