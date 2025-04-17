@@ -3,6 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import './App.css';
 
 import { EnglishFontStyle } from './styles/EnglishFontStyle';
+import ScrollToTop from './components/ScrollToTop';
+
 import Main from "./pages/Main";
 import Splash from "./pages/Splash";
 import Join from "./pages/Join";
@@ -23,6 +25,7 @@ function App() {
   return (
     <div className="App">
       <EnglishFontStyle /> {/* 여기에서 폰트 스타일 적용 */}
+      <ScrollToTop /> 
       <Routes>
         <Route exact path="/main" element={<Main />} />
         <Route exact path="/splash" element={<Splash />} />
