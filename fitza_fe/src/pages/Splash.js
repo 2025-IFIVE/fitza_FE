@@ -13,7 +13,7 @@ export default function Splash() {
       if (splashScreenRef.current) {
         splashScreenRef.current.classList.add('fade-out'); // 페이드 아웃 시작
       }
-    }, 1300);
+    }, 1800);
 
     // 페이드 아웃이 끝난 후 화면 전환
     setTimeout(() => {
