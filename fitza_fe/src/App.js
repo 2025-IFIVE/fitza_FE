@@ -28,7 +28,7 @@ function App() {
       <ScrollToTop /> 
       <Routes>
         <Route exact path="/main" element={<Main />} />
-        <Route exact path="/splash" element={<Splash />} />
+        <Route exact path="/" element={<Splash />} />
         <Route exact path="/join" element={<Join />} />
         <Route exact path="/signup" element={<SignUp />} />
         <Route exact path="/mycloset_1" element={<MyCloset_1 />} />
