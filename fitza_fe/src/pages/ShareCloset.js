@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import * as SC from "../styles/ShareClosetStyle";
 import Footer from "../components/Footer";
 import TopBar from "../components/TopBar";
 import axios from "axios";
+import html2canvas from 'html2canvas';
 
 // 이미지 주소
 import backIcon from "../img/backButton.png";
@@ -72,17 +73,17 @@ function ShareCloset() {
     }, []);
 
     /* 이미지 다운로드 함수 */
-    const handleDownload = () => {
-        if (profileImage) {
-            const link = document.createElement("a");
-            link.href = profileImage; // 프로필 이미지 URL
-            link.download = "profile-image.jpg"; // 저장될 파일명
-            document.body.appendChild(link);
+    const profileRef = useRef();
+
+    const handleDownloadProfileBox = () => {
+        if (!profileRef.current) return;
+
+        html2canvas(profileRef.current).then(canvas => {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'profile-box.png';
             link.click();
-            document.body.removeChild(link);
-        } else {
-            alert("다운로드할 프로필 이미지가 없습니다.");
-        }
+        });
     };
 
 
@@ -154,7 +155,7 @@ function ShareCloset() {
                                     </SC.FriendLink>
                                 </SC.Friends>
                             </SC.TopBox2>
-                            <SC.WhiteBox>
+                            <SC.WhiteBox ref={profileRef}>
                                 <SC.ProfImg>
                                     {profileImage ? (
                                         <img src={profileImage} alt="profile" />
@@ -165,7 +166,7 @@ function ShareCloset() {
                                 <SC.ProfTxt>
                                     <SC.NameBox>
                                         <SC.Name>{nickname} </SC.Name>
-                                        <SC.Down onClick={handleDownload}> <img src={down} alt="download" /></SC.Down>
+                                        <SC.Down onClick={handleDownloadProfileBox}> <img src={down} alt="download" /></SC.Down>
                                         <SC.Edit onClick={openEditModal}> <img src={edit} alt="edit" /> </SC.Edit>
                                     </SC.NameBox>
                                     <SC.Intro>{intro || "자기소개가 없습니다."}</SC.Intro>
