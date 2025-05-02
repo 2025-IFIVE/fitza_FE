@@ -39,7 +39,7 @@ function Main() {
 
       <M.Container>
         <M.Header>
-              <M.Logo>FITZA</M.Logo>
+          <M.Logo>FITZA</M.Logo>
         </M.Header>
         <M.TitleBox1>
           <M.Title1>최근 옷장</M.Title1>
@@ -68,7 +68,7 @@ function Main() {
       </M.Container>
 
       <M.BottomBox>
-      <Footer />
+        <Footer />
       </M.BottomBox>
     </M.Background>
   );
