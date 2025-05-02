@@ -16,7 +16,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 15px;
+  //padding: 15px;
 `;
 
 export const TopBox = styled.div`
@@ -41,7 +41,7 @@ export const Container2 = styled.div`
   align-items: center;
   position:relative;
   justify-content: space-between;
-  margin-top:1.5%;
+  //margin-top:1.5%;
 `;
 
 export const Header_ = styled.div`
