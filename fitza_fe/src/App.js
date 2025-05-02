@@ -14,6 +14,7 @@ import MyCloset_2 from "./pages/MyCloset_2";
 import MyCloset_3 from "./pages/MyCloset_3";
 import Mypage from "./pages/Mypage";
 import Person from "./pages/Person";
+import BodyShape from "./pages/BodyShape";
 import CalendarPage from "./pages/CalendarPage";
 import ShareCloset from "./pages/ShareCloset";
 import Friends from "./pages/Friends";
@@ -37,6 +38,7 @@ function App() {
         <Route exact path="/mycloset_3" element={<MyCloset_3 />} />
         <Route exact path="/mypage" element={<Mypage />} />
         <Route exact path="/person" element={<Person />} />
+        <Route exact path="/bodyshape" element={<BodyShape />} />
         <Route exact path="/calendarpage" element={<CalendarPage />} />
         <Route exact path="/sharecloset" element={<ShareCloset />} />
         <Route exact path="/friends" element={<Friends />} />
