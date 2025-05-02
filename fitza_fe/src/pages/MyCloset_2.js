@@ -84,8 +84,8 @@ function MyCloset_2() {
           <M.Title1>{`내 옷장 > ${category}`}</M.Title1>
           <M.RegisterContainer>
             <M.Register>옷 등록하기</M.Register>
-            <Link to="/Main">
-              <img src={smallPlus} alt="plus" className="plusImage" />
+            <Link to="/clothesRegistration">
+  <             img src={smallPlus} alt="plus" className="plusImage" />
             </Link>
           </M.RegisterContainer>
         </M.TitleBox1>

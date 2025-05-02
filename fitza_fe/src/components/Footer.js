@@ -43,8 +43,11 @@ const Footer = () => {
       {isModalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-button" onClick={handleOptionClick}>옷 등록</button>
-            <button className="modal-button" onClick={handleOptionClick}>코디 등록</button>
+          <button className="modal-button" onClick={() => { navigate("/clothesRegistration"); closeModal(); }}>
+          옷 등록
+          </button>
+            <button className="modal-button" onClick={handleOptionClick}>잡화 등록</button>
+            <button className="modal-button" onClick={handleOptionClick}>OOTD 등록</button>
             <button className="modal-button" onClick={handleOptionClick}>체형 분석</button>
             <button className="close-button" onClick={closeModal}>닫기</button>
           </div>
