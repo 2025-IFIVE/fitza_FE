@@ -108,7 +108,7 @@ function Friends() {
                 <F.FriendList>
                     {filteredFriends.length > 0 ? (
                         filteredFriends.map((friend) => (
-                            <F.FriendItem to={`/friend/${friend.id}`} key={friend.id}>
+                            <F.FriendItem to={`/friendCloset/${friend.id}`} key={friend.id}>
                                 {friend.name}
                             </F.FriendItem>
                         ))
