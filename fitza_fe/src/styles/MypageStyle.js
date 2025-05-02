@@ -52,6 +52,12 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+    /* 중앙 정렬을 위한 내부 래퍼 */
+  > * {
+    max-width: 400px; /* 원하는 최대 너비 설정 */
+    width: 100%;       /* 내부 콘텐츠는 최대 너비 안에서 꽉 차게 */
+  }
 `;
 
 export const Header = styled.div`

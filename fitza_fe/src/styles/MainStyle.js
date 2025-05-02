@@ -14,6 +14,7 @@ export const Background = styled.div`
 `;
 
 /* 탑바를 감싸는 박스 */
+
 export const TopBox = styled.div`
   width: 100%;
   height: 30px; /* 탑바 높이 */
@@ -51,6 +52,8 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+      /* 중앙 정렬을 위한 내부 래퍼 */
+
 `;
 
 export const Header = styled.div`
@@ -157,6 +160,10 @@ export const NewsContainer = styled.div`
   align-items: center;
   width: 100%;
   padding: 10px 0;
+    > * {
+    max-width: 400px; /* 원하는 최대 너비 설정 */
+    width: 100%;       /* 내부 콘텐츠는 최대 너비 안에서 꽉 차게 */
+  }
 `;
 
 export const NewsItem = styled.div`

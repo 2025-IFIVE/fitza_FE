@@ -14,7 +14,7 @@ const Footer = () => {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-  
+
   const handleOptionClick = () => {
     navigate("/main");
     closeModal();
