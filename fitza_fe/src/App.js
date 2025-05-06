@@ -22,6 +22,7 @@ import FriendCloset from "./pages/FriendCloset";
 import CalendarDetail from "./pages/CalendarDetail";
 import CalendarCreate from "./pages/CalendarCreate";
 import ClothesRegistration from "./pages/ClothesRegistration";
+import CalendarCreate2 from "./pages/CalendarCreate2";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
         <Route exact path="/calendardetail" element={<CalendarDetail />} />
         <Route exact path="/calendarcreate" element={<CalendarCreate />} />
         <Route exact path="/clothesRegistration" element={<ClothesRegistration />} />
+        <Route exact path="/calendarcreate2" element={<CalendarCreate2 />} />
       </Routes>
     </div>
   );
