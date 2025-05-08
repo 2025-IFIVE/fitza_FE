@@ -23,6 +23,7 @@ import CalendarDetail from "./pages/CalendarDetail";
 import CalendarCreate from "./pages/CalendarCreate";
 import ClothesRegistration from "./pages/ClothesRegistration";
 import CalendarCreate2 from "./pages/CalendarCreate2";
+import ShoesHats from "./pages/ShoesHats";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         <Route exact path="/calendarcreate" element={<CalendarCreate />} />
         <Route exact path="/clothesRegistration" element={<ClothesRegistration />} />
         <Route exact path="/calendarcreate2" element={<CalendarCreate2 />} />
+        <Route exact path="/shoeshats" element={<ShoesHats />} />
       </Routes>
     </div>
   );

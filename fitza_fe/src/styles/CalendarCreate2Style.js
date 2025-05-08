@@ -261,3 +261,19 @@ export const AnalyzeButton = styled.button`
   }
 `;
 
+export const Button = styled.button`
+  font-family: 'NanumSquareNeo';
+  font-size: 13px;
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: #AD8574;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #916b5d;
+  }
+`;
