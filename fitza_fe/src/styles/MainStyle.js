@@ -58,6 +58,7 @@ export const Container = styled.div`
 
 export const Header = styled.div`
   width: 100%; 
+  background-color: #AD8574;
 `;
 
 export const Logo = styled.div`
@@ -65,26 +66,21 @@ export const Logo = styled.div`
   left: 10px; /* Logo를 왼쪽으로 배치 */
   font-size: 33px;
   //font-weight: bold;
-  color: black;
+  color: white;
   padding-top: 10px;
   padding-bottom: 10px;
   margin: 0;
 `;
-/*
-export const Hr = styled.hr`
-  width:100%;
-  margin-top:1.5%;
-  color:#0000004f;
-`;*/
 
 export const TitleBox1 = styled.div`
-  background-color: rgba(206, 150, 148, 0.25); /* #CE9694 */
+  background-color: #AD8574; /* #CE9694 */
   width: 100%;
   padding: 0.1px;
+  border-top: 1px solid white;
 `;
 
 export const Title1 = styled.div`
-  color: #000; /* 검은색 */
+  color: white; /* 검은색 */
   font-size: 15px;
   padding-left: 10px;
   padding-top:5px;
@@ -140,13 +136,13 @@ export const ClosetItem = styled.div`
 `;
 
 export const TitleBox2 = styled.div`
-  background-color: rgba(206, 150, 148, 0.25); /* #CE9694 */
+  background-color:white; /* #CE9694 */
   width: 100%;
   padding: 0.1px;
 `;
 
 export const Title2 = styled.div`
-  color: #000; /* 검은색 */
+  color: black; 
   font-size: 15px;
   padding-left: 10px;
   padding-top:5px;
@@ -161,7 +157,7 @@ export const NewsContainer = styled.div`
   width: 100%;
   padding: 10px 0;
     > * {
-    max-width: 400px; /* 원하는 최대 너비 설정 */
+    max-width: 500px; /* 원하는 최대 너비 설정 */
     width: 100%;       /* 내부 콘텐츠는 최대 너비 안에서 꽉 차게 */
   }
 `;
@@ -207,5 +203,3 @@ export const NewsDescription = styled.div`
   color: gray;
   margin-top: 5px;
 `;
-
-

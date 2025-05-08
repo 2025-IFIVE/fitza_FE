@@ -42,7 +42,7 @@ function Main() {
           <M.Logo>FITZA</M.Logo>
         </M.Header>
         <M.TitleBox1>
-          <M.Title1>최근 옷장</M.Title1>
+          <M.Title1>MY CLOSET</M.Title1>
         </M.TitleBox1>
         <M.ClosetScroll>
           {closetItems.map((item, index) => (
