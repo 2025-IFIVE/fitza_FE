@@ -9,7 +9,7 @@ import img8 from '../img/img8.png';
 import img9 from '../img/img9.png';
 import penIcon from '../img/MyCloset_3_pen.png';
 import checkedIcon from '../img/MyCloset_3_checked.png';
-import BrushEraserCanvas from "./BrushEraserCanvas";
+import BrushEraserCanvas from "../pages/BrushEraserCanvas";
 import axios from "axios";
 
 function MyCloset_3() {
