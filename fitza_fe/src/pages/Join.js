@@ -1,13 +1,15 @@
-/*
+// src/pages/Join.js
 import React, { useState } from "react";
-import * as S from "../styles/JoinStyle"; // 스타일 파일 import
-import { Link } from "react-router-dom";
+import * as S from "../styles/JoinStyle";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Join() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    id: "testuser",   //더미데이터
-    password: "1234"    //더미데이터
+    username: "",
+    password: ""
   });
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -19,14 +21,27 @@ function Join() {
       [name]: value
     });
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("폼 데이터 확인:", formData);
+
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", formData);
-      console.log("로그인 성공:", response.data);
-      setErrorMessage("");
-      // 로그인 후 페이지 이동 또는 토큰 저장 로직 추가 가능
+      const response = await axios.post("http://localhost:8080/login", {
+        username: formData.username,
+        password: formData.password
+      }, {
+        headers: { "Content-Type": "application/json" }
+      });
+
+      // ✅ response.status로만 체크
+      if (response.status === 200) {
+        console.log("로그인 성공!");
+        setErrorMessage("");
+        navigate("/main");
+      } else {
+        setErrorMessage("로그인 실패: 서버에서 에러를 반환했습니다.");
+      }
     } catch (error) {
       console.error("로그인 실패:", error);
       setErrorMessage("아이디 또는 비밀번호를 확인해주세요.");
@@ -39,8 +54,8 @@ function Join() {
       <S.Form onSubmit={handleSubmit}>
         <S.Input
           type="text"
-          name="id"
-          value={formData.id}
+          name="username"
+          value={formData.username}
           onChange={handleChange}
           placeholder="아이디를 입력해주세요."
           required
@@ -53,79 +68,7 @@ function Join() {
           placeholder="비밀번호를 입력해주세요."
           required
         />
-        <S.Button type="submit">로그인</S.Button>
-      </S.Form>
-      <S.SignUpContainer>
-        <S.SignUpText>회원으로 가입하시겠습니까?</S.SignUpText>
-        <S.SignUpButton as={Link} to="/SignUp">
-          회원가입
-        </S.SignUpButton>
-      </S.SignUpContainer>
-    </S.Container>
-  );
-}
-
-export default Join;
-*/
-
-import React, { useState } from "react";
-import * as S from "../styles/JoinStyle";
-import { Link, useNavigate } from "react-router-dom";
-
-function Join() {
-  const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    id: "",
-    password: ""
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const dummyUser = {
-      id: "testuser",
-      password: "1234"
-    };
-
-    if (
-      formData.id === dummyUser.id &&
-      formData.password === dummyUser.password
-    ) {
-      console.log("로그인 성공!");
-      navigate("/main");
-    } else {
-      console.log("로그인 실패");
-    }
-  };
-
-  return (
-    <S.Container>
-      <S.Logo>FITZA</S.Logo>
-      <S.Form onSubmit={handleSubmit}>
-        <S.Input
-          type="text"
-          name="id"
-          value={formData.id}
-          onChange={handleChange}
-          placeholder="아이디를 입력해주세요."
-          required
-        />
-        <S.Input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="비밀번호를 입력해주세요."
-          required
-        />
+        {errorMessage && <S.ErrorMessage>{errorMessage}</S.ErrorMessage>}
         <S.Button type="submit">로그인</S.Button>
       </S.Form>
       <S.SignUpContainer>

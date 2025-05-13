@@ -89,3 +89,11 @@ export const SignUpButton = styled.button`
     background-color: #8b5e4f;
   }
 `;
+
+export const ErrorMessage = styled.p`
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+`;
+
