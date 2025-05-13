@@ -213,11 +213,11 @@ function ShareCloset() {
                                             </SC.OutfitBox1>
 
                                             <SC.OutfitBox2>
-                                                <div>4월 16일</div>
+                                                <div>코디 제목1</div>
                                                 <img src={sam13} alt="샘플 이미지" style={{ height: '70px' }} />
                                             </SC.OutfitBox2>
                                             <SC.OutfitBox2>
-                                                <div>4월 17일</div>
+                                                <div>코디 제목2</div>
                                                 <img src={sam12} alt="샘플 이미지" style={{ height: '70px' }} />
                                             </SC.OutfitBox2>
 

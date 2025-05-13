@@ -30,7 +30,7 @@ function Mypage() {
         //더미데이터 예시
         const dummyData = {
             nickname: '홍길동',
-            bodyType: 'round',
+            bodyType: 'none'
         };
         setNickname(dummyData.nickname);
         setBodyType(dummyData.bodyType);
@@ -73,6 +73,17 @@ function Mypage() {
 
                     <MP.BodytypeText>
                         {/* 조건에 맞는 텍스트를 다르게 표시 1 */}
+                        {bodyType === "none" && (
+                            <div style={{ fontSize: "12px", lineHeight: "1.6", color: "#555" }}>
+                                <p><strong>{nickname}</strong>님의 체형 정보가 등록되지 않았습니다.</p>
+                                <p>체형 측정 후 스타일 추천을 받아보세요!</p>
+                                <p>
+                                    <Link to="/bodyshape" style={{ color: "black", fontSize: "18px" }}>
+                                        체형 측정하러 가기 ▶️▶️
+                                    </Link>
+                                </p>
+                            </div>
+                        )}
                         {bodyType === "round" && <div style={{ fontSize: "12px", display: "flex" }}><p style={{ fontWeight: "bold", color: "brown" }}>{nickname}</p>님의 체형은 &nbsp;<p style={{ fontWeight: "bold", paddingBottom: "2px", color: "green" }}>라운드 체형</p>입니다.</div>}
                         {bodyType === "tri" && <div style={{ fontSize: "12px", display: "flex" }}><p style={{ fontWeight: "bold", color: "brown" }}>{nickname}</p>님의 체형은 &nbsp;<p style={{ fontWeight: "bold", paddingBottom: "2px", color: "green" }}>삼각형 체형</p>입니다.</div>}
                         {bodyType === "square" && <div style={{ fontSize: "12px", display: "flex" }}><p style={{ fontWeight: "bold", color: "brown" }}>{nickname}</p>님의 체형은 &nbsp;<p style={{ fontWeight: "bold", paddingBottom: "2px", color: "green" }}>사각형 체형</p>입니다.</div>}
@@ -149,7 +160,7 @@ function Mypage() {
                     <MP.Click to="/calendarpage">
                         <img src={calendarIcon} alt="캘린더 아이콘" style={{ width: '20px', height: '20px' }} /> 캘린더
                     </MP.Click>
-                    <MP.Click to="/size">
+                    <MP.Click to="/bodyshape">
                         <img src={sizeIcon} alt="체형측정 아이콘" style={{ width: '26px', height: '16px', transform: 'translateX(-5px)', marginRight: '5px' }} /> 체형측정
                     </MP.Click>
                     <MP.Click to="/sharecloset">
