@@ -27,18 +27,32 @@ function Join() {
     console.log("폼 데이터 확인:", formData);
 
     try {
-      const response = await axios.post("http://localhost:8080/login", {
-        username: formData.username,
-        password: formData.password
-      }, {
-        headers: { "Content-Type": "application/json" }
-      });
+      const response = await axios.post(
+        "http://localhost:8080/login",
+        {
+          username: formData.username,
+          password: formData.password
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true
+        }
+      );
 
-      // ✅ response.status로만 체크
+
       if (response.status === 200) {
-        console.log("로그인 성공!");
-        setErrorMessage("");
-        navigate("/main");
+        // ✅ 헤더에서 JWT 토큰 추출
+        const token = response.headers["authorization"]?.replace("Bearer ", "") || response.headers["accesstoken"]?.replace("Bearer ", "");
+
+        if (token) {
+          localStorage.setItem("authToken", token.replace("Bearer ", ""));
+          console.log("✅ 토큰 저장 완료:", token);
+          setErrorMessage("");
+          navigate("/main");
+        } else {
+          setErrorMessage("로그인은 성공했지만 토큰이 발급되지 않았습니다.");
+          console.warn("⚠️ 응답 전체:", response);
+        }
       } else {
         setErrorMessage("로그인 실패: 서버에서 에러를 반환했습니다.");
       }
