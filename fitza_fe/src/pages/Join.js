@@ -24,27 +24,46 @@ function Join() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("폼 데이터 확인:", formData);
 
     try {
-      const response = await axios.post("http://localhost:8080/login", {
-        username: formData.username,
-        password: formData.password
-      }, {
-        headers: { "Content-Type": "application/json" }
+      const response = await axios.post("http://localhost:8080/login", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      // ✅ response.status로만 체크
-      if (response.status === 200) {
-        console.log("로그인 성공!");
-        setErrorMessage("");
-        navigate("/main");
-      } else {
-        setErrorMessage("로그인 실패: 서버에서 에러를 반환했습니다.");
+      // ✅ 서버 응답 확인
+      console.log("서버 전체 응답:", response);
+
+      // ✅ 1. 바디에서 token을 시도 (혹시 있을 경우 대비)
+      let token = response.data.token;
+
+      // ✅ 2. 바디에 없으면 헤더에서 꺼내기
+      if (!token) {
+        const authHeader = response.headers['authorization'] || response.headers['Authorization'];
+        token = authHeader ? authHeader.split(' ')[1] : null;
       }
+
+      // ✅ 3. token이 없으면 에러 처리
+      if (!token) {
+        console.error("서버에서 토큰을 받지 못했습니다.");
+        setErrorMessage("로그인 실패: 서버에서 토큰을 받지 못했습니다.");
+        return;
+      }
+
+      // ✅ 4. localStorage에 저장
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userInfo", JSON.stringify({}));    // user info는 현재 서버에서 안 옴
+
+      // ✅ 저장 확인 (디버그용)
+      console.log("저장된 토큰:", token);
+
+      setErrorMessage("");
+      navigate("/Main");    // 메인 페이지 이동
+
     } catch (error) {
       console.error("로그인 실패:", error);
-      setErrorMessage("아이디 또는 비밀번호를 확인해주세요.");
+      setErrorMessage("로그인 실패. 아이디 또는 비밀번호를 확인해 주세요.");
     }
   };
 
