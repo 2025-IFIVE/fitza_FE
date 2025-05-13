@@ -26,22 +26,34 @@ function Join() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8080/login", formData, {
-        headers: {
-          "Content-Type": "application/json",
+      const response = await axios.post(
+        "http://localhost:8080/login",
+        {
+          username: formData.username,
+          password: formData.password
         },
-      });
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true
+        }
+      );
 
-      // ✅ 서버 응답 확인
-      console.log("서버 전체 응답:", response);
 
-      // ✅ 1. 바디에서 token을 시도 (혹시 있을 경우 대비)
-      let token = response.data.token;
+      if (response.status === 200) {
+        // ✅ 헤더에서 JWT 토큰 추출
+        const token = response.headers["authorization"]?.replace("Bearer ", "") || response.headers["accesstoken"]?.replace("Bearer ", "");
 
-      // ✅ 2. 바디에 없으면 헤더에서 꺼내기
-      if (!token) {
-        const authHeader = response.headers['authorization'] || response.headers['Authorization'];
-        token = authHeader ? authHeader.split(' ')[1] : null;
+        if (token) {
+          localStorage.setItem("authToken", token.replace("Bearer ", ""));
+          console.log("✅ 토큰 저장 완료:", token);
+          setErrorMessage("");
+          navigate("/main");
+        } else {
+          setErrorMessage("로그인은 성공했지만 토큰이 발급되지 않았습니다.");
+          console.warn("⚠️ 응답 전체:", response);
+        }
+      } else {
+        setErrorMessage("로그인 실패: 서버에서 에러를 반환했습니다.");
       }
 
       // ✅ 3. token이 없으면 에러 처리
