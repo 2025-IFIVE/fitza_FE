@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import * as M from "../styles/MyClosetStyle_2";
 import Footer from '../components/Footer';
 import TopBar from '../components/TopBar';
@@ -7,47 +7,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import smallPlus from '../img/smallPlus.png';
 import backbtn from '../img/backButton.png';
 
-// 더미 이미지 import
-import img1 from "../img/img1.png";
-import img2 from "../img/img2.png";
-import img3 from "../img/img3.png";
-import img4 from "../img/img4.png";
-import img5 from "../img/img5.png";
-import img6 from "../img/img6.png";
-import img7 from "../img/img7.png";
-import domi30 from "../img/domi30.PNG";
-import domi31 from "../img/domi31.PNG";
-import domi32 from "../img/domi32.PNG";
-import domi34 from "../img/domi34.PNG";
-import domi35 from "../img/domi35.PNG";
-
-
-// 이미지 리스트 매핑 (카테고리별 더미 이미지)
-const dummyImagesByCategory = {
-  상의: ["image3.jpg", "image7.jpg","domi30.PNG","domi31.PNG","domi32.PNG","domi34.PNG","domi35.PNG"],
-  하의: ["image4.jpg", "image5.jpg"],
-  아우터: ["image6.jpg", "image7.jpg"],
-  원피스: ["image1.jpg"],
-  신발: ["image2.jpg", "image3.jpg"],
-  모자: ["image4.jpg"],
-  기타: ["image5.jpg", "image6.jpg"],
-};
-
-// 이미지 파일 이름에 대응하는 이미지 파일 import
-const imageMap = {
-  "image1.jpg": img1,
-  "image2.jpg": img2,
-  "image3.jpg": img3,
-  "image4.jpg": img4,
-  "image5.jpg": img5,
-  "image6.jpg": img6,
-  "image7.jpg": img7,
-  "domi30.PNG": domi30,
-  "domi31.PNG": domi31,
-  "domi32.PNG": domi32,
-  "domi34.PNG": domi34,
-  "domi35.PNG": domi35,
-};
+import axios from "axios";
 
 
 function MyCloset_2() {
@@ -56,14 +16,43 @@ function MyCloset_2() {
 
   // URL에서 카테고리 추출 (/category/:category 경로를 따라온 경우)
   const category = decodeURIComponent(location.pathname.split("/").pop());
-  const images = dummyImagesByCategory[category] || [];
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    const fetchClothing = async () => {
+      try {
+        const token = localStorage.getItem('authToken'); // 실제 저장된 토큰 키 확인 필요
+        const response = await axios.get("http://localhost:8080/api/clothing/my", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // 카테고리별 필터링
+        const filtered = response.data.filter(item => item.type === category);
+        
+        console.log("받아온 이미지 목록:", filtered); //디버깅
+        setImages(filtered);
+      } catch (error) {
+        console.error("의류 목록 불러오기 실패:", error);
+      }
+    };
+
+    fetchClothing();
+  }, [category]);
 
   const handleBackButtonClick = () => {
     navigate(-1);
   };
 
-  const handleBoxClick = (image) => {
-    navigate("/MyCloset_3", { state: { imageSrc: imageMap[image],category: category } });
+  const handleBoxClick = (item) => {
+    navigate("/MyCloset_3", {
+      state: {
+        imageSrc: `http://localhost:8080${item.imagePath}`,
+        category: item.type,
+        clothId: item.clothid, // 상세정보 연동용
+      },
+    });
   };
 
   return (
@@ -94,7 +83,10 @@ function MyCloset_2() {
         <M.ImageGrid>
           {images.map((image, index) => (
             <M.Box key={index} onClick={() => handleBoxClick(image)}>
-              <M.BoxImage src={imageMap[image]} alt={`옷 ${index + 1}`} />
+              <M.BoxImage 
+                src={`http://localhost:8080${image.imagePath}`}
+                alt={`옷 ${index + 1}`}
+              />
             </M.Box>
           ))}
         </M.ImageGrid>
