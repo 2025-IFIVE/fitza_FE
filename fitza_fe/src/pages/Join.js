@@ -24,6 +24,7 @@ function Join() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("폼 데이터 확인:", formData);
 
     try {
       const response = await axios.post(
@@ -55,27 +56,9 @@ function Join() {
       } else {
         setErrorMessage("로그인 실패: 서버에서 에러를 반환했습니다.");
       }
-
-      // ✅ 3. token이 없으면 에러 처리
-      if (!token) {
-        console.error("서버에서 토큰을 받지 못했습니다.");
-        setErrorMessage("로그인 실패: 서버에서 토큰을 받지 못했습니다.");
-        return;
-      }
-
-      // ✅ 4. localStorage에 저장
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("userInfo", JSON.stringify({}));    // user info는 현재 서버에서 안 옴
-
-      // ✅ 저장 확인 (디버그용)
-      console.log("저장된 토큰:", token);
-
-      setErrorMessage("");
-      navigate("/Main");    // 메인 페이지 이동
-
     } catch (error) {
       console.error("로그인 실패:", error);
-      setErrorMessage("로그인 실패. 아이디 또는 비밀번호를 확인해 주세요.");
+      setErrorMessage("아이디 또는 비밀번호를 확인해주세요.");
     }
   };
 
