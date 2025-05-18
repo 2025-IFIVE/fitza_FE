@@ -14,7 +14,6 @@ import edit from "../img/shareClosetPage_edit.png";
 import addoutfitbutton from "../img/shareClosetPage_addoutfitbutton.png";
 
 //샘플링 이미지들
-import sam14 from '../img/sam14.jpg';
 import sam13 from '../img/sam13.jpg';
 import sam12 from '../img/sam12.jpg';
 
@@ -146,6 +145,37 @@ function ShareCloset() {
         }
     };
 
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+            return;
+        }
+
+        fetch("http://localhost:8080/api/profile", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log("프로필 정보 응답:", data);
+                const resData = data?.data;
+                if (resData) {
+                    setNickname(resData.nickname);
+                    setIntro(resData.comment);
+                    setTags(resData.style.split(',').map(tag => tag.trim()));
+                    setProfileImage(resData.imagePath); // 문자열 경로로 저장
+                    console.log("🔥 profileImage:", resData.imagePath);
+
+
+                }
+            })
+            .catch(err => {
+                console.error("프로필 정보 가져오기 실패:", err);
+            });
+    }, []);
 
     /* ================================================================== */
     /* 2. 방문자수 설정 */
@@ -165,7 +195,7 @@ function ShareCloset() {
 
     /* 방문자 수 가져오기 */
     useEffect(() => {
-        axios.get("/api/visitor-count")
+        axios.get("http://localhost:8080/api/visitor-count")
             .then(response => {
                 setToday(response.data.today);
                 setTotal(response.data.total);
@@ -174,6 +204,7 @@ function ShareCloset() {
                 console.error("Error fetching visitor data:", error);
             });
     }, []);
+
 
 
     /* 이미지 다운로드 함수 */
@@ -262,15 +293,16 @@ function ShareCloset() {
                             <SC.WhiteBox ref={profileRef}>
                                 <SC.ProfImg>
                                     {profileImage ? (
-                                        typeof profileImage === "string" ? (
-                                            <img src={`http://localhost:8080${profileImage}`} alt="profile" />
-                                        ) : (
-                                            <img src={URL.createObjectURL(profileImage)} alt="profile" />
-                                        )
+                                        <img
+                                            src={`http://localhost:8080/${profileImage.replace(/^\/+/, '')}`}
+                                            alt="profile"
+                                            onError={(e) => e.target.src = "/img/default.png"}
+                                        />
                                     ) : (
                                         <div className="no-image-text">프로필 사진을 <br /> 등록해주세요</div>
                                     )}
                                 </SC.ProfImg>
+
 
                                 <SC.ProfTxt>
                                     <SC.NameBox>
@@ -292,9 +324,10 @@ function ShareCloset() {
 
                             <SC.WhiteBox2>
                                 <SC.ToggleBox>
-                                    <SC.ToggleButton onClick={toggleTodayOutfit} isActive={showTodayOutfit}>
+                                    <SC.ToggleButton $isActive={showTodayOutfit}>
                                         오늘의 코디
                                     </SC.ToggleButton>
+
                                     <SC.ToggleButton onClick={toggleOutfitList} isActive={showOutfitList}>
                                         코디 목록
                                     </SC.ToggleButton>

@@ -496,18 +496,18 @@ export const ToggleBox = styled.div`
     padding-bottom: 10px;
 `;
 
-//토글 버튼 스타일 
+// 토글 버튼 스타일
 export const ToggleButton = styled.div`
     font-family: 'NanumSquareNeo';
-    font-size: 12px;  /* 숫자 값으로 설정 */
-    color: rgba(93, 64, 55, 1);  /* 글씨 색깔 설정 */
-    text-align: center;  /* 중앙 정렬 */
-    cursor: pointer;  /* 클릭 가능한 느낌 */
-    margin: 5px;  /* 버튼들 간의 간격 */
+    font-size: 12px;
+    color: rgba(93, 64, 55, 1);
+    text-align: center;
+    cursor: pointer;
+    margin: 5px;
 
-    /* isActive prop을 사용해 클릭 시 스타일 변경 */
-    font-weight: ${(props) => (props.isActive ? 'bold' : 'normal')};  /* 글씨체 두꺼워짐 */
+    font-weight: ${(props) => (props.$isActive ? 'bold' : 'normal')};  // ✅ 여기만 수정
 `;
+
 
 /* ================================================================
 ===================================================================
