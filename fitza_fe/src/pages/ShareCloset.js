@@ -21,17 +21,139 @@ import sam12 from '../img/sam12.jpg';
 
 
 function ShareCloset() {
-    /* 상태 관리 */
+    /* 1. 프로필 설정 */
     const [nickname, setNickname] = useState(""); // 닉네임
-    const [bodyType, setBodyType] = useState(""); // 체형
-
-
     const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 편집 모달
     const [profileImage, setProfileImage] = useState(null); // 프로필 이미지
     const [intro, setIntro] = useState(""); // 자기소개
     const [tag, setTag] = useState('');  // 태그 입력 필드 값
     const [tags, setTags] = useState([]); // 태그 배열 상태
 
+    /* 사용자 닉네임 정보 가져오기 */
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+            console.error("로그인 토큰이 없습니다.");
+            return;
+        }
+
+        // 🔹 닉네임 가져오기
+        fetch("http://localhost:8080/mypage", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log("마이페이지 응답:", data);
+                const nicknameValue = data?.data?.nickname;
+                if (typeof nicknameValue === "string") {
+                    setNickname(nicknameValue);
+                } else {
+                    console.warn("nickname 없음 또는 잘못된 형식:", data);
+                    setNickname("이름없음");
+                }
+            })
+            .catch(error => {
+                console.error("닉네임 가져오기 실패:", error);
+                setNickname("오류");
+            });
+
+    }, []);
+
+
+    /* 프사 바꾸기 */
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setProfileImage(file);  // 이미지 파일 자체 저장
+        }
+    };
+
+
+
+    // 태그 입력 후 엔터 누를 때
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && tag.trim() !== '') {
+            setTags((prevTags) => [...prevTags, tag.trim()]);
+            setTag(''); // 입력 필드 비우기
+        }
+    };
+
+    // 태그 삭제
+    const handleTagDelete = (tagToDelete) => {
+        setTags(tags.filter((item) => item !== tagToDelete));
+    };
+
+
+    const handleSaveProfile = async () => {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            console.error("로그인 토큰이 없습니다.");
+            return;
+        }
+
+        const formData = new FormData();
+
+        // 프로필 이미지 File인지 확인
+        if (profileImage instanceof File) {
+            formData.append("file", profileImage);
+        } else {
+            console.warn("파일이 없습니다. 혹은 File 객체가 아닙니다.");
+            return;
+        }
+
+        // 스타일
+        if (tags.length > 0) {
+            formData.append("style", tags.join(', '));
+        } else {
+            console.warn("스타일 태그가 없습니다.");
+            return;
+        }
+
+        // 코멘트
+        if (intro.trim()) {
+            formData.append("comment", intro.trim());
+        } else {
+            console.warn("코멘트가 없습니다.");
+            return;
+        }
+
+        // 디버깅용 로그
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
+
+        try {
+            const response = await axios.post("http://localhost:8080/api/profile", formData, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                }
+            });
+
+            const resData = response.data?.data;
+
+            setProfileImage(resData.imagePath);
+            setIntro(resData.comment);
+            setTags(resData.style.split(',').map(tag => tag.trim()));
+            setNickname(resData.nickname);
+
+            console.log("프로필 업데이트 성공:", resData);
+            closeEditModal();
+
+        } catch (error) {
+            console.error("프로필 업데이트 실패:", error.response?.data || error.message);
+        }
+    };
+
+
+
+
+    /* ================================================================== */
+    /* 2. 방문자수 설정 */
 
     const [today, setToday] = useState(0); // 오늘 방문자 수
     const [total, setTotal] = useState(0); // 총 방문자 수
@@ -47,18 +169,7 @@ function ShareCloset() {
 
 
 
-    /* 사용자 프로필 정보 가져오기 */
-    useEffect(() => {
-        fetch("/api/user-profile")
-            .then(response => response.json())
-            .then(data => {
-                setNickname(data.nickname);
-                setBodyType(data.bodyType);
-                setIntro(data.intro || "");
-                setProfileImage(data.profileImage || null);
-            })
-            .catch(error => console.error("Error fetching user data:", error));
-    }, []);
+
 
     /* 방문자 수 가져오기 */
     useEffect(() => {
@@ -71,6 +182,8 @@ function ShareCloset() {
                 console.error("Error fetching visitor data:", error);
             });
     }, []);
+
+
 
     /* 이미지 다운로드 함수 */
     const profileRef = useRef();
@@ -91,27 +204,9 @@ function ShareCloset() {
     const openEditModal = () => setIsEditModalOpen(true);
     const closeEditModal = () => setIsEditModalOpen(false);
 
-    /* 프사 바꾸기 */
-    const handleImageUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setProfileImage(imageUrl);
-        }
-    };
 
-    // 태그 입력 후 엔터 누를 때
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && tag.trim() !== '') {
-            setTags((prevTags) => [...prevTags, tag.trim()]);
-            setTag(''); // 입력 필드 비우기
-        }
-    };
 
-    // 태그 삭제
-    const handleTagDelete = (tagToDelete) => {
-        setTags(tags.filter((item) => item !== tagToDelete));
-    };
+
 
     // 버튼 클릭 시 토글 상태 변경
     const toggleTodayOutfit = () => {
@@ -158,11 +253,16 @@ function ShareCloset() {
                             <SC.WhiteBox ref={profileRef}>
                                 <SC.ProfImg>
                                     {profileImage ? (
-                                        <img src={profileImage} alt="profile" />
+                                        typeof profileImage === "string" ? (
+                                            <img src={`http://localhost:8080${profileImage}`} alt="profile" />
+                                        ) : (
+                                            <img src={URL.createObjectURL(profileImage)} alt="profile" />
+                                        )
                                     ) : (
-                                        <div className="no-image-text">프로필 사진을 <br></br> 등록해주세요</div>
+                                        <div className="no-image-text">프로필 사진을 <br /> 등록해주세요</div>
                                     )}
                                 </SC.ProfImg>
+
                                 <SC.ProfTxt>
                                     <SC.NameBox>
                                         <SC.Name>{nickname} </SC.Name>
@@ -319,7 +419,7 @@ function ShareCloset() {
 
                         {/* 버튼들 */}
                         <SC.ButtonBox>
-                            <SC.SaveButton onClick={closeEditModal}>저장</SC.SaveButton>
+                            <SC.SaveButton onClick={handleSaveProfile}>저장</SC.SaveButton>
                             <SC.CancelButton onClick={closeEditModal}>취소</SC.CancelButton>
                         </SC.ButtonBox>
                     </SC.ModalContent>
