@@ -64,7 +64,6 @@ function ShareCloset() {
 
     }, []);
 
-
     /* 프사 바꾸기 */
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
@@ -72,8 +71,6 @@ function ShareCloset() {
             setProfileImage(file);  // 이미지 파일 자체 저장
         }
     };
-
-
 
     // 태그 입력 후 엔터 누를 때
     const handleKeyPress = (e) => {
@@ -150,8 +147,6 @@ function ShareCloset() {
     };
 
 
-
-
     /* ================================================================== */
     /* 2. 방문자수 설정 */
 
@@ -168,9 +163,6 @@ function ShareCloset() {
     };
 
 
-
-
-
     /* 방문자 수 가져오기 */
     useEffect(() => {
         axios.get("/api/visitor-count")
@@ -182,7 +174,6 @@ function ShareCloset() {
                 console.error("Error fetching visitor data:", error);
             });
     }, []);
-
 
 
     /* 이미지 다운로드 함수 */
@@ -205,20 +196,38 @@ function ShareCloset() {
     const closeEditModal = () => setIsEditModalOpen(false);
 
 
-
-
-
     // 버튼 클릭 시 토글 상태 변경
+    // 오늘의 코디 
     const toggleTodayOutfit = () => {
         setShowTodayOutfit(prevState => !prevState);
         setShowOutfitList(false); // 다른 콘텐츠가 열릴 때는 자동으로 닫히게 설정
     };
 
+    const [todayCoordi, setTodayCoordi] = useState(null);
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        axios.get("http://localhost:8080/api/coordination/my", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+            .then(res => {
+                const todayStr = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+                const todayItem = res.data.find(item => item.date === todayStr);
+                setTodayCoordi(todayItem || null);
+            })
+            .catch(err => {
+                console.error("오늘의 코디 불러오기 실패", err);
+            });
+    }, []);
+
+
     const toggleOutfitList = () => {
         setShowOutfitList(prevState => !prevState);
         setShowTodayOutfit(false); // 다른 콘텐츠가 열릴 때는 자동으로 닫히게 설정
     };
-
 
 
     return (
@@ -294,11 +303,19 @@ function ShareCloset() {
                                 <SC.ContentBox2>
                                     {showTodayOutfit && (
                                         <SC.RecentOutfit>
-                                            {/* 최근 코디를 여기에 추가 */}
-                                            <SC.OutfitBox3>
-                                                {/* 여기에 오늘의 코디 사진 */}
-                                                <img src={sam14} alt="샘플 이미지" style={{ height: '200px' }} />
-                                            </SC.OutfitBox3>
+                                            {todayCoordi ? (
+                                                <SC.OutfitBox3>
+                                                    <div style={{ color: 'white', fontWeight: 'bold' }}>
+                                                        📅 {todayCoordi.date} <br />
+                                                        🧥 {todayCoordi.title} <br />
+                                                        🌤️ {todayCoordi.weather}
+                                                    </div>
+                                                </SC.OutfitBox3>
+                                            ) : (
+                                                <SC.OutfitBox3>
+                                                    <div style={{ color: 'white' }}>오늘의 코디가 없습니다</div>
+                                                </SC.OutfitBox3>
+                                            )}
                                         </SC.RecentOutfit>
                                     )}
 
