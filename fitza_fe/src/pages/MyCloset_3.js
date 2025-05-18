@@ -6,6 +6,7 @@ import TopBar from '../components/TopBar';
 import backbtn from '../img/backButton.png';
 import BrushEraserCanvas from "../pages/BrushEraserCanvas";
 import axios from "axios";
+import { useEffect } from "react";
 
 import img8 from '../img/img8.png';
 import img9 from '../img/img9.png';
@@ -16,7 +17,7 @@ function MyCloset_3() {
   const navigate = useNavigate(); // navigate 훅 사용
   const location = useLocation(); // useLocation 훅을 사용하여 상태값 가져오기
   const imageSrc = location.state?.imageSrc; // 전달받은 이미지 정보
-  const category = location.state?.category || "상의";
+
   
   const [isEditing, setIsEditing] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -52,6 +53,11 @@ function MyCloset_3() {
     return new Blob([u8arr], { type: mime });
   };
 
+// MyCloset_3.js에서
+const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추가
+
+
+
 
   const categoryData = {
     상의: ["탑", "블라우스", "티셔츠", "니트웨어", "셔츠", "브라탑", "후드티"],
@@ -63,9 +69,13 @@ function MyCloset_3() {
     기타: ["홈웨어", "헤어악세사리", "안경/선글라스", "스카프", "목도리","시계","장갑","양말","벨트","지갑","기타"]
   };
   
-  const [selectedCtgy, setSelectedCtgy] = useState([]);
+  const [selectedCtgy, setSelectedCtgy] = useState(null);
   const [selectedSubCtgy, setSelectedSubCtgy] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
+  const category = location.state?.category || null;
+
+  // useState 추가
+  const [clothData, setClothData] = useState(null);
 
   const [selectedDetail, setSelectedDetail] = useState([]);
   const detail = ["메탈", "리본/띠", "봉제/자수", "허리라인","절개/비대칭","단추","지퍼","스트링","소매/밑단","포켓","주름","어깨라인","레이스","기타"];
@@ -109,6 +119,11 @@ function MyCloset_3() {
   const [selecteddressLength, setSelecteddressLength] = useState([]);
   const dresslength = ["미니","니렝스","미디","발목","맥시"];
 
+  const [type, setType] = useState(null);
+  const [imagePath, setImagePath] = useState(null);
+  const [croppedPath, setCroppedPath] = useState(null);
+
+
   const getFitOptions = () => {
     switch (selectedCtgy) {
       case "하의":
@@ -127,13 +142,99 @@ function MyCloset_3() {
     setSelected([item]);   // ⭐ 단일 선택
   };
   
-
-
-  const handleEditClick = () => {
+  const handleEditClick = async () => {
+    if (isEditing) {
+      try {
+        const token = localStorage.getItem('authToken');
+  
+        const payload = {
+          category: selectedCtgy,
+          subCategory: selectedSubCtgy[0],
+          color: selectedcolor.join(','),      // 문자열로 변환
+          detail: selectedDetail.join(','),
+          material: selectedCloth.join(','),
+          print: selectedPrint.join(','),
+          style: selectedStyle[0],
+          substyle: selectedSubStyle[0],
+          fit: selectedFit[0] || selectedbottomFit[0],
+          neckline: selectedNeckline[0],
+          sleeve: selectedSleeve[0],
+          length:
+            selectedLength[0] || selectedbottomLength[0] ||
+            selectedouterLength[0] || selecteddressLength[0],
+          // ✅ null로 초기화되지 않도록 명시적으로 포함
+          type,
+          imagePath,
+          croppedPath
+        };
+  
+        console.log("🛠 PATCH 요청 URL:", `http://localhost:8080/api/clothing/${id}`);
+        console.log("📦 payload:", payload);
+  
+        await axios.put(`http://localhost:8080/api/clothing/${id}`, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+  
+        alert("수정 완료!");
+      } catch (err) {
+        alert("수정 실패!");
+        console.error(err);
+      }
+    }
     setIsEditing((prev) => !prev);
-
-    
   };
+  
+
+  useEffect(() => {
+    if (!id) return;
+  
+    const fetchClothingInfo = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get(`http://localhost:8080/api/clothing/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+  
+        const data = response.data;
+  
+        // ✅ 필수 정보 저장
+        setType(data.type);
+        setImagePath(data.imagePath);
+        setCroppedPath(data.croppedPath);
+  
+        // ✅ 상태값 설정
+        setSelectedCtgy(data.category);
+        setSelectedSubCtgy([data.subCategory]);
+        setSelectedcolor(data.color?.split(','));
+        setSelectedDetail(data.detail?.split(','));
+        setSelectedCloth(data.material?.split(','));
+        setSelectedFit([data.fit]);
+        setSelectedNeckline([data.neck]);
+        setSelectedSleeve([data.sleeve]);
+        setSelectedPrint(data.print?.split(','));
+        setSelectedStyle([data.style]);
+        setSelectedSubStyle([data.substyle]);
+        setSelectedLength([data.length]);
+      } catch (err) {
+        console.error("❌ 의류 정보 불러오기 실패", err);
+      }
+    };
+  
+    fetchClothingInfo();
+  }, [id]);
+  
+  
+  
+  const getParentCategory = (sub) => {
+    for (const [parent, subs] of Object.entries(categoryData)) {
+      if (subs.includes(sub)) return parent;
+    }
+    return null;
+  };
+  
 
   const handleCtgyClick = (category) => {
     if (!isEditing) return; // 편집 모드에서만 변경 가능
@@ -224,7 +325,6 @@ const handleSingleSelect = (selected, setSelected, item) => {
     navigate(-1); // 이전 페이지로 이동
   };
 
- 
 
   return (
     <M.Background>
@@ -241,8 +341,9 @@ const handleSingleSelect = (selected, setSelected, item) => {
         </M.Header>
 
         <M.TitleBox1>
-          <M.Title1>{`내 옷장 > ${category} > 옷 정보`}</M.Title1>
+          <M.Title1>{`내 옷장 > ${type || category} > 옷 정보`}</M.Title1>
         </M.TitleBox1>
+
 
         <M.ImageContainer>
         <M.ImageBox>

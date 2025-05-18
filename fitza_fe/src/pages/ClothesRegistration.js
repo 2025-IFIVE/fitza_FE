@@ -50,6 +50,17 @@ function ClothesRegistration() {
             const result = await response.json();
             console.log("✅ 업로드 성공:", result);
 
+            // 업로드 성공 후 이동
+            navigate("/MyCloset_3", {
+                state: {
+                  id: result.clothid,
+                  imageSrc: `http://localhost:8080${result.imagePath || result.image_path}`,
+                  category: result.category,
+                  type: result.type   // ✅ type도 함께 넘기기
+                }
+              });
+              
+
             // navigate("/register-success"); // 예시 페이지 이동
         } catch (error) {
             console.error("❌ 업로드 에러:", error);
