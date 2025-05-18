@@ -107,11 +107,11 @@ export const Register = styled.div`
 export const RegisterContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 0px;
   padding-right: 10px;
 
   img {
-    width: 20px;
+    width: 24px;
     height: auto;
     vertical-align: middle;
     display: flex;
