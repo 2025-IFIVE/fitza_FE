@@ -3,8 +3,8 @@ import * as C from "../styles/CalendarDetailStyle";
 import Footer from '../components/Footer';
 import TopBar from '../components/TopBar';
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import smallPlus from '../img/smallPlus.png';
 import backButton from '../img/backButton.png';
+import minusButton from '../img/minusButton.png';
 import axios from "axios";
 
 function CalendarDetail() {
@@ -55,6 +55,24 @@ function CalendarDetail() {
     fetchCoordi();
   }, [calendarId]);
 
+  const handleDelete = async () => {
+    if (!window.confirm("정말 이 코디를 삭제하시겠습니까?")) return;
+
+    try {
+      const token = localStorage.getItem("authToken");
+      await axios.delete(`http://localhost:8080/api/coordination/${calendarId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      alert("코디 삭제 성공!");
+      navigate("/calendarpage");
+    } catch (err) {
+      console.error("삭제 실패:", err);
+      alert("코디 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
+
   return (
     <C.Background>
       <C.TopBox>
@@ -72,10 +90,10 @@ function CalendarDetail() {
         <C.TitleBox1>
           <C.Title1>{selectedDate}</C.Title1>
           <C.RegisterContainer>
-            <C.Register>수정하기</C.Register>
-            <Link to="/Camera">
-              <img src={smallPlus} alt="plus" className="plusImage" />
-            </Link>
+            <C.Register>삭제하기</C.Register>
+            <button onClick={handleDelete} style={{ background: "none", border: "none", cursor: "pointer" }}>
+              <img src={minusButton} alt="minus" className="minusImage" />
+            </button>
           </C.RegisterContainer>
         </C.TitleBox1>
 
@@ -97,7 +115,19 @@ function CalendarDetail() {
           ))}
         </C.Board>
 
-        <C.EditButton>수정하기</C.EditButton>
+        <C.EditButton onClick={() => {
+          navigate("/CalendarCreate", {
+            state: {
+              mode: "edit",
+              calendarId: coordi.calendarId,
+              title: coordi.title,
+              date: coordi.date,
+              items: coordi.items
+            }
+          });
+        }}>수정하기
+        </C.EditButton>
+
       </C.Container>
 
       <C.BottomBox>
