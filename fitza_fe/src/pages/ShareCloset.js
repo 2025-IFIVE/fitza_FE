@@ -279,7 +279,30 @@ function ShareCloset() {
     }, [todayCoordi]);
 
     /* ================================================================== */
-    /* 3. 모달2 - 오늘의 코디 */
+    /* 3. 모달2 - 공유 코디 */
+    const handleGoToCalendarCreate = () => {
+        navigate("/sharecloset2");
+    };
+
+
+    const [sharedCoordis, setSharedCoordis] = useState([]);
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        axios.get("http://localhost:8080/api/share/my", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                setSharedCoordis(response.data);
+            })
+            .catch(error => {
+                console.error("공유 코디 불러오기 실패:", error);
+            });
+    }, []);
+
 
 
     return (
@@ -304,7 +327,7 @@ function ShareCloset() {
                     <SC.DashandBox>
                         <SC.GrayBox>
                             <SC.TopBox2>
-                                <SC.TodayTotal>TODAY {today} TOTAL {total}</SC.TodayTotal>
+                                <SC.TodayTotal></SC.TodayTotal>
                                 <SC.Friends>
                                     <SC.FriendLink to="/friends">
                                         <img src={friends} alt="find friends" />
@@ -380,25 +403,38 @@ function ShareCloset() {
 
                                     {showOutfitList && (
                                         <SC.OutfitList>
-                                            {/* 코디 목록 내용을 여기에 추가 */}
                                             <SC.OutfitBox1>
                                                 <div>코디 등록하기</div>
-                                                <SC.AddOutfitButton>
+                                                <SC.AddOutfitButton onClick={handleGoToCalendarCreate}>
                                                     <img src={addoutfitbutton} alt="addoutfitbutton" />
                                                 </SC.AddOutfitButton>
                                             </SC.OutfitBox1>
 
-                                            <SC.OutfitBox2>
-                                                <div>코디 제목1</div>
-                                                <img src={sam13} alt="샘플 이미지" style={{ height: '70px' }} />
-                                            </SC.OutfitBox2>
-                                            <SC.OutfitBox2>
-                                                <div>코디 제목2</div>
-                                                <img src={sam12} alt="샘플 이미지" style={{ height: '70px' }} />
-                                            </SC.OutfitBox2>
 
+                                            {sharedCoordis.length === 0 ? (
+                                                <SC.OutfitBox2>
+                                                    <div>공유된 코디가 없습니다</div>
+                                                </SC.OutfitBox2>
+                                            ) : (
+                                                sharedCoordis.map((coordi, index) => (
+                                                    <SC.OutfitBox2 key={index}>
+                                                        <div>{coordi.title}</div>
+                                                        <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                                                            {coordi.items.slice(0, 3).map((item, idx) => (
+                                                                <img
+                                                                    key={idx}
+                                                                    src={`http://localhost:8080${item.croppedPath}`}
+                                                                    alt={`item-${idx}`}
+                                                                    style={{ height: '70px' }}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </SC.OutfitBox2>
+                                                ))
+                                            )}
                                         </SC.OutfitList>
                                     )}
+
                                 </SC.ContentBox2>
                             </SC.WhiteBox2>
                         </SC.GrayBox>
