@@ -210,6 +210,16 @@ export const FriendItem = styled.div`
  
 `;
 
+export const ProfileImage = styled.img`
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 10px;
+  padding-right: 50px;
+`;
+
+
+
 // 친구 목록
 export const FriendList = styled.div`
   background-color: rgba(255, 255, 255, 0.25); /* #CE9694 */

@@ -44,6 +44,58 @@ function Person() {
             });
     }, []);
 
+
+    const [profile, setProfile] = useState({
+        nickname: '',
+        comment: '',
+        style: '',
+        imagePath: ''
+    });
+
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+            console.error("JWT 토큰이 없습니다.");
+            return;
+        }
+
+        // 기존 유저 정보
+        axios.get("http://localhost:8080/mypage", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        })
+            .then(response => {
+                const user = response.data.data;
+                setname(user.name);
+                setusername(user.username);
+                setNickname(user.nickname);
+                setphone(user.phone);
+            })
+            .catch(error => {
+                console.error("유저 정보 불러오기 실패", error);
+            });
+
+        // 프로필 정보 추가
+        axios.get("http://localhost:8080/api/profile", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                const data = response.data.data;
+                setProfile(data);
+            })
+            .catch(error => {
+                console.error("프로필 정보 불러오기 실패", error);
+            });
+
+    }, []);
+
+
+
     return (
         <Per.Background>
             <Per.TopBox>
@@ -63,19 +115,34 @@ function Person() {
                 </Per.TitleBox1>
                 <Per.FriendList>
                     <Per.FriendItem>
-                        <div>이름: {name}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                            <div>이름</div>
+                            <div style={{ paddingRight: '50px' }}>{name}</div>
+                        </div>
                     </Per.FriendItem>
                     <Per.FriendItem>
-                        <div>닉네임: {nickname}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                            <div>닉네임</div>
+                            <div style={{ paddingRight: '50px' }}>{nickname}</div>
+                        </div>
                     </Per.FriendItem>
                     <Per.FriendItem>
-                        <div>아이디: {username}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                            <div>아이디</div>
+                            <div style={{ paddingRight: '50px' }}>{username}</div>
+                        </div>
                     </Per.FriendItem>
                     <Per.FriendItem>
-                        <div>비밀번호: ******</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                            <div>비밀번호</div>
+                            <div style={{ paddingRight: '50px' }}>******</div>
+                        </div>
                     </Per.FriendItem>
                     <Per.FriendItem>
-                        <div>전화번호: {phone}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                            <div>전화번호</div>
+                            <div style={{ paddingRight: '50px' }}>{phone}</div>
+                        </div>
                     </Per.FriendItem>
                 </Per.FriendList>
 
@@ -84,24 +151,31 @@ function Person() {
                 </Per.TitleBox1>
                 <Per.FriendList>
                     <Per.FriendItem>
-                        <div>프로필 사진</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                            <div>닉네임</div>
+                            <div style={{ paddingRight: '50px' }}>{profile.nickname}</div>
+                        </div>
                     </Per.FriendItem>
                     <Per.FriendItem>
-                        <div>닉네임</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                            <div>코멘트</div>
+                            <div style={{ paddingRight: '50px' }}>{profile.comment}</div>
+                        </div>
                     </Per.FriendItem>
                     <Per.FriendItem>
-                        <div>코멘트</div>
-                    </Per.FriendItem>
-                    <Per.FriendItem>
-                        <div>스타일</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                            <div>스타일</div>
+                            <div style={{ paddingRight: '50px' }}>{profile.style}</div>
+                        </div>
                     </Per.FriendItem>
                 </Per.FriendList>
+
             </Per.Container>
 
             <Per.BottomBox>
                 <Footer />
             </Per.BottomBox>
-        </Per.Background>
+        </Per.Background >
     );
 }
 
