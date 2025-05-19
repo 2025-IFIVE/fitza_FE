@@ -51,6 +51,7 @@ function MyCloset_2() {
         imageSrc: `http://localhost:8080${item.croppedPath}`,
         category: item.type,
         clothId: item.clothid, // 상세정보 연동용
+        type: item.type   // type도 넘겨주자
       },
     });
   };

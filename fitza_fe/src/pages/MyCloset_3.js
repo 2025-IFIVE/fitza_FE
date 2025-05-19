@@ -16,7 +16,8 @@ import checkedIcon from '../img/MyCloset_3_checked.png';
 function MyCloset_3() {
   const navigate = useNavigate(); // navigate 훅 사용
   const location = useLocation(); // useLocation 훅을 사용하여 상태값 가져오기
-  const imageSrc = location.state?.imageSrc; // 전달받은 이미지 정보
+  const [imageSrc, setImageSrc] = useState(location.state?.imageSrc || null);
+
 
   
   const [isEditing, setIsEditing] = useState(false);
@@ -27,22 +28,30 @@ function MyCloset_3() {
 
   const handleMaskSubmit = async (maskDataUrl) => {
     const formData = new FormData();
-    const originalBlob = await fetch(imageSrc).then((res) => res.blob());
     const maskBlob = dataURLtoBlob(maskDataUrl);
-
-    formData.append("original", originalBlob, "original.jpg");
-    formData.append("mask", maskBlob, "mask.png");
-
+    formData.append("file", new File([maskBlob], "mask.png", { type: "image/png" }));
+  
     try {
-      await axios.post("http://localhost:5000/process", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const token = localStorage.getItem("authToken");
+  
+      const response = await axios.post("http://localhost:8080/api/clothing/upload", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"
+        }
       });
-      alert("이미지 전송 완료!");
+  
+      // ✅ 상태 갱신
+      setImagePath(response.data.imagePath);
+      setCroppedPath(response.data.croppedPath);
+      setImageSrc(response.data.croppedPath || response.data.imagePath); // 핵심
     } catch (error) {
-      alert("전송 실패: 백엔드 서버를 확인하세요");
+      alert("이미지 저장 실패: 서버를 확인하세요");
+      console.error(error);
     }
   };
-
+  
+  // helper
   const dataURLtoBlob = (dataurl) => {
     const arr = dataurl.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
@@ -52,7 +61,7 @@ function MyCloset_3() {
     while (n--) u8arr[n] = bstr.charCodeAt(n);
     return new Blob([u8arr], { type: mime });
   };
-
+  
 // MyCloset_3.js에서
 const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추가
 
@@ -148,9 +157,9 @@ const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추
         const token = localStorage.getItem('authToken');
   
         const payload = {
-          category: selectedCtgy,
-          subCategory: selectedSubCtgy[0],
-          color: selectedcolor.join(','),      // 문자열로 변환
+          type, // ✅ 상위 카테고리
+          category: selectedSubCtgy[0], // ✅ 하위 카테고리
+          color: selectedcolor.join(','),
           detail: selectedDetail.join(','),
           material: selectedCloth.join(','),
           print: selectedPrint.join(','),
@@ -162,11 +171,10 @@ const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추
           length:
             selectedLength[0] || selectedbottomLength[0] ||
             selectedouterLength[0] || selecteddressLength[0],
-          // ✅ null로 초기화되지 않도록 명시적으로 포함
-          type,
           imagePath,
           croppedPath
         };
+        
   
         console.log("🛠 PATCH 요청 URL:", `http://localhost:8080/api/clothing/${id}`);
         console.log("📦 payload:", payload);
@@ -200,24 +208,30 @@ const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추
   
         const data = response.data;
   
-        // ✅ 필수 정보 저장
-        setType(data.type);
+        // ✅ 상위/하위 카테고리 분리 처리
+        const cleanSubCategory = data.category?.trim(); // 실제로는 하위 카테고리
+        const cleanParent = data.type?.trim();          // 실제로는 상위 카테고리
+  
+        setType(cleanParent);
+        setSelectedCtgy(cleanParent);
+        setSelectedSubCtgy(cleanSubCategory ? [cleanSubCategory] : []);
+  
+        // 이미지
         setImagePath(data.imagePath);
         setCroppedPath(data.croppedPath);
   
-        // ✅ 상태값 설정
-        setSelectedCtgy(data.category);
-        setSelectedSubCtgy([data.subCategory]);
-        setSelectedcolor(data.color?.split(','));
-        setSelectedDetail(data.detail?.split(','));
-        setSelectedCloth(data.material?.split(','));
-        setSelectedFit([data.fit]);
-        setSelectedNeckline([data.neck]);
-        setSelectedSleeve([data.sleeve]);
-        setSelectedPrint(data.print?.split(','));
-        setSelectedStyle([data.style]);
-        setSelectedSubStyle([data.substyle]);
-        setSelectedLength([data.length]);
+        // 나머지 속성들
+        setSelectedcolor(data.color?.split(',') || []);
+        setSelectedDetail(data.detail?.split(',') || []);
+        setSelectedCloth(data.material?.split(',') || []);
+        setSelectedFit(data.fit ? [data.fit] : []);
+        setSelectedNeckline(data.neckline ? [data.neckline] : []);
+        setSelectedSleeve(data.sleeve ? [data.sleeve] : []);
+        setSelectedPrint(data.print?.split(',') || []);
+        setSelectedStyle(data.style ? [data.style] : []);
+        setSelectedSubStyle(data.substyle ? [data.substyle] : []);
+        setSelectedLength(data.length ? [data.length] : []);
+  
       } catch (err) {
         console.error("❌ 의류 정보 불러오기 실패", err);
       }
@@ -225,7 +239,6 @@ const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추
   
     fetchClothingInfo();
   }, [id]);
-  
   
   
   const getParentCategory = (sub) => {
@@ -335,7 +348,10 @@ const handleSingleSelect = (selected, setSelected, item) => {
       <M.Container>
         <M.Header>
           <M.BackButton onClick={handleBackButtonClick}>
-            <img src={backbtn} alt="Back" />
+          <img
+            src={`http://localhost:8080${imageSrc}?t=${Date.now()}`}
+            alt="선택한 옷"
+          />
           </M.BackButton>
           <M.Title>내 옷장</M.Title>
         </M.Header>
@@ -347,9 +363,12 @@ const handleSingleSelect = (selected, setSelected, item) => {
 
         <M.ImageContainer>
         <M.ImageBox>
-            {imageSrc ? (
+            {(croppedPath || imagePath || imageSrc) ? (
               <>
-                <img src={imageSrc} alt="선택한 옷" />
+                <img
+                  src={`http://localhost:8080${croppedPath || imagePath || imageSrc}`}
+                  alt="선택한 옷"
+                />
                 <button onClick={openEditModal} style={{ marginTop: "10px" }}>
                   이미지 수정하기
                 </button>
@@ -357,8 +376,7 @@ const handleSingleSelect = (selected, setSelected, item) => {
             ) : (
               <p>이미지가 없습니다.</p>
             )}
-                
-            </M.ImageBox>
+        </M.ImageBox>
         </M.ImageContainer>
 
         {showEditModal && (
@@ -435,6 +453,8 @@ const handleSingleSelect = (selected, setSelected, item) => {
                     ))}
               </M.SubCategoryItems>
             )}
+
+
 
   <M.CategoryTitle>색상</M.CategoryTitle>
   <M.CategoryItems>
