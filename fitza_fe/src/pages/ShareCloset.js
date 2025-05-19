@@ -13,13 +13,11 @@ import down from "../img/shareClosetPage_download.png";
 import edit from "../img/shareClosetPage_edit.png";
 import addoutfitbutton from "../img/shareClosetPage_addoutfitbutton.png";
 
-//샘플링 이미지들
-import sam13 from '../img/sam13.jpg';
-import sam12 from '../img/sam12.jpg';
 
 
 
 function ShareCloset() {
+
     // ==================================================================
     // 1. 프로필 설정
     const [nickname, setNickname] = useState(""); // 닉네임
@@ -184,13 +182,21 @@ function ShareCloset() {
     const handleDownloadProfileBox = () => {
         if (!profileRef.current) return;
 
-        html2canvas(profileRef.current).then(canvas => {
+        html2canvas(profileRef.current, {
+            useCORS: true,
+            allowTaint: false,
+            logging: true,
+            scale: 2, // 해상도 개선
+        }).then(canvas => {
             const link = document.createElement('a');
             link.href = canvas.toDataURL('image/png');
             link.download = 'profile-box.png';
             link.click();
+        }).catch(err => {
+            console.error("다운로드 오류:", err);
         });
     };
+
 
     /* ================================================================== */
     /* 2. 방문자수 설정 */
