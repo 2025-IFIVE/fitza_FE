@@ -179,7 +179,7 @@ function ShareCloset() {
             });
     }, []);
 
-    /* 이미지 다운로드 함수 */
+    // 이미지 다운로드
     const profileRef = useRef();
     const handleDownloadProfileBox = () => {
         if (!profileRef.current) return;
@@ -278,6 +278,8 @@ function ShareCloset() {
             });
     }, [todayCoordi]);
 
+    /* ================================================================== */
+    /* 3. 모달2 - 오늘의 코디 */
 
 
     return (
