@@ -48,7 +48,7 @@ function MyCloset_2() {
   const handleBoxClick = (item) => {
     navigate("/MyCloset_3", {
       state: {
-        imageSrc: `http://localhost:8080${item.imagePath}`,
+        imageSrc: `http://localhost:8080${item.croppedPath}`,
         category: item.type,
         clothId: item.clothid, // 상세정보 연동용
       },
@@ -84,7 +84,7 @@ function MyCloset_2() {
           {images.map((image, index) => (
             <M.Box key={index} onClick={() => handleBoxClick(image)}>
               <M.BoxImage 
-                src={`http://localhost:8080${image.imagePath}`}
+                src={`http://localhost:8080${image.croppedPath}`}
                 alt={`옷 ${index + 1}`}
               />
             </M.Box>
