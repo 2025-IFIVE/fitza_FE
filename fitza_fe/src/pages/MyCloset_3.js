@@ -27,26 +27,37 @@ function MyCloset_3() {
   const closeEditModal = () => setShowEditModal(false);
 
   const handleMaskSubmit = async (maskDataUrl) => {
-    const formData = new FormData();
+    const clothId = location.state?.clothId;
+    if (!clothId) {
+      alert("옷 ID가 없습니다. 다시 시도해주세요.");
+      return;
+    }
+  
     const maskBlob = dataURLtoBlob(maskDataUrl);
-    formData.append("file", new File([maskBlob], "mask.png", { type: "image/png" }));
+    const formData = new FormData();
+    formData.append("image", new File([maskBlob], "cropped.png", { type: "image/png" }));
   
     try {
       const token = localStorage.getItem("authToken");
   
-      const response = await axios.post("http://localhost:8080/api/clothing/upload", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data"
+      const response = await axios.put(
+        `http://localhost:8080/api/clothing/${clothId}/cropped-image`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
+      );
   
-      // ✅ 상태 갱신
-      setImagePath(response.data.imagePath);
-      setCroppedPath(response.data.croppedPath);
-      setImageSrc(response.data.croppedPath || response.data.imagePath); // 핵심
+      alert("이미지 수정 완료!");
+      // 변경된 이미지가 다시 반영되도록 강제 리로드 (캐시 문제 해결)
+      const timestamp = Date.now();
+      setCroppedPath((prev) => prev + `?t=${timestamp}`);
+  
     } catch (error) {
-      alert("이미지 저장 실패: 서버를 확인하세요");
+      alert("이미지 수정 실패: 서버를 확인하세요");
       console.error(error);
     }
   };
@@ -63,8 +74,8 @@ function MyCloset_3() {
   };
   
 // MyCloset_3.js에서
-const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추가
-
+const [clothData, setClothData] = useState(location.state?.clothData || null);
+const id = location.state?.clothId || clothData?.clothid;
 
 
 
@@ -83,8 +94,6 @@ const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추
   const [activeCategory, setActiveCategory] = useState(null);
   const category = location.state?.category || null;
 
-  // useState 추가
-  const [clothData, setClothData] = useState(null);
 
   const [selectedDetail, setSelectedDetail] = useState([]);
   const detail = ["메탈", "리본/띠", "봉제/자수", "허리라인","절개/비대칭","단추","지퍼","스트링","소매/밑단","포켓","주름","어깨라인","레이스","기타"];
@@ -155,38 +164,64 @@ const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추
     if (isEditing) {
       try {
         const token = localStorage.getItem('authToken');
+
+        let finalFit = "";
+        let finalLength = "";
+
+        switch (selectedCtgy) {
+          case "하의":
+            finalFit = selectedbottomFit[0] || "";
+            finalLength = selectedbottomLength[0] || "";
+            break;
+          case "상의":
+            finalFit = selectedFit[0] || "";
+            finalLength = selectedLength[0] || "";
+            break;
+          case "아우터":
+            finalFit = selectedFit[0] || "";
+            finalLength = selectedouterLength[0] || "";
+            break;
+          case "원피스":
+            finalFit = selectedFit[0] || "";
+            finalLength = selecteddressLength[0] || "";
+            break;
+          default:
+            finalFit = selectedFit[0] || selectedbottomFit[0] || "";
+            finalLength = selectedLength[0] || selectedbottomLength[0] ||
+                          selectedouterLength[0] || selecteddressLength[0] || "";
+            break;
+        }
+
   
         const payload = {
-          type, // ✅ 상위 카테고리
-          category: selectedSubCtgy[0], // ✅ 하위 카테고리
+          type: selectedCtgy,
+          category: selectedSubCtgy[0],
           color: selectedcolor.join(','),
           detail: selectedDetail.join(','),
           material: selectedCloth.join(','),
           print: selectedPrint.join(','),
           style: selectedStyle[0],
           substyle: selectedSubStyle[0],
-          fit: selectedFit[0] || selectedbottomFit[0],
+          fit: finalFit,
           neckline: selectedNeckline[0],
           sleeve: selectedSleeve[0],
-          length:
-            selectedLength[0] || selectedbottomLength[0] ||
-            selectedouterLength[0] || selecteddressLength[0],
+          length: finalLength,
           imagePath,
-          croppedPath
+          croppedPath,
         };
         
-  
-        console.log("🛠 PATCH 요청 URL:", `http://localhost:8080/api/clothing/${id}`);
-        console.log("📦 payload:", payload);
-  
         await axios.put(`http://localhost:8080/api/clothing/${id}`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         });
   
         alert("수정 완료!");
+  
+        // ✅ 여기서 다시 최신 정보 불러오기
+        fetchClothingInfo();  // 👈 이 함수 외부로 빼야 함
+  
       } catch (err) {
         alert("수정 실패!");
         console.error(err);
@@ -199,46 +234,93 @@ const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추
   useEffect(() => {
     if (!id) return;
   
-    const fetchClothingInfo = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        const response = await axios.get(`http://localhost:8080/api/clothing/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-  
-        const data = response.data;
-  
-        // ✅ 상위/하위 카테고리 분리 처리
-        const cleanSubCategory = data.category?.trim(); // 실제로는 하위 카테고리
-        const cleanParent = data.type?.trim();          // 실제로는 상위 카테고리
-  
-        setType(cleanParent);
-        setSelectedCtgy(cleanParent);
-        setSelectedSubCtgy(cleanSubCategory ? [cleanSubCategory] : []);
-  
-        // 이미지
-        setImagePath(data.imagePath);
-        setCroppedPath(data.croppedPath);
-  
-        // 나머지 속성들
-        setSelectedcolor(data.color?.split(',') || []);
-        setSelectedDetail(data.detail?.split(',') || []);
-        setSelectedCloth(data.material?.split(',') || []);
-        setSelectedFit(data.fit ? [data.fit] : []);
-        setSelectedNeckline(data.neckline ? [data.neckline] : []);
-        setSelectedSleeve(data.sleeve ? [data.sleeve] : []);
-        setSelectedPrint(data.print?.split(',') || []);
-        setSelectedStyle(data.style ? [data.style] : []);
-        setSelectedSubStyle(data.substyle ? [data.substyle] : []);
-        setSelectedLength(data.length ? [data.length] : []);
-  
-      } catch (err) {
-        console.error("❌ 의류 정보 불러오기 실패", err);
-      }
-    };
-  
     fetchClothingInfo();
   }, [id]);
+
+  
+  const fetchClothingInfo = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(`http://localhost:8080/api/clothing/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = response.data;
+
+      // ✅ 상위/하위 카테고리 분리 처리
+      const cleanSubCategory = data.category?.trim(); // 실제로는 하위 카테고리
+      const cleanParent = data.type?.trim();          // 실제로는 상위 카테고리
+
+      setType(cleanParent);
+      setSelectedCtgy(cleanParent);
+      setSelectedSubCtgy(cleanSubCategory ? [cleanSubCategory] : []);
+
+      switch (cleanParent) {
+        case "하의":
+          if (data.fit) setSelectedbottomFit([data.fit]);
+          if (data.length) setSelectedbottomLength([data.length]);
+          break;
+        case "상의":
+        case "아우터":
+        case "원피스":
+          if (data.fit) setSelectedFit([data.fit]);
+          if (data.length) {
+            if (cleanParent === "아우터") setSelectedouterLength([data.length]);
+            else if (cleanParent === "원피스") setSelecteddressLength([data.length]);
+            else setSelectedLength([data.length]);
+          }
+          break;
+      }
+
+
+      // 이미지
+      setImagePath(data.imagePath);
+      setCroppedPath(data.croppedPath);
+
+      // 나머지 속성들
+      // ✅ 나머지 속성들
+      setSelectedcolor(data.color?.split(',') || []);
+      setSelectedDetail(data.detail?.split(',') || []);
+      setSelectedCloth(data.material?.split(',') || []);
+      setSelectedFit(data.fit ? [data.fit] : []);
+      setSelectedbottomFit(data.fit ? [data.fit] : []);  // ✅ 하의 대응
+      setSelectedNeckline(data.neckline ? [data.neckline] : []);
+      setSelectedSleeve(data.sleeve ? [data.sleeve] : []);
+      setSelectedPrint(data.print?.split(',') || []);
+      setSelectedStyle(data.style ? [data.style] : []);
+      setSelectedSubStyle(data.substyle ? [data.substyle] : []);
+
+      // ✅ 기장 초기화 - 모든 카테고리 대응
+      setSelectedLength(data.length ? [data.length] : []);
+      setSelectedbottomLength(data.length ? [data.length] : []);
+      setSelectedouterLength(data.length ? [data.length] : []);
+      setSelecteddressLength(data.length ? [data.length] : []);
+
+            // 핏: 하의면 하의 핏에 저장
+      if (cleanParent === "하의" && data.fit) {
+        setSelectedbottomFit([data.fit]);
+      }
+
+      // 기장: 하의면 하의 기장에 저장
+      if (cleanParent === "하의" && data.length) {
+        setSelectedbottomLength([data.length]);
+      }
+
+      // 아우터일 경우 outerLength 초기화
+      if (cleanParent === "아우터" && data.length) {
+        setSelectedouterLength([data.length]);
+      }
+
+      // 원피스일 경우 dressLength 초기화
+      if (cleanParent === "원피스" && data.length) {
+        setSelecteddressLength([data.length]);
+      }
+
+    } catch (err) {
+      console.error("❌ 의류 정보 불러오기 실패", err);
+    }
+  };
+
   
   
   const getParentCategory = (sub) => {
@@ -250,18 +332,32 @@ const id = location.state?.clothId || clothData?.clothid; // ✅ fallback도 추
   
 
   const handleCtgyClick = (category) => {
-    if (!isEditing) return; // 편집 모드에서만 변경 가능
+    if (!isEditing) return;
   
     if (selectedCtgy === category) {
-      // 이미 선택된 경우 선택 해제
       setSelectedCtgy(null);
       setActiveCategory(null);
-      setSelectedSubCtgy([]); // 하위 카테고리도 초기화
+      setSelectedSubCtgy([]);
+  
+      // 💡 카테고리 초기화할 때 관련 상태도 같이 초기화
+      setSelectedFit([]);
+      setSelectedbottomFit([]);
+      setSelectedLength([]);
+      setSelectedbottomLength([]);
+      setSelectedouterLength([]);
+      setSelecteddressLength([]);
     } else {
-      // 새로운 카테고리 선택
       setSelectedCtgy(category);
       setActiveCategory(category);
-      setSelectedSubCtgy([]); // 새로운 카테고리 선택 시 하위 초기화
+      setSelectedSubCtgy([]);
+  
+      // 💡 새로운 카테고리 선택 시 관련 값도 초기화
+      setSelectedFit([]);
+      setSelectedbottomFit([]);
+      setSelectedLength([]);
+      setSelectedbottomLength([]);
+      setSelectedouterLength([]);
+      setSelecteddressLength([]);
     }
   };
   
@@ -338,6 +434,8 @@ const handleSingleSelect = (selected, setSelected, item) => {
     navigate(-1); // 이전 페이지로 이동
   };
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
 
   return (
     <M.Background>
@@ -348,10 +446,7 @@ const handleSingleSelect = (selected, setSelected, item) => {
       <M.Container>
         <M.Header>
           <M.BackButton onClick={handleBackButtonClick}>
-          <img
-            src={`http://localhost:8080${imageSrc}?t=${Date.now()}`}
-            alt="선택한 옷"
-          />
+          <img src={backbtn} alt="Back" />
           </M.BackButton>
           <M.Title>내 옷장</M.Title>
         </M.Header>
@@ -566,25 +661,23 @@ const handleSingleSelect = (selected, setSelected, item) => {
   </M.CategoryItems>
   <M.CategoryTitle>핏</M.CategoryTitle>
 <M.CategoryItems>
-  {(() => {
-    const { options, selected } = getFitOptions();
-    return isEditing
-      ? options.map((item) => (
-          <M.CategoryItem
-            key={item}
-            selected={selected.includes(item)}
-            onClick={() => handleFitClickDynamic(item)}
-          >
-            {item}
-          </M.CategoryItem>
-        ))
-      : selected.map((item) => (
-          <M.CategoryItem key={item} selected>
-            {item}
-          </M.CategoryItem>
-        ));
-  })()}
+  {isEditing
+    ? getFitOptions().options.map((item) => (
+        <M.CategoryItem
+          key={item}
+          selected={getFitOptions().selected.includes(item)}
+          onClick={() => handleFitClickDynamic(item)}
+        >
+          {item}
+        </M.CategoryItem>
+      ))
+    : (selectedFit.length > 0 ? selectedFit : selectedbottomFit).map((item) => (
+        <M.CategoryItem key={item} selected>
+          {item}
+        </M.CategoryItem>
+      ))}
 </M.CategoryItems>
+
 
   {/* 넥라인 : 하의가 아닐 때만 표시 */}
 {selectedCtgy !== "하의" && (
@@ -634,40 +727,103 @@ const handleSingleSelect = (selected, setSelected, item) => {
   </>
 )}
 
-  <M.CategoryTitle>기장</M.CategoryTitle>
+<M.CategoryTitle>기장</M.CategoryTitle>
 <M.CategoryItems>
-  {(() => {
-    const { options, selected } = getLengthOptions();
-    return isEditing
-      ? options.map((item) => (
-          <M.CategoryItem
-            key={item}
-            selected={selected.includes(item)}
-            onClick={() => handleLengthClickDynamic(item)}
-          >
-            {item}
-          </M.CategoryItem>
-        ))
-      : selected.map((item) => (
+  {isEditing
+    ? getLengthOptions().options.map((item) => (
+        <M.CategoryItem
+          key={item}
+          selected={getLengthOptions().selected.includes(item)}
+          onClick={() => handleLengthClickDynamic(item)}
+        >
+          {item}
+        </M.CategoryItem> 
+      ))
+    : (() => {
+        const selected =
+          selectedLength.length > 0 ? selectedLength :
+          selectedbottomLength.length > 0 ? selectedbottomLength :
+          selectedouterLength.length > 0 ? selectedouterLength :
+          selecteddressLength.length > 0 ? selecteddressLength : [];
+        return selected.map((item) => (
           <M.CategoryItem key={item} selected>
             {item}
           </M.CategoryItem>
         ));
-  })()}
+      })()}
 </M.CategoryItems>
 
 
+
 </M.CategorySection>
-    <M.ButtonContainer>
-        <M.EditButton onClick={handleEditClick}>
-        {isEditing ? "저장" : "편집"}
-      <img 
-        alt={isEditing ? "저장 아이콘" : "편집 아이콘"} 
-        src={isEditing ? checkedIcon : penIcon} 
-        style={{ marginLeft: '3px', width: '18px', height: '18px',position: 'relative',top: '2px' }} 
-      />
-        </M.EditButton>
-    </M.ButtonContainer>
+{showDeleteModal && (
+  <div style={{
+    position: 'fixed',
+    top: 0, left: 0,
+    width: '100vw', height: '100vh',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    display: 'flex', justifyContent: 'center', alignItems: 'center',
+    zIndex: 2000
+  }}>
+    <div style={{
+      background: '#fff', padding: '30px', borderRadius: '10px',
+      textAlign: 'center', width: '300px'
+    }}>
+      <p style={{ marginBottom: '20px' }}>정말로 삭제하시겠습니까?</p>
+      <button
+        onClick={async () => {
+          try {
+            const token = localStorage.getItem("authToken");
+            await axios.delete(`http://localhost:8080/api/clothing/${id}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            alert("삭제가 완료되었습니다.");
+            navigate("/MyCloset_1");
+          } catch (err) {
+            alert("삭제 실패! 서버를 확인하세요.");
+            console.error(err);
+          }
+        }}
+        style={{
+          marginRight: '10px', padding: '8px 16px',
+          backgroundColor: '#ff4d4f', color: 'white', border: 'none', borderRadius: '5px'
+        }}
+      >
+        예
+      </button>
+      <button
+        onClick={() => setShowDeleteModal(false)}
+        style={{
+          padding: '8px 16px',
+          backgroundColor: '#ccc', color: '#333', border: 'none', borderRadius: '5px'
+        }}
+      >
+        아니오
+      </button>
+    </div>
+  </div>
+)}
+
+<M.ButtonContainer>
+  <M.DeleteButton onClick={() => setShowDeleteModal(true)}>
+    삭제
+  </M.DeleteButton>
+  <M.EditButton onClick={handleEditClick}>
+    {isEditing ? "저장" : "편집"}
+    <img
+      alt={isEditing ? "저장 아이콘" : "편집 아이콘"}
+      src={isEditing ? checkedIcon : penIcon}
+      style={{
+        marginLeft: "3px",
+        width: "18px",
+        height: "18px",
+        position: "relative",
+        top: "2px"
+      }}
+    />
+  </M.EditButton>
+</M.ButtonContainer>
+
 
         <M.BottomBox>
           <Footer />
