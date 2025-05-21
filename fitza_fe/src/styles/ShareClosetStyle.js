@@ -566,8 +566,8 @@ export const OutfitBox1 = styled.div`
     flex-direction: column; /* 내부 요소들을 세로 정렬 */
     align-items: center; /* 가로 중앙 정렬 */
     justify-content: center; /* 세로 중앙 정렬 */
-    width: 100px; /* 필요에 따라 조정 */
-    height: 100px;
+   width: 150px;
+    height: 150px;
     border: 2px dotted #D19492; /* 점선 핑크색 테두리 */
     border-radius: 20px; /* 둥근 테두리 */
     text-align: center;
