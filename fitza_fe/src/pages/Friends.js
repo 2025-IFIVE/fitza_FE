@@ -51,18 +51,33 @@ function Friends() {
     const handleAddFriendNumber = () => {
         if (!friendNumber) return;
 
-        // 친구 번호로 친구 정보를 가져오는 API 호출
-        axios.post("/api/add-friend", { friendNumber })
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("friendId", friendNumber); // 서버 요구대로 form-data 형식으로 보냄
+
+        axios.post("http://localhost:8080/api/friends/request", formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data"
+            }
+        })
             .then(response => {
-                setNewFriend(response.data);  // 추가된 친구 정보 상태에 저장
-                setShowModal(false);  // 모달 닫기
-                setFriendNumber("");  // 번호 입력 초기화
+                console.log("친구 요청 성공", response.data);
+                setNewFriend(response.data);  // 새 친구 정보 저장
+                setShowModal(false);          // 모달 닫기
+                setFriendNumber("");          // 입력 초기화
             })
             .catch(error => {
-                console.error("친구 추가 실패", error);
+                console.error("친구 요청 실패", error);
                 setShowModal(false);
             });
     };
+
 
     const filteredFriends = friends.filter(friend =>
         friend.name.toLowerCase().includes(searchTerm.toLowerCase())

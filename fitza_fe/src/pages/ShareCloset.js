@@ -336,10 +336,15 @@ function ShareCloset() {
                                 <SC.ProfImg>
                                     {profileImage ? (
                                         <img
-                                            src={`http://localhost:8080/${profileImage.replace(/^\/+/, '')}`}
+                                            src={
+                                                typeof profileImage === "string"
+                                                    ? `http://localhost:8080/${profileImage.replace(/^\/+/, '')}`
+                                                    : URL.createObjectURL(profileImage)
+                                            }
                                             alt="profile"
-                                            onError={(e) => e.target.src = "/img/default.png"}
+                                            onError={(e) => (e.target.src = "/img/default.png")}
                                         />
+
                                     ) : (
                                         <div className="no-image-text">프로필 사진을 <br /> 등록해주세요</div>
                                     )}
@@ -424,11 +429,12 @@ function ShareCloset() {
                                                                     key={idx}
                                                                     src={`http://localhost:8080${item.croppedPath}`}
                                                                     alt={`item-${idx}`}
-                                                                    style={{ height: '70px' }}
+                                                                    style={{ height: '45px' }}
                                                                 />
                                                             ))}
                                                         </div>
                                                     </SC.OutfitBox2>
+
                                                 ))
                                             )}
                                         </SC.OutfitList>
