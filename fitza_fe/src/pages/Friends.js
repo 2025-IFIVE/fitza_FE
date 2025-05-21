@@ -88,30 +88,48 @@ function Friends() {
     };
 
 
-    // 친구 수락/거절 모달
-    const [incomingRequests, setIncomingRequests] = useState([]); // 받은 친구 요청 목록
-    const [showRequestModal, setShowRequestModal] = useState(false); // 수락/거절 모달 표시 여부
-    const [selectedRequestId, setSelectedRequestId] = useState(null); // 현재 처리 중인 요청 ID
+    // 친구 요청 목록 불러오기 - 페이지 진입 시 한 번 실행
+    // 친구 요청 관련 상태
+    const [incomingRequests, setIncomingRequests] = useState([]);
+    const [showRequestModal, setShowRequestModal] = useState(false);
+    const [selectedRequestId, setSelectedRequestId] = useState(null);
 
+    // 요청 목록 받아오기 ( /api/friends/received )
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
-        axios.get("http://localhost:8080/api/friends/incoming", {
+        axios.get("http://localhost:8080/api/friends/received", {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
-                const requests = response.data; // [{friendId, nickname, imagePath, ...}]
+                const requests = response.data?.data || [];
                 if (requests.length > 0) {
                     setIncomingRequests(requests);
-                    setSelectedRequestId(requests[0].friendId); // 가장 첫 번째 요청 선택
+                    setSelectedRequestId(requests[0].requestId);
                     setShowRequestModal(true);
                 }
             })
             .catch(error => {
                 console.error("친구 요청 목록 조회 실패", error);
             });
+
+
+        const dummyRequests = [
+            {
+                requestId: 999,
+                username: "dummy_user",
+                nickname: "테스트유저"
+            }
+        ];
+        setIncomingRequests(dummyRequests);
+        setSelectedRequestId(dummyRequests[0].requestId);
+        setShowRequestModal(true);
     }, []);
+
+
+
+    //친구 요청 조회
     const handleRespondFriend = (accept) => {
         const token = localStorage.getItem("authToken");
         if (!token || selectedRequestId === null) return;

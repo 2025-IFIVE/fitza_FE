@@ -338,9 +338,15 @@ export const AcceptButton = styled.button`
 `;
 
 export const RejectButton = styled.button`
-  background-color: #f44336;
-  color: white;
-  margin: 5px;
+    background:rgba(93, 64, 55);
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+
+    &:hover {
+        background:rgba(93, 64, 55, 0.8);
 `;
 
 export const SectionTitle = styled.h2`
