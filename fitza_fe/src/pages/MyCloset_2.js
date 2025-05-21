@@ -29,10 +29,11 @@ function MyCloset_2() {
         });
 
         // 카테고리별 필터링
-        const filtered = response.data.filter(item => item.type === category);
-        
-        console.log("받아온 이미지 목록:", filtered); //디버깅
-        setImages(filtered);
+        //const filtered = response.data.filter(item => item.type === category);
+        setImages(response.data);
+
+        console.log("받아온 이미지 목록:", response.data); // ✅ 여기만 유지
+        setImages(response.data); // 전체 저장
       } catch (error) {
         console.error("의류 목록 불러오기 실패:", error);
       }
@@ -51,6 +52,7 @@ function MyCloset_2() {
         imageSrc: `http://localhost:8080${item.croppedPath}`,
         category: item.type,
         clothId: item.clothid, // 상세정보 연동용
+        type: item.type   // type도 넘겨주자
       },
     });
   };
@@ -81,15 +83,18 @@ function MyCloset_2() {
 
         {/* 이미지 박스 렌더링 */}
         <M.ImageGrid>
-          {images.map((image, index) => (
-            <M.Box key={index} onClick={() => handleBoxClick(image)}>
-              <M.BoxImage 
-                src={`http://localhost:8080${image.croppedPath}`}
-                alt={`옷 ${index + 1}`}
-              />
-            </M.Box>
-          ))}
+          {images
+            .filter(image => image.type === category) // 이렇게 렌더링 시 필터
+            .map((image, index) => (
+              <M.Box key={index} onClick={() => handleBoxClick(image)}>
+                <M.BoxImage 
+                  src={`http://localhost:8080${image.croppedPath}`}
+                  alt={`옷 ${index + 1}`}
+                />
+              </M.Box>
+            ))}
         </M.ImageGrid>
+
       </M.Container>
 
       <M.BottomBox>

@@ -14,89 +14,61 @@ import edit from "../img/shareClosetPage_edit.png";
 import addoutfitbutton from "../img/shareClosetPage_addoutfitbutton.png";
 
 //샘플링 이미지들
-import sam14 from '../img/sam14.jpg';
 import sam13 from '../img/sam13.jpg';
 import sam12 from '../img/sam12.jpg';
 
 
 
 function ShareCloset() {
-    /* 상태 관리 */
+    // ==================================================================
+    // 1. 프로필 설정
     const [nickname, setNickname] = useState(""); // 닉네임
-    const [bodyType, setBodyType] = useState(""); // 체형
-
-
     const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 편집 모달
     const [profileImage, setProfileImage] = useState(null); // 프로필 이미지
     const [intro, setIntro] = useState(""); // 자기소개
     const [tag, setTag] = useState('');  // 태그 입력 필드 값
     const [tags, setTags] = useState([]); // 태그 배열 상태
 
-
-    const [today, setToday] = useState(0); // 오늘 방문자 수
-    const [total, setTotal] = useState(0); // 총 방문자 수
-
-    const [showTodayOutfit, setShowTodayOutfit] = useState(false);
-    const [showOutfitList, setShowOutfitList] = useState(false);
-
-    const navigate = useNavigate();  // useNavigate 훅 사용
-
-    const handleBackClick = () => {
-        navigate(-1);  // 이전 페이지로 이동
-    };
-
-
-
-    /* 사용자 프로필 정보 가져오기 */
+    // 사용자 닉네임 정보 가져오기
     useEffect(() => {
-        fetch("/api/user-profile")
-            .then(response => response.json())
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+            console.error("로그인 토큰이 없습니다.");
+            return;
+        }
+
+        // 🔹 닉네임 가져오기
+        fetch("http://localhost:8080/mypage", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(res => res.json())
             .then(data => {
-                setNickname(data.nickname);
-                setBodyType(data.bodyType);
-                setIntro(data.intro || "");
-                setProfileImage(data.profileImage || null);
-            })
-            .catch(error => console.error("Error fetching user data:", error));
-    }, []);
-
-    /* 방문자 수 가져오기 */
-    useEffect(() => {
-        axios.get("/api/visitor-count")
-            .then(response => {
-                setToday(response.data.today);
-                setTotal(response.data.total);
+                console.log("마이페이지 응답:", data);
+                const nicknameValue = data?.data?.nickname;
+                if (typeof nicknameValue === "string") {
+                    setNickname(nicknameValue);
+                } else {
+                    console.warn("nickname 없음 또는 잘못된 형식:", data);
+                    setNickname("이름없음");
+                }
             })
             .catch(error => {
-                console.error("Error fetching visitor data:", error);
+                console.error("닉네임 가져오기 실패:", error);
+                setNickname("오류");
             });
+
     }, []);
 
-    /* 이미지 다운로드 함수 */
-    const profileRef = useRef();
-
-    const handleDownloadProfileBox = () => {
-        if (!profileRef.current) return;
-
-        html2canvas(profileRef.current).then(canvas => {
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = 'profile-box.png';
-            link.click();
-        });
-    };
-
-
-    /* 모달 열기/닫기 */
-    const openEditModal = () => setIsEditModalOpen(true);
-    const closeEditModal = () => setIsEditModalOpen(false);
-
-    /* 프사 바꾸기 */
+    // 프사 업로드
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setProfileImage(imageUrl);
+            setProfileImage(file);  // 이미지 파일 자체 저장
         }
     };
 
@@ -113,17 +85,201 @@ function ShareCloset() {
         setTags(tags.filter((item) => item !== tagToDelete));
     };
 
-    // 버튼 클릭 시 토글 상태 변경
-    const toggleTodayOutfit = () => {
-        setShowTodayOutfit(prevState => !prevState);
-        setShowOutfitList(false); // 다른 콘텐츠가 열릴 때는 자동으로 닫히게 설정
+    // 프로필 사진 저장하기
+    const handleSaveProfile = async () => {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            console.error("로그인 토큰이 없습니다.");
+            return;
+        }
+
+        const formData = new FormData();
+
+        // 프로필 이미지 File인지 확인
+        if (profileImage instanceof File) {
+            formData.append("file", profileImage);
+        } else {
+            console.warn("파일이 없습니다. 혹은 File 객체가 아닙니다.");
+            return;
+        }
+
+        // 스타일
+        if (tags.length > 0) {
+            formData.append("style", tags.join(', '));
+        } else {
+            console.warn("스타일 태그가 없습니다.");
+            return;
+        }
+
+        // 코멘트
+        if (intro.trim()) {
+            formData.append("comment", intro.trim());
+        } else {
+            console.warn("코멘트가 없습니다.");
+            return;
+        }
+
+        // 디버깅용 로그
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
+
+        try {
+            const response = await axios.post("http://localhost:8080/api/profile", formData, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                }
+            });
+
+            const resData = response.data?.data;
+
+            setProfileImage(resData.imagePath);
+            setIntro(resData.comment);
+            setTags(resData.style.split(',').map(tag => tag.trim()));
+            setNickname(resData.nickname);
+
+            console.log("프로필 업데이트 성공:", resData);
+            closeEditModal();
+
+        } catch (error) {
+            console.error("프로필 업데이트 실패:", error.response?.data || error.message);
+        }
     };
 
+    // 프로필 이미지 가져오기
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+            return;
+        }
+
+        fetch("http://localhost:8080/api/profile", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log("프로필 정보 응답:", data);
+                const resData = data?.data;
+                if (resData) {
+                    setNickname(resData.nickname);
+                    setIntro(resData.comment);
+                    setTags(resData.style.split(',').map(tag => tag.trim()));
+                    setProfileImage(resData.imagePath); // 문자열 경로로 저장
+                    console.log("🔥 profileImage:", resData.imagePath);
+
+
+                }
+            })
+            .catch(err => {
+                console.error("프로필 정보 가져오기 실패:", err);
+            });
+    }, []);
+
+    // 이미지 다운로드
+    const profileRef = useRef();
+    const handleDownloadProfileBox = () => {
+        if (!profileRef.current) return;
+
+        html2canvas(profileRef.current).then(canvas => {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'profile-box.png';
+            link.click();
+        });
+    };
+
+    /* ================================================================== */
+    /* 2. 방문자수 설정 */
+
+    const [today, setToday] = useState(0); // 오늘 방문자 수
+    const [total, setTotal] = useState(0); // 총 방문자 수
+
+    const [showTodayOutfit, setShowTodayOutfit] = useState(false);
+    const [showOutfitList, setShowOutfitList] = useState(false);
+
+    const navigate = useNavigate();  // useNavigate 훅 사용
+
+    const handleBackClick = () => {
+        navigate(-1);  // 이전 페이지로 이동
+    };
+
+    /* 방문자 수 가져오기 */
+    useEffect(() => {
+        axios.get("http://localhost:8080/api/visitor-count")
+            .then(response => {
+                setToday(response.data.today);
+                setTotal(response.data.total);
+            })
+            .catch(error => {
+                console.error("Error fetching visitor data:", error);
+            });
+    }, []);
+
+    /* ================================================================== */
+    /* 3. 모달1 - 오늘의 코디 */
+
+    /* 모달 열기/닫기 */
+    const openEditModal = () => setIsEditModalOpen(true);
+    const closeEditModal = () => setIsEditModalOpen(false);
     const toggleOutfitList = () => {
         setShowOutfitList(prevState => !prevState);
         setShowTodayOutfit(false); // 다른 콘텐츠가 열릴 때는 자동으로 닫히게 설정
     };
 
+    // 버튼 클릭 시 토글 상태 변경
+    // 오늘의 코디 
+    const toggleTodayOutfit = () => {
+        setShowTodayOutfit(prevState => !prevState);
+        setShowOutfitList(false); // 다른 콘텐츠가 열릴 때는 자동으로 닫히게 설정
+    };
+
+    // 오늘의 코디 메타 데이터 가져오기
+    const [todayCoordi, setTodayCoordi] = useState(null);
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        axios.get("http://localhost:8080/api/coordination/my", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+            .then(res => {
+                const todayStr = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+                const todayItem = res.data.find(item => item.date === todayStr);
+                setTodayCoordi(todayItem || null);
+            })
+            .catch(err => {
+                console.error("오늘의 코디 불러오기 실패", err);
+            });
+    }, []);
+
+    // 오늘의 코디 사진 가져오기
+    const [todayCoordiImages, setTodayCoordiImages] = useState([]);
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (!token || !todayCoordi?.calendarId) return;
+
+        axios.get(`http://localhost:8080/api/coordination/${todayCoordi.calendarId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+            .then(res => {
+                const imagePaths = res.data.items.map(item => item.imagePath); // 또는 croppedPath 사용 가능
+                setTodayCoordiImages(imagePaths);
+            })
+            .catch(err => {
+                console.error("오늘의 코디 상세 이미지 불러오기 실패", err);
+            });
+    }, [todayCoordi]);
+
+    /* ================================================================== */
+    /* 3. 모달2 - 오늘의 코디 */
 
 
     return (
@@ -158,11 +314,17 @@ function ShareCloset() {
                             <SC.WhiteBox ref={profileRef}>
                                 <SC.ProfImg>
                                     {profileImage ? (
-                                        <img src={profileImage} alt="profile" />
+                                        <img
+                                            src={`http://localhost:8080/${profileImage.replace(/^\/+/, '')}`}
+                                            alt="profile"
+                                            onError={(e) => e.target.src = "/img/default.png"}
+                                        />
                                     ) : (
-                                        <div className="no-image-text">프로필 사진을 <br></br> 등록해주세요</div>
+                                        <div className="no-image-text">프로필 사진을 <br /> 등록해주세요</div>
                                     )}
                                 </SC.ProfImg>
+
+
                                 <SC.ProfTxt>
                                     <SC.NameBox>
                                         <SC.Name>{nickname} </SC.Name>
@@ -183,9 +345,11 @@ function ShareCloset() {
 
                             <SC.WhiteBox2>
                                 <SC.ToggleBox>
-                                    <SC.ToggleButton onClick={toggleTodayOutfit} isActive={showTodayOutfit}>
+                                    <SC.ToggleButton onClick={toggleTodayOutfit} $isActive={showTodayOutfit}>
                                         오늘의 코디
                                     </SC.ToggleButton>
+
+
                                     <SC.ToggleButton onClick={toggleOutfitList} isActive={showOutfitList}>
                                         코디 목록
                                     </SC.ToggleButton>
@@ -194,13 +358,25 @@ function ShareCloset() {
                                 <SC.ContentBox2>
                                     {showTodayOutfit && (
                                         <SC.RecentOutfit>
-                                            {/* 최근 코디를 여기에 추가 */}
-                                            <SC.OutfitBox3>
-                                                {/* 여기에 오늘의 코디 사진 */}
-                                                <img src={sam14} alt="샘플 이미지" style={{ height: '200px' }} />
-                                            </SC.OutfitBox3>
+                                            {todayCoordi ? (
+                                                <SC.OutfitBox3>
+                                                    <div style={{ color: 'black', fontWeight: 'bold' }}>
+                                                        {todayCoordi.date} {todayCoordi.title}<br />
+                                                    </div>
+                                                    <div style={{ marginTop: "2px", display: "flex", gap: "2px", flexWrap: "wrap" }}>
+                                                        {todayCoordiImages.map((src, idx) => (
+                                                            <img key={idx} src={`http://localhost:8080${src}`} alt={`coordi-${idx}`} style={{ height: "170px" }} />
+                                                        ))}
+                                                    </div>
+                                                </SC.OutfitBox3>
+                                            ) : (
+                                                <SC.OutfitBox3>
+                                                    <div style={{ color: 'white' }}>오늘의 코디가 없습니다</div>
+                                                </SC.OutfitBox3>
+                                            )}
                                         </SC.RecentOutfit>
                                     )}
+
 
                                     {showOutfitList && (
                                         <SC.OutfitList>
@@ -319,7 +495,7 @@ function ShareCloset() {
 
                         {/* 버튼들 */}
                         <SC.ButtonBox>
-                            <SC.SaveButton onClick={closeEditModal}>저장</SC.SaveButton>
+                            <SC.SaveButton onClick={handleSaveProfile}>저장</SC.SaveButton>
                             <SC.CancelButton onClick={closeEditModal}>취소</SC.CancelButton>
                         </SC.ButtonBox>
                     </SC.ModalContent>
