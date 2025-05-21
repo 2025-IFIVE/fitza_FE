@@ -105,7 +105,7 @@ function CalendarCreate2() {
                         }
                     }}
                 >
-                    체형 분석하기
+                    캘린더 등록하기
                 </C.AnalyzeButton>
             </C.Container>
             <C.BottomBox><Footer /></C.BottomBox>

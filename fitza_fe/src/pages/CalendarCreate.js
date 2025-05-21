@@ -116,7 +116,7 @@ function CalendarCreate() {
     const dataToSend = {
       title: coordiName,
       date: formatDate(selectedDate),
-      weather: "맑음",
+      weather: "더미",
       items,
     };
 
