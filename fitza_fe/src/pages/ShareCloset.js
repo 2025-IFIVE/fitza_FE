@@ -235,20 +235,36 @@ function ShareCloset() {
         setShowOutfitList(false); // 다른 콘텐츠가 열릴 때는 자동으로 닫히게 설정
     };
 
-    // 오늘의 코디 메타 데이터 가져오기
+    // 오늘의 코디 상태
     const [todayCoordi, setTodayCoordi] = useState(null);
+    const [todayCoordiImages, setTodayCoordiImages] = useState([]);
+
+    // KST 기준 날짜 계산 함수
+    function getTodayKST() {
+        const now = new Date();
+        const kstOffset = 9 * 60 * 60 * 1000;
+        const kstDate = new Date(now.getTime() + kstOffset);
+        return kstDate.toISOString().split('T')[0];
+    }
+
+    // 오늘의 코디 메타 데이터 가져오기 (한 번만 실행)
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
         axios.get("http://localhost:8080/api/coordination/my", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
+            headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                const todayStr = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
-                const todayItem = res.data.find(item => item.date === todayStr);
+                const todayStr = getTodayKST();
+                console.log("한국 기준 오늘 날짜:", todayStr);
+                console.log("서버 응답:", res.data.map(d => d.date));
+
+                const todayItem = res.data.find(item => {
+                    const itemDateStr = new Date(item.date).toISOString().split('T')[0];
+                    return itemDateStr === todayStr;
+                });
+
                 setTodayCoordi(todayItem || null);
             })
             .catch(err => {
@@ -256,19 +272,16 @@ function ShareCloset() {
             });
     }, []);
 
-    // 오늘의 코디 사진 가져오기
-    const [todayCoordiImages, setTodayCoordiImages] = useState([]);
+    // 오늘의 코디 이미지 가져오기 (todayCoordi가 바뀔 때 실행)
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         if (!token || !todayCoordi?.calendarId) return;
 
         axios.get(`http://localhost:8080/api/coordination/${todayCoordi.calendarId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
+            headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                const imagePaths = res.data.items.map(item => item.imagePath); // 또는 croppedPath 사용 가능
+                const imagePaths = res.data.items.map(item => item.croppedPath); // 또는 imagePath
                 setTodayCoordiImages(imagePaths);
             })
             .catch(err => {
@@ -276,12 +289,13 @@ function ShareCloset() {
             });
     }, [todayCoordi]);
 
-    /* ================================================================== */
-    /* 3. 모달2 - 공유 코디 */
-    const handleGoToCalendarCreate = () => {
-        navigate("/sharecloset2");
-    };
 
+
+
+    // 공유 코디
+    const handleGoToCalendarCreate = () => {
+        navigate("/sharecloset2"); // 또는 원하는 경로
+    };
 
     const [sharedCoordis, setSharedCoordis] = useState([]);
     useEffect(() => {
@@ -387,12 +401,10 @@ function ShareCloset() {
                                         <SC.RecentOutfit>
                                             {todayCoordi ? (
                                                 <SC.OutfitBox3>
-                                                    <div style={{ color: 'black', fontWeight: 'bold' }}>
-                                                        {todayCoordi.date} {todayCoordi.title}<br />
-                                                    </div>
-                                                    <div style={{ marginTop: "2px", display: "flex", gap: "2px", flexWrap: "wrap" }}>
+                                                    <div > {todayCoordi.title}<br /> </div>
+                                                    <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }} >
                                                         {todayCoordiImages.map((src, idx) => (
-                                                            <img key={idx} src={`http://localhost:8080${src}`} alt={`coordi-${idx}`} style={{ height: "170px" }} />
+                                                            <img key={idx} src={`http://localhost:8080${src}`} alt={`coordi-${idx}`} style={{ height: "60px" }} />
                                                         ))}
                                                     </div>
                                                 </SC.OutfitBox3>

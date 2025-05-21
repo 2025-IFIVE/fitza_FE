@@ -544,14 +544,17 @@ export const OutfitBox3 = styled.div`
     font-size: 11px; /* 원하는 크기로 조정 */
     color: #D19492;
     display: flex;
-    flex-direction: column; /* 내부 요소들을 세로 정렬 */
-    align-items: center; /* 가로 중앙 정렬 */
-    justify-content: center; /* 세로 중앙 정렬 */
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px; /* 위쪽 패딩 */
     width: 200px; /* 필요에 따라 조정 */
     height: 200px;
     background-color: rgb(200, 200, 200, 0.1);
     border-radius: 20px; /* 둥근 테두리 */
     text-align: center;
+    font-size: 13px; /* 원하는 크기로 조정 */
+    font-weight: bold; /* 두껍게 */
+    font-color:rgb(55, 53, 53); /* 갈색 */
 `;
 
 
