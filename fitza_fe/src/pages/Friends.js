@@ -21,29 +21,23 @@ function Friends() {
     const [newFriend, setNewFriend] = useState(null);  // 추가된 친구 정보
     const navigate = useNavigate();
 
+
     //친구 목록 조회
     useEffect(() => {
-        const token = localStorage.getItem("authToken");
-
-        if (!token) {
-            console.error("토큰이 없습니다. 로그인 후 이용해주세요.");
-            return;
-        }
+        const token = localStorage.getItem("authToken");  // 토큰 가져오기
 
         axios.get("http://localhost:8080/api/friends/list", {
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
             }
         })
             .then(response => {
-                console.log("친구 목록 응답:", response.data);
-                setFriends(response.data.data);
+                setFriends(response.data.data);  // 응답의 data 필드 사용
             })
             .catch(error => {
                 console.error("친구 목록 가져오기 실패", error);
             });
     }, [newFriend]);
-
 
 
     const handleSearchChange = (e) => {
@@ -71,11 +65,8 @@ function Friends() {
     };
 
     const filteredFriends = friends.filter(friend =>
-        (friend.nickname || "").toLowerCase().includes(searchTerm.toLowerCase())
+        friend.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-
-
 
     const handleBackClick = () => {
         navigate(-1);  // 이전 페이지로 이동
@@ -127,12 +118,12 @@ function Friends() {
                             <F.FriendItem to={`/friendCloset/${friend.id}`} key={friend.id}>
                                 {friend.nickname}
                             </F.FriendItem>
-
                         ))
                     ) : (
                         <p>친구가 없습니다.</p>
                     )}
                 </F.FriendList>
+
 
             </F.Container >
 

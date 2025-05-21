@@ -336,3 +336,10 @@ export const RejectButton = styled.button`
   color: white;
   margin: 5px;
 `;
+
+export const SectionTitle = styled.h2`
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #333;
+`;
+

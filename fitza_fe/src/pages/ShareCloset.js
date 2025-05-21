@@ -130,18 +130,23 @@ function ShareCloset() {
             });
 
             const resData = response.data?.data;
-
+            localStorage.setItem("profileImage", resData.imagePath);
             setProfileImage(resData.imagePath);
             setIntro(resData.comment);
             setTags(resData.style.split(',').map(tag => tag.trim()));
             setNickname(resData.nickname);
 
+
+
             console.log("프로필 업데이트 성공:", resData);
+
             closeEditModal();
 
         } catch (error) {
             console.error("프로필 업데이트 실패:", error.response?.data || error.message);
         }
+
+
     };
 
     // 프로필 이미지 가져오기
