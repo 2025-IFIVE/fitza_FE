@@ -201,9 +201,6 @@ function ShareCloset() {
     /* ================================================================== */
     /* 2. 방문자수 설정 */
 
-    const [today, setToday] = useState(0); // 오늘 방문자 수
-    const [total, setTotal] = useState(0); // 총 방문자 수
-
     const [showTodayOutfit, setShowTodayOutfit] = useState(false);
     const [showOutfitList, setShowOutfitList] = useState(false);
 
@@ -213,17 +210,7 @@ function ShareCloset() {
         navigate(-1);  // 이전 페이지로 이동
     };
 
-    /* 방문자 수 가져오기 */
-    useEffect(() => {
-        axios.get("http://localhost:8080/api/visitor-count")
-            .then(response => {
-                setToday(response.data.today);
-                setTotal(response.data.total);
-            })
-            .catch(error => {
-                console.error("Error fetching visitor data:", error);
-            });
-    }, []);
+
 
     /* ================================================================== */
     /* 3. 모달1 - 오늘의 코디 */
@@ -379,9 +366,10 @@ function ShareCloset() {
                                     </SC.ToggleButton>
 
 
-                                    <SC.ToggleButton onClick={toggleOutfitList} isActive={showOutfitList}>
+                                    <SC.ToggleButton onClick={toggleOutfitList} $isActive={showOutfitList}>
                                         코디 목록
                                     </SC.ToggleButton>
+
                                 </SC.ToggleBox>
 
                                 <SC.ContentBox2>

@@ -324,3 +324,15 @@ export const CancelButton = styled.button`
     &:hover {
         background:rgba(93, 64, 55, 0.8);
 `;
+
+export const AcceptButton = styled.button`
+  background-color: #4CAF50;
+  color: white;
+  margin: 5px;
+`;
+
+export const RejectButton = styled.button`
+  background-color: #f44336;
+  color: white;
+  margin: 5px;
+`;

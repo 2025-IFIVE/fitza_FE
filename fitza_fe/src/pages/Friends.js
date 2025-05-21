@@ -14,24 +14,37 @@ import backIcon from "../img/backButton.png";
 
 function Friends() {
 
-    const [friends, setFriends] = useState([
-        { id: 1, name: "홍길동" },
-        { id: 2, name: "김철수" },
-        { id: 3, name: "박영희" },
-    ]);  // 친구 목록 상태
+    const [friends, setFriends] = useState([]);  // 친구 목록 상태
     const [searchTerm, setSearchTerm] = useState("");  // 검색어 상태
     const [showModal, setShowModal] = useState(false);  // 모달 표시 상태
     const [friendNumber, setFriendNumber] = useState("");  // 입력받은 친구 번호
     const [newFriend, setNewFriend] = useState(null);  // 추가된 친구 정보
     const navigate = useNavigate();
 
-
+    //친구 목록 조회
     useEffect(() => {
-        // 백엔드에서 친구 목록을 가져오는 API 호출 (예시)
-        axios.get("/api/friends")
-            .then(response => setFriends(response.data))
-            .catch(error => console.error("친구 목록 가져오기 실패", error));
-    }, [newFriend]);  // 새로운 친구가 추가될 때마다 목록 갱신
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+            console.error("토큰이 없습니다. 로그인 후 이용해주세요.");
+            return;
+        }
+
+        axios.get("http://localhost:8080/api/friends/list", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                console.log("친구 목록 응답:", response.data);
+                setFriends(response.data.data);
+            })
+            .catch(error => {
+                console.error("친구 목록 가져오기 실패", error);
+            });
+    }, [newFriend]);
+
+
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
@@ -58,8 +71,11 @@ function Friends() {
     };
 
     const filteredFriends = friends.filter(friend =>
-        friend.name.toLowerCase().includes(searchTerm.toLowerCase())
+        (friend.nickname || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+
+
 
     const handleBackClick = () => {
         navigate(-1);  // 이전 페이지로 이동
@@ -109,8 +125,9 @@ function Friends() {
                     {filteredFriends.length > 0 ? (
                         filteredFriends.map((friend) => (
                             <F.FriendItem to={`/friendCloset/${friend.id}`} key={friend.id}>
-                                {friend.name}
+                                {friend.nickname}
                             </F.FriendItem>
+
                         ))
                     ) : (
                         <p>친구가 없습니다.</p>
