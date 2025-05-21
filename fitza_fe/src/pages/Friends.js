@@ -87,6 +87,53 @@ function Friends() {
         navigate(-1);  // 이전 페이지로 이동
     };
 
+
+    // 친구 수락/거절 모달
+    const [incomingRequests, setIncomingRequests] = useState([]); // 받은 친구 요청 목록
+    const [showRequestModal, setShowRequestModal] = useState(false); // 수락/거절 모달 표시 여부
+    const [selectedRequestId, setSelectedRequestId] = useState(null); // 현재 처리 중인 요청 ID
+
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        axios.get("http://localhost:8080/api/friends/incoming", {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(response => {
+                const requests = response.data; // [{friendId, nickname, imagePath, ...}]
+                if (requests.length > 0) {
+                    setIncomingRequests(requests);
+                    setSelectedRequestId(requests[0].friendId); // 가장 첫 번째 요청 선택
+                    setShowRequestModal(true);
+                }
+            })
+            .catch(error => {
+                console.error("친구 요청 목록 조회 실패", error);
+            });
+    }, []);
+    const handleRespondFriend = (accept) => {
+        const token = localStorage.getItem("authToken");
+        if (!token || selectedRequestId === null) return;
+
+        axios.post(`http://localhost:8080/api/friends/respond/${selectedRequestId}?accept=${accept}`, null, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                const remaining = incomingRequests.filter(req => req.friendId !== selectedRequestId);
+                setIncomingRequests(remaining);
+                if (remaining.length > 0) {
+                    setSelectedRequestId(remaining[0].friendId);
+                } else {
+                    setShowRequestModal(false);
+                }
+            })
+            .catch(error => {
+                console.error("친구 요청 응답 실패", error);
+            });
+    };
+
+
     return (
         <F.Background>
             <F.TopBox>
@@ -135,8 +182,11 @@ function Friends() {
                             </F.FriendItem>
                         ))
                     ) : (
-                        <p>친구가 없습니다.</p>
+                        <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                            <F.EmptyMessage>친구가 없습니다.</F.EmptyMessage>
+                        </div>
                     )}
+
                 </F.FriendList>
 
 
@@ -169,6 +219,27 @@ function Friends() {
                     </F.ModalOverlay>
                 )
             }
+
+            {/* 친구 요청 수락/거절 모달 */}
+            {showRequestModal && selectedRequestId !== null && (
+                <F.ModalOverlay>
+                    <F.ModalContent>
+                        <h3>친구 요청이 도착했습니다!</h3>
+
+                        <div style={{ marginBottom: '10px' }}>
+                            요청자: {
+                                incomingRequests.find(r => r.friendId === selectedRequestId)?.nickname || "알 수 없음"
+                            }
+                        </div>
+
+                        <F.ButtonBox>
+                            <F.SaveButton onClick={() => handleRespondFriend(true)}>수락</F.SaveButton>
+                            <F.RejectButton onClick={() => handleRespondFriend(false)}>거절</F.RejectButton>
+                        </F.ButtonBox>
+                    </F.ModalContent>
+                </F.ModalOverlay>
+            )}
+
 
 
         </F.Background >

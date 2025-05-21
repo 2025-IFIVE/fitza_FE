@@ -141,6 +141,7 @@ export const Back = styled.div`
 ======================================================================*/
 
 
+
 export const AddFnd = styled.div`
 
 `;
@@ -219,7 +220,12 @@ export const FriendList = styled.div`
   align-items: flex-start; /* 왼쪽 정렬 */
 `;
 
-
+export const EmptyMessage = styled.p`
+  text-align: center;
+  color: #888;
+  margin-top: 20px;
+  font-size: 14px;
+`;
 
 
 
