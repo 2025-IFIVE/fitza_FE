@@ -161,5 +161,3 @@ export const BoxImage = styled.img`
   object-fit: contain; /* 이미지 잘리지 않고 전부 보이게 */
   transform: translate(-50%, -50%);
 `;
-
-

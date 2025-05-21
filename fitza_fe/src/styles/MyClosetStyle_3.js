@@ -263,3 +263,20 @@ export const EditButton = styled.button`
   }
 `;
 
+export const DeleteButton = styled.button`
+  margin-top: 5px;
+  margin-bottom: 30px;
+  padding: 8px 15px;
+  font-size: 16px;
+  background-color: #CE9694;
+  color: black;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  margin-right: auto;
+
+  &:hover {
+    background-color: #8d6b64;
+  }
+`;
+
