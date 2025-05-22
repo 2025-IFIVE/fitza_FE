@@ -22,24 +22,24 @@ function FriendCloset() {
     useEffect(() => {
         if (!token || !id) return;
 
-        axios.get("http://localhost:8080/api/friends/list", {
+        axios.get(`http://localhost:8080/api/profile/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                const friendList = res.data?.data || [];
-                const friend = friendList.find(f => String(f.id) === String(id));
-
-                if (friend) {
-                    setNickname(friend.nickname || "");
-                    // 프로필 이미지와 스타일 정보가 없으므로 기본값 유지
-                } else {
-                    console.error("❌ 친구를 찾을 수 없습니다.");
+                const data = res.data?.data;
+                if (data) {
+                    setNickname(data.nickname || "");
+                    setProfileImage(data.imagePath || null);
+                    setIntro(data.comment || "친구 소개글은 비공개입니다.");
+                    const styleTags = data.style ? data.style.split(",") : [];
+                    setTags(styleTags);
                 }
             })
             .catch(err => {
-                console.error("❌ 친구 목록 조회 실패:", err);
+                console.error("❌ 친구 프로필 조회 실패:", err.response?.data || err.message);
             });
     }, [id, token]);
+
 
     // ✅ 공유 코디 불러오기
     useEffect(() => {

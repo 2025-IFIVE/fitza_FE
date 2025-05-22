@@ -355,3 +355,28 @@ export const SectionTitle = styled.h2`
   color: #333;
 `;
 
+export const DeleteButton = styled.button`
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid red;
+  background-color: transparent;
+  color: red;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 20px;
+  padding: 0;
+  margin-left: 8px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 오른쪽으로 살짝 밀기 */
+  transform: translateX(-20px);
+
+  &:hover {
+    background-color: #ffe6e6;
+  }
+`;

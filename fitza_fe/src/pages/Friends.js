@@ -224,9 +224,11 @@ function Friends() {
                 <F.FriendList>
                     {filteredFriends.length > 0 ? (
                         filteredFriends.map((friend) => (
-                            <F.FriendItem key={friend.id}>
-                                <Link to={`/friendCloset/${friend.id}`}>{friend.nickname}</Link>
-                                <button onClick={() => handleDeleteFriend(friend.id)}>삭제</button>
+                            <F.FriendItem key={friend.id} style={{ display: 'flex', alignItems: 'center' }}>
+                                <Link to={`/friendCloset/${friend.id}`} style={{ flex: 1 }}>
+                                    {friend.nickname}
+                                </Link>
+                                <F.DeleteButton onClick={() => handleDeleteFriend(friend.id)} title="삭제">–</F.DeleteButton>
                             </F.FriendItem>
 
 
@@ -236,8 +238,8 @@ function Friends() {
                             <F.EmptyMessage>친구가 없습니다.</F.EmptyMessage>
                         </div>
                     )}
-
                 </F.FriendList>
+
 
 
             </F.Container >
