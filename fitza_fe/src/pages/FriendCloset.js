@@ -23,19 +23,35 @@ function FriendCloset() {
     const [showOutfitList, setShowOutfitList] = useState(false);
 
     // 친구 프로필 정보
+    // 친구 프로필 정보
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/friend-profile/${id}`, {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        axios.get("http://localhost:8080/api/friends/list", {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                const data = res.data;
-                setNickname(data.nickname);
-                setIntro(data.comment || "");
-                setTags(data.style?.split(',').map(tag => tag.trim()) || []);
-                setProfileImage(data.imagePath);
+                const friendList = res.data?.data || [];
+                const friend = friendList.find(f => String(f.id) === String(id));
+
+                if (friend) {
+                    setNickname(friend.nickname);
+                    // 프로필 이미지와 소개글은 없으므로 디폴트로 설정
+                    setIntro("친구 소개글은 비공개입니다.");
+                    setTags([]);  // 친구 스타일 정보 없음
+                    setProfileImage(null);  // 친구 프사 없음
+                } else {
+                    console.error("해당 친구를 찾을 수 없습니다.");
+                }
             })
-            .catch(err => console.error("친구 프로필 정보 불러오기 실패:", err));
+            .catch(err => {
+                console.error("친구 목록 조회 실패:", err);
+            });
     }, [id]);
+
+
+
 
     // 오늘의 코디
     useEffect(() => {
@@ -52,7 +68,7 @@ function FriendCloset() {
 
     // 공유 코디 목록
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/friend-share/${id}`, {
+        axios.get(`http://localhost:8080/api/share/friends?friendId=${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -60,6 +76,7 @@ function FriendCloset() {
             })
             .catch(err => console.error("공유 코디 불러오기 실패:", err));
     }, [id]);
+
 
     const toggleTodayOutfit = () => {
         setShowTodayOutfit(prev => !prev);
