@@ -5,25 +5,61 @@ import Footer from "../components/Footer";
 import TopBar from "../components/TopBar";
 import backIcon from "../img/backButton.png";
 import friends from "../img/shareClosetPage_friends.png";
+import axios from "axios";
 
-
-
-{/*
-   나중에 app.js나 router.js에 이거 추가해야 함!!
-   <Route path="/friendCloset/:id" element={<FriendCloset />} />
- 
-    */}
 function FriendCloset() {
-    const { id } = useParams();
+    const { id } = useParams();  // 친구 ID
     const navigate = useNavigate();
+    const token = localStorage.getItem("authToken");
 
     const [nickname, setNickname] = useState("");
     const [profileImage, setProfileImage] = useState(null);
     const [intro, setIntro] = useState("");
     const [tags, setTags] = useState([]);
-
+    const [todayCoordi, setTodayCoordi] = useState(null);
+    const [todayCoordiImages, setTodayCoordiImages] = useState([]);
+    const [sharedCoordis, setSharedCoordis] = useState([]);
     const [showTodayOutfit, setShowTodayOutfit] = useState(false);
     const [showOutfitList, setShowOutfitList] = useState(false);
+
+    // 친구 프로필 정보
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/friend-profile/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => {
+                const data = res.data;
+                setNickname(data.nickname);
+                setIntro(data.comment || "");
+                setTags(data.style?.split(',').map(tag => tag.trim()) || []);
+                setProfileImage(data.imagePath);
+            })
+            .catch(err => console.error("친구 프로필 정보 불러오기 실패:", err));
+    }, [id]);
+
+    // 오늘의 코디
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/friend-coordination/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => {
+                setTodayCoordi(res.data);  // 전체 객체 저장
+                const paths = res.data.items.map(item => item.imagePath);
+                setTodayCoordiImages(paths);
+            })
+            .catch(err => console.error("오늘의 코디 불러오기 실패:", err));
+    }, [id]);
+
+    // 공유 코디 목록
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/friend-share/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => {
+                setSharedCoordis(res.data);
+            })
+            .catch(err => console.error("공유 코디 불러오기 실패:", err));
+    }, [id]);
 
     const toggleTodayOutfit = () => {
         setShowTodayOutfit(prev => !prev);
@@ -34,18 +70,6 @@ function FriendCloset() {
         setShowOutfitList(prev => !prev);
         setShowTodayOutfit(false);
     };
-
-    useEffect(() => {
-        fetch(`/api/friend-profile/${id}`)
-            .then(res => res.json())
-            .then(data => {
-                setNickname(data.nickname);
-                setProfileImage(data.profileImage || null);
-                setIntro(data.intro || "");
-                setTags(data.tags || []);
-            })
-            .catch(err => console.error("친구 정보 불러오기 실패:", err));
-    }, [id]);
 
     return (
         <SC.Background>
@@ -62,11 +86,13 @@ function FriendCloset() {
                 </SC.Header>
 
                 <SC.ContentBox>
-                    <div>{nickname}의 옷장</div>
+                    <div style={{ fontFamily: "NanumSquareNeo", fontSize: "15px", fontWeight: "bold", color: "white" }}>
+                        {nickname}의 옷장
+                    </div>
+
                     <SC.DashandBox>
                         <SC.GrayBox>
                             <SC.TopBox2>
-                                {/* 방문자 수는 친구 페이지에서는 안 보여줌 */}
                                 <div />
                                 <SC.Friends>
                                     <SC.FriendLink to="/friends">
@@ -77,16 +103,13 @@ function FriendCloset() {
 
                             <SC.WhiteBox>
                                 <SC.ProfImg>
-                                    {profileImage ? (
-                                        <img src={profileImage} alt="profile" />
-                                    ) : (
-                                        <div className="no-image-text">프로필 사진이 없습니다</div>
-                                    )}
+                                    {profileImage
+                                        ? <img src={`http://localhost:8080${profileImage}`} alt="profile" />
+                                        : <div className="no-image-text">프로필 사진이 없습니다</div>}
                                 </SC.ProfImg>
                                 <SC.ProfTxt>
                                     <SC.NameBox>
                                         <SC.Name>{nickname}</SC.Name>
-                                        {/* 친구 페이지라 수정 및 다운로드 버튼 없음 */}
                                     </SC.NameBox>
                                     <SC.Intro>{intro || "자기소개가 없습니다."}</SC.Intro>
                                     <SC.Tag>
@@ -110,23 +133,41 @@ function FriendCloset() {
                                 <SC.ContentBox2>
                                     {showTodayOutfit && (
                                         <SC.RecentOutfit>
-                                            <SC.OutfitBox3>
-                                                <div>오늘의 날짜</div>
-                                                <div>여기에 오늘의 코디 사진</div>
-                                            </SC.OutfitBox3>
+                                            {todayCoordi ? (
+                                                <SC.OutfitBox3>
+                                                    <div>{todayCoordi.title}</div>
+                                                    <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                                                        {todayCoordiImages.map((src, idx) => (
+                                                            <img key={idx} src={`http://localhost:8080${src}`} alt={`coordi-${idx}`} style={{ height: "60px" }} />
+                                                        ))}
+                                                    </div>
+                                                </SC.OutfitBox3>
+                                            ) : (
+                                                <SC.OutfitBox3>
+                                                    <div>오늘의 코디가 없습니다</div>
+                                                </SC.OutfitBox3>
+                                            )}
                                         </SC.RecentOutfit>
                                     )}
 
                                     {showOutfitList && (
                                         <SC.OutfitList>
-                                            <SC.OutfitBox2>
-                                                <div>1월 3일</div>
-                                                <div>여기에 코디 사진</div>
-                                            </SC.OutfitBox2>
-                                            <SC.OutfitBox2>
-                                                <div>1월 4일</div>
-                                                <div>여기에 코디 사진</div>
-                                            </SC.OutfitBox2>
+                                            {sharedCoordis.length === 0 ? (
+                                                <SC.OutfitBox2>
+                                                    <div>공유된 코디가 없습니다</div>
+                                                </SC.OutfitBox2>
+                                            ) : (
+                                                sharedCoordis.map((coordi, index) => (
+                                                    <SC.OutfitBox2 key={index}>
+                                                        <div>{coordi.title || coordi.date}</div>
+                                                        <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                                                            {coordi.items.slice(0, 3).map((item, idx) => (
+                                                                <img key={idx} src={`http://localhost:8080${item.croppedPath || item.imagePath}`} alt={`shared-${idx}`} style={{ height: "50px" }} />
+                                                            ))}
+                                                        </div>
+                                                    </SC.OutfitBox2>
+                                                ))
+                                            )}
                                         </SC.OutfitList>
                                     )}
                                 </SC.ContentBox2>

@@ -23,8 +23,10 @@ function Friends() {
 
 
     //친구 목록 조회
+    // 친구 목록 조회
     useEffect(() => {
-        const token = localStorage.getItem("authToken");  // 토큰 가져오기
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
 
         axios.get("http://localhost:8080/api/friends/list", {
             headers: {
@@ -32,12 +34,15 @@ function Friends() {
             }
         })
             .then(response => {
-                setFriends(response.data.data);  // 응답의 data 필드 사용
+                const friendsData = response.data?.data || [];
+                setFriends(friendsData);  // 그대로 저장 (accepted 필터 제거)
             })
             .catch(error => {
-                console.error("친구 목록 가져오기 실패", error);
+                console.error("❌ 친구 목록 가져오기 실패:", error.response?.data || error.message);
             });
     }, [newFriend]);
+
+
 
 
     const handleSearchChange = (e) => {
@@ -48,6 +53,7 @@ function Friends() {
         setShowModal(true);  // 친구 추가 모달 열기
     };
 
+    //친구 요청하기
     const handleAddFriendNumber = () => {
         if (!friendNumber) return;
 
@@ -57,31 +63,40 @@ function Friends() {
             return;
         }
 
-        const formData = new FormData();
-        formData.append("friendId", friendNumber); // 서버 요구대로 form-data 형식으로 보냄
+        const normalizedPhone = friendNumber.includes("-")
+            ? friendNumber
+            : friendNumber.replace(/^(\d{3})(\d{4})(\d{4})$/, "$1-$2-$3");
 
-        axios.post("http://localhost:8080/api/friends/request", formData, {
+        console.log("보내는 전화번호:", normalizedPhone);
+
+        axios.post("http://localhost:8080/api/friends/request", {
+            phone: normalizedPhone
+        }, {
             headers: {
                 Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data"
+                "Content-Type": "application/json"
             }
         })
             .then(response => {
                 console.log("친구 요청 성공", response.data);
-                setNewFriend(response.data);  // 새 친구 정보 저장
-                setShowModal(false);          // 모달 닫기
-                setFriendNumber("");          // 입력 초기화
+                setNewFriend(response.data);
+                setShowModal(false);
+                setFriendNumber("");
             })
             .catch(error => {
-                console.error("친구 요청 실패", error);
+                console.error("친구 요청 실패", error.response?.data || error.message);
                 setShowModal(false);
             });
     };
 
 
+
+
     const filteredFriends = friends.filter(friend =>
-        friend.name.toLowerCase().includes(searchTerm.toLowerCase())
+        (friend.nickname || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+
 
     const handleBackClick = () => {
         navigate(-1);  // 이전 페이지로 이동
@@ -113,19 +128,8 @@ function Friends() {
             .catch(error => {
                 console.error("친구 요청 목록 조회 실패", error);
             });
-
-
-        const dummyRequests = [
-            {
-                requestId: 999,
-                username: "dummy_user",
-                nickname: "테스트유저"
-            }
-        ];
-        setIncomingRequests(dummyRequests);
-        setSelectedRequestId(dummyRequests[0].requestId);
-        setShowRequestModal(true);
     }, []);
+
 
 
 
@@ -138,18 +142,27 @@ function Friends() {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(() => {
-                const remaining = incomingRequests.filter(req => req.friendId !== selectedRequestId);
+                const remaining = incomingRequests.filter(req => req.requestId !== selectedRequestId);
                 setIncomingRequests(remaining);
-                if (remaining.length > 0) {
-                    setSelectedRequestId(remaining[0].friendId);
+
+                if (accept) {
+                    // 수락한 경우 전체 새로고침
+                    window.location.reload();
                 } else {
-                    setShowRequestModal(false);
+                    // 거절일 경우 모달만 닫음
+                    if (remaining.length > 0) {
+                        setSelectedRequestId(remaining[0].requestId);
+                    } else {
+                        setShowRequestModal(false);
+                    }
                 }
             })
             .catch(error => {
                 console.error("친구 요청 응답 실패", error);
             });
     };
+
+
 
 
     return (
@@ -198,6 +211,7 @@ function Friends() {
                             <F.FriendItem to={`/friendCloset/${friend.id}`} key={friend.id}>
                                 {friend.nickname}
                             </F.FriendItem>
+
                         ))
                     ) : (
                         <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
@@ -246,9 +260,10 @@ function Friends() {
 
                         <div style={{ marginBottom: '10px' }}>
                             요청자: {
-                                incomingRequests.find(r => r.friendId === selectedRequestId)?.nickname || "알 수 없음"
+                                incomingRequests.find(r => r.requestId === selectedRequestId)?.nickname || "알 수 없음"
                             }
                         </div>
+
 
                         <F.ButtonBox>
                             <F.SaveButton onClick={() => handleRespondFriend(true)}>수락</F.SaveButton>

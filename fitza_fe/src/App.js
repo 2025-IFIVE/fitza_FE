@@ -43,10 +43,12 @@ function App() {
         <Route exact path="/person" element={<Person />} />
         <Route exact path="/bodyshape" element={<BodyShape />} />
         <Route exact path="/calendarpage" element={<CalendarPage />} />
+
         <Route exact path="/sharecloset" element={<ShareCloset />} />
         <Route exact path="/sharecloset2" element={<ShareCloset2 />} />
         <Route exact path="/friends" element={<Friends />} />
-        <Route exact path="/friendcloset" element={<FriendCloset />} />
+        <Route path="/friendCloset/:id" element={<FriendCloset />} />
+
         <Route exact path="/calendardetail" element={<CalendarDetail />} />
         <Route exact path="/calendarcreate" element={<CalendarCreate />} />
         <Route exact path="/clothesRegistration" element={<ClothesRegistration />} />
