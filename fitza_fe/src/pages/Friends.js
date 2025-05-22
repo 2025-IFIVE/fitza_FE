@@ -79,14 +79,17 @@ function Friends() {
         })
             .then(response => {
                 console.log("친구 요청 성공", response.data);
+                alert("친구 요청이 전송되었습니다!");
                 setNewFriend(response.data);
                 setShowModal(false);
                 setFriendNumber("");
             })
             .catch(error => {
                 console.error("친구 요청 실패", error.response?.data || error.message);
+                alert("친구 요청에 실패했습니다. 이미 요청했거나 존재하지 않는 사용자일 수 있어요.");
                 setShowModal(false);
             });
+
     };
 
 
@@ -146,10 +149,10 @@ function Friends() {
                 setIncomingRequests(remaining);
 
                 if (accept) {
-                    // 수락한 경우 전체 새로고침
+                    alert("친구 요청을 수락했습니다.");
                     window.location.reload();
                 } else {
-                    // 거절일 경우 모달만 닫음
+                    alert("친구 요청을 거절했습니다.");
                     if (remaining.length > 0) {
                         setSelectedRequestId(remaining[0].requestId);
                     } else {
@@ -159,7 +162,9 @@ function Friends() {
             })
             .catch(error => {
                 console.error("친구 요청 응답 실패", error);
+                alert("친구 요청 응답 처리에 실패했습니다.");
             });
+
     };
 
     //친구 삭제
@@ -172,10 +177,13 @@ function Friends() {
         })
             .then(() => {
                 setFriends(prev => prev.filter(f => f.id !== friendId));
+                alert("친구가 삭제되었습니다.");
             })
             .catch(error => {
                 console.error("❌ 친구 삭제 실패:", error.response?.data || error.message);
+                alert("친구 삭제에 실패했습니다.");
             });
+
     };
 
 
