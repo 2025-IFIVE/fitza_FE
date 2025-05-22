@@ -8,21 +8,19 @@ import friends from "../img/shareClosetPage_friends.png";
 import axios from "axios";
 
 function FriendCloset() {
-    const { id } = useParams();  // 친구 ID
+    const { id } = useParams(); // 친구 ID
     const navigate = useNavigate();
     const token = localStorage.getItem("authToken");
 
     const [nickname, setNickname] = useState("");
     const [profileImage, setProfileImage] = useState(null);
-    const [intro, setIntro] = useState("");
+    const [intro, setIntro] = useState("친구 소개글은 비공개입니다.");
     const [tags, setTags] = useState([]);
     const [sharedCoordis, setSharedCoordis] = useState([]);
 
-    // 친구 프로필 정보
-    // 친구 프로필 정보
+    // ✅ 친구 프로필 정보 불러오기
     useEffect(() => {
-        const token = localStorage.getItem("authToken");
-        if (!token) return;
+        if (!token || !id) return;
 
         axios.get("http://localhost:8080/api/friends/list", {
             headers: { Authorization: `Bearer ${token}` }
@@ -32,36 +30,45 @@ function FriendCloset() {
                 const friend = friendList.find(f => String(f.id) === String(id));
 
                 if (friend) {
-                    setNickname(friend.nickname);
-                    // 프로필 이미지와 소개글은 없으므로 디폴트로 설정
-                    setIntro("친구 소개글은 비공개입니다.");
-                    setTags([]);  // 친구 스타일 정보 없음
-                    setProfileImage(null);  // 친구 프사 없음
+                    setNickname(friend.nickname || "");
+                    // 프로필 이미지와 스타일 정보가 없으므로 기본값 유지
                 } else {
-                    console.error("해당 친구를 찾을 수 없습니다.");
+                    console.error("❌ 친구를 찾을 수 없습니다.");
                 }
             })
             .catch(err => {
-                console.error("친구 목록 조회 실패:", err);
+                console.error("❌ 친구 목록 조회 실패:", err);
             });
-    }, [id]);
+    }, [id, token]);
 
-
-    // 공유 코디 목록
+    // ✅ 공유 코디 불러오기
     useEffect(() => {
-        const token = localStorage.getItem("authToken");
-        if (!token) return;
+        if (!token || !id) return;
 
-        axios.get(`http://localhost:8080/api/share/friends?friendId=${id}`, {
+        console.log("📦 요청 보냄: /api/share/friends?friendId=" + id);
+
+        setSharedCoordis([]); // 초기화
+
+        axios.get(`http://localhost:8080/api/share/friends/${id}`, {
+
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                // 배열이 직접 응답되는 경우 처리
                 const coordis = Array.isArray(res.data) ? res.data : res.data?.data || [];
+
+                console.log("📥 응답 받은 코디 수:", coordis.length);
+                console.log("📥 응답 내용 확인:", coordis);
+
+                // 혹시 ownerNickname이 여러 명 섞여 있는지 확인
+                const ownerList = coordis.map(c => c.ownerNickname);
+                const uniqueOwners = [...new Set(ownerList)];
+                console.log("👥 포함된 ownerNickname 목록:", uniqueOwners);
+
                 setSharedCoordis(coordis);
             })
-            .catch(err => console.error("공유 코디 불러오기 실패:", err));
-    }, [id]);
+            .catch(err => console.error("❌ 공유 코디 불러오기 실패:", err));
+    }, [id, token]);
+
 
     return (
         <SC.Background>
@@ -103,7 +110,7 @@ function FriendCloset() {
                                     <SC.NameBox>
                                         <SC.Name>{nickname}</SC.Name>
                                     </SC.NameBox>
-                                    <SC.Intro>{intro || "자기소개가 없습니다."}</SC.Intro>
+                                    <SC.Intro>{intro}</SC.Intro>
                                     <SC.Tag>
                                         {tags.map((tag, idx) => (
                                             <SC.TagItem key={idx}>{tag}</SC.TagItem>
@@ -120,8 +127,8 @@ function FriendCloset() {
                                                 <div>공유된 코디가 없습니다</div>
                                             </SC.OutfitBox2>
                                         ) : (
-                                            sharedCoordis.map((coordi, index) => (
-                                                <SC.OutfitBox2 key={index}>
+                                            sharedCoordis.map((coordi) => (
+                                                <SC.OutfitBox2 key={coordi.shareId}>
                                                     <div>{coordi.title || coordi.date}</div>
                                                     <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
                                                         {coordi.items.slice(0, 3).map((item, idx) => (
@@ -139,7 +146,6 @@ function FriendCloset() {
                                     </SC.OutfitList>
                                 </SC.ContentBox2>
                             </SC.WhiteBox2>
-
                         </SC.GrayBox>
                     </SC.DashandBox>
                 </SC.ContentBox>

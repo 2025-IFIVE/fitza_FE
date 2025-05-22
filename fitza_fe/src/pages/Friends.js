@@ -162,6 +162,22 @@ function Friends() {
             });
     };
 
+    //친구 삭제
+    const handleDeleteFriend = (friendId) => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        axios.delete(`http://localhost:8080/api/friends/delete/${friendId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                setFriends(prev => prev.filter(f => f.id !== friendId));
+            })
+            .catch(error => {
+                console.error("❌ 친구 삭제 실패:", error.response?.data || error.message);
+            });
+    };
+
 
 
 
@@ -208,9 +224,11 @@ function Friends() {
                 <F.FriendList>
                     {filteredFriends.length > 0 ? (
                         filteredFriends.map((friend) => (
-                            <F.FriendItem to={`/friendCloset/${friend.id}`} key={friend.id}>
-                                {friend.nickname}
+                            <F.FriendItem key={friend.id}>
+                                <Link to={`/friendCloset/${friend.id}`}>{friend.nickname}</Link>
+                                <button onClick={() => handleDeleteFriend(friend.id)}>삭제</button>
                             </F.FriendItem>
+
 
                         ))
                     ) : (
