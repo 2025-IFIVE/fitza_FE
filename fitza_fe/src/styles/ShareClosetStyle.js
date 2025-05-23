@@ -544,14 +544,17 @@ export const OutfitBox3 = styled.div`
     font-size: 11px; /* 원하는 크기로 조정 */
     color: #D19492;
     display: flex;
-    flex-direction: column; /* 내부 요소들을 세로 정렬 */
-    align-items: center; /* 가로 중앙 정렬 */
-    justify-content: center; /* 세로 중앙 정렬 */
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px; /* 위쪽 패딩 */
     width: 200px; /* 필요에 따라 조정 */
     height: 200px;
     background-color: rgb(200, 200, 200, 0.1);
     border-radius: 20px; /* 둥근 테두리 */
     text-align: center;
+    font-size: 13px; /* 원하는 크기로 조정 */
+    font-weight: bold; /* 두껍게 */
+    font-color:rgb(55, 53, 53); /* 갈색 */
 `;
 
 
@@ -563,8 +566,8 @@ export const OutfitBox1 = styled.div`
     flex-direction: column; /* 내부 요소들을 세로 정렬 */
     align-items: center; /* 가로 중앙 정렬 */
     justify-content: center; /* 세로 중앙 정렬 */
-    width: 100px; /* 필요에 따라 조정 */
-    height: 100px;
+   width: 150px;
+    height: 150px;
     border: 2px dotted #D19492; /* 점선 핑크색 테두리 */
     border-radius: 20px; /* 둥근 테두리 */
     text-align: center;
@@ -582,15 +585,15 @@ export const AddOutfitButton = styled.div`
 
 export const OutfitBox2 = styled.div`
     font-family: 'NanumSquareNeo';
-    font-size: 11px; /* 원하는 크기로 조정 */
+    font-size: 11px;
     color: #D19492;
     display: flex;
-    flex-direction: column; /* 내부 요소들을 세로 정렬 */
-    align-items: center; /* 가로 중앙 정렬 */
-    justify-content: center; /* 세로 중앙 정렬 */
-    width: 100px; /* 필요에 따라 조정 */
-    height: 100px;
-    border: 2px solid  #D19492; /* 점선 핑크색 테두리 */
-    border-radius: 20px; /* 둥근 테두리 */
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+    height: 150px;
+    border: 2px solid #D19492;
+    border-radius: 20px;
     text-align: center;
+    padding: 8px 4px; /* 공간 확보 */
 `;

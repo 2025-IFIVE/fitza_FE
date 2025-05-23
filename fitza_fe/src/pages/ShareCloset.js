@@ -13,13 +13,11 @@ import down from "../img/shareClosetPage_download.png";
 import edit from "../img/shareClosetPage_edit.png";
 import addoutfitbutton from "../img/shareClosetPage_addoutfitbutton.png";
 
-//샘플링 이미지들
-import sam13 from '../img/sam13.jpg';
-import sam12 from '../img/sam12.jpg';
 
 
 
 function ShareCloset() {
+
     // ==================================================================
     // 1. 프로필 설정
     const [nickname, setNickname] = useState(""); // 닉네임
@@ -132,18 +130,23 @@ function ShareCloset() {
             });
 
             const resData = response.data?.data;
-
+            localStorage.setItem("profileImage", resData.imagePath);
             setProfileImage(resData.imagePath);
             setIntro(resData.comment);
             setTags(resData.style.split(',').map(tag => tag.trim()));
             setNickname(resData.nickname);
 
+
+
             console.log("프로필 업데이트 성공:", resData);
+
             closeEditModal();
 
         } catch (error) {
             console.error("프로필 업데이트 실패:", error.response?.data || error.message);
         }
+
+
     };
 
     // 프로필 이미지 가져오기
@@ -184,19 +187,24 @@ function ShareCloset() {
     const handleDownloadProfileBox = () => {
         if (!profileRef.current) return;
 
-        html2canvas(profileRef.current).then(canvas => {
+        html2canvas(profileRef.current, {
+            useCORS: true,
+            allowTaint: false,
+            logging: true,
+            scale: 2, // 해상도 개선
+        }).then(canvas => {
             const link = document.createElement('a');
             link.href = canvas.toDataURL('image/png');
             link.download = 'profile-box.png';
             link.click();
+        }).catch(err => {
+            console.error("다운로드 오류:", err);
         });
     };
 
+
     /* ================================================================== */
     /* 2. 방문자수 설정 */
-
-    const [today, setToday] = useState(0); // 오늘 방문자 수
-    const [total, setTotal] = useState(0); // 총 방문자 수
 
     const [showTodayOutfit, setShowTodayOutfit] = useState(false);
     const [showOutfitList, setShowOutfitList] = useState(false);
@@ -207,17 +215,7 @@ function ShareCloset() {
         navigate(-1);  // 이전 페이지로 이동
     };
 
-    /* 방문자 수 가져오기 */
-    useEffect(() => {
-        axios.get("http://localhost:8080/api/visitor-count")
-            .then(response => {
-                setToday(response.data.today);
-                setTotal(response.data.total);
-            })
-            .catch(error => {
-                console.error("Error fetching visitor data:", error);
-            });
-    }, []);
+
 
     /* ================================================================== */
     /* 3. 모달1 - 오늘의 코디 */
@@ -237,20 +235,36 @@ function ShareCloset() {
         setShowOutfitList(false); // 다른 콘텐츠가 열릴 때는 자동으로 닫히게 설정
     };
 
-    // 오늘의 코디 메타 데이터 가져오기
+    // 오늘의 코디 상태
     const [todayCoordi, setTodayCoordi] = useState(null);
+    const [todayCoordiImages, setTodayCoordiImages] = useState([]);
+
+    // KST 기준 날짜 계산 함수
+    function getTodayKST() {
+        const now = new Date();
+        const kstOffset = 9 * 60 * 60 * 1000;
+        const kstDate = new Date(now.getTime() + kstOffset);
+        return kstDate.toISOString().split('T')[0];
+    }
+
+    // 오늘의 코디 메타 데이터 가져오기 (한 번만 실행)
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
         axios.get("http://localhost:8080/api/coordination/my", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
+            headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                const todayStr = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
-                const todayItem = res.data.find(item => item.date === todayStr);
+                const todayStr = getTodayKST();
+                console.log("한국 기준 오늘 날짜:", todayStr);
+                console.log("서버 응답:", res.data.map(d => d.date));
+
+                const todayItem = res.data.find(item => {
+                    const itemDateStr = new Date(item.date).toISOString().split('T')[0];
+                    return itemDateStr === todayStr;
+                });
+
                 setTodayCoordi(todayItem || null);
             })
             .catch(err => {
@@ -258,19 +272,16 @@ function ShareCloset() {
             });
     }, []);
 
-    // 오늘의 코디 사진 가져오기
-    const [todayCoordiImages, setTodayCoordiImages] = useState([]);
+    // 오늘의 코디 이미지 가져오기 (todayCoordi가 바뀔 때 실행)
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         if (!token || !todayCoordi?.calendarId) return;
 
         axios.get(`http://localhost:8080/api/coordination/${todayCoordi.calendarId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
+            headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                const imagePaths = res.data.items.map(item => item.imagePath); // 또는 croppedPath 사용 가능
+                const imagePaths = res.data.items.map(item => item.croppedPath); // 또는 imagePath
                 setTodayCoordiImages(imagePaths);
             })
             .catch(err => {
@@ -278,8 +289,32 @@ function ShareCloset() {
             });
     }, [todayCoordi]);
 
-    /* ================================================================== */
-    /* 3. 모달2 - 오늘의 코디 */
+
+
+
+    // 공유 코디
+    const handleGoToCalendarCreate = () => {
+        navigate("/sharecloset2"); // 또는 원하는 경로
+    };
+
+    const [sharedCoordis, setSharedCoordis] = useState([]);
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        axios.get("http://localhost:8080/api/share/my", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                setSharedCoordis(response.data);
+            })
+            .catch(error => {
+                console.error("공유 코디 불러오기 실패:", error);
+            });
+    }, []);
+
 
 
     return (
@@ -304,7 +339,7 @@ function ShareCloset() {
                     <SC.DashandBox>
                         <SC.GrayBox>
                             <SC.TopBox2>
-                                <SC.TodayTotal>TODAY {today} TOTAL {total}</SC.TodayTotal>
+                                <SC.TodayTotal></SC.TodayTotal>
                                 <SC.Friends>
                                     <SC.FriendLink to="/friends">
                                         <img src={friends} alt="find friends" />
@@ -315,10 +350,15 @@ function ShareCloset() {
                                 <SC.ProfImg>
                                     {profileImage ? (
                                         <img
-                                            src={`http://localhost:8080/${profileImage.replace(/^\/+/, '')}`}
+                                            src={
+                                                typeof profileImage === "string"
+                                                    ? `http://localhost:8080/${profileImage.replace(/^\/+/, '')}`
+                                                    : URL.createObjectURL(profileImage)
+                                            }
                                             alt="profile"
-                                            onError={(e) => e.target.src = "/img/default.png"}
+                                            onError={(e) => (e.target.src = "/img/default.png")}
                                         />
+
                                     ) : (
                                         <div className="no-image-text">프로필 사진을 <br /> 등록해주세요</div>
                                     )}
@@ -350,9 +390,10 @@ function ShareCloset() {
                                     </SC.ToggleButton>
 
 
-                                    <SC.ToggleButton onClick={toggleOutfitList} isActive={showOutfitList}>
+                                    <SC.ToggleButton onClick={toggleOutfitList} $isActive={showOutfitList}>
                                         코디 목록
                                     </SC.ToggleButton>
+
                                 </SC.ToggleBox>
 
                                 <SC.ContentBox2>
@@ -360,12 +401,10 @@ function ShareCloset() {
                                         <SC.RecentOutfit>
                                             {todayCoordi ? (
                                                 <SC.OutfitBox3>
-                                                    <div style={{ color: 'black', fontWeight: 'bold' }}>
-                                                        {todayCoordi.date} {todayCoordi.title}<br />
-                                                    </div>
-                                                    <div style={{ marginTop: "2px", display: "flex", gap: "2px", flexWrap: "wrap" }}>
+                                                    <div > {todayCoordi.title}<br /> </div>
+                                                    <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }} >
                                                         {todayCoordiImages.map((src, idx) => (
-                                                            <img key={idx} src={`http://localhost:8080${src}`} alt={`coordi-${idx}`} style={{ height: "170px" }} />
+                                                            <img key={idx} src={`http://localhost:8080${src}`} alt={`coordi-${idx}`} style={{ height: "60px" }} />
                                                         ))}
                                                     </div>
                                                 </SC.OutfitBox3>
@@ -380,25 +419,39 @@ function ShareCloset() {
 
                                     {showOutfitList && (
                                         <SC.OutfitList>
-                                            {/* 코디 목록 내용을 여기에 추가 */}
                                             <SC.OutfitBox1>
                                                 <div>코디 등록하기</div>
-                                                <SC.AddOutfitButton>
+                                                <SC.AddOutfitButton onClick={handleGoToCalendarCreate}>
                                                     <img src={addoutfitbutton} alt="addoutfitbutton" />
                                                 </SC.AddOutfitButton>
                                             </SC.OutfitBox1>
 
-                                            <SC.OutfitBox2>
-                                                <div>코디 제목1</div>
-                                                <img src={sam13} alt="샘플 이미지" style={{ height: '70px' }} />
-                                            </SC.OutfitBox2>
-                                            <SC.OutfitBox2>
-                                                <div>코디 제목2</div>
-                                                <img src={sam12} alt="샘플 이미지" style={{ height: '70px' }} />
-                                            </SC.OutfitBox2>
 
+                                            {sharedCoordis.length === 0 ? (
+                                                <SC.OutfitBox2>
+                                                    <div>공유된 코디가 없습니다</div>
+                                                </SC.OutfitBox2>
+                                            ) : (
+                                                sharedCoordis.map((coordi, index) => (
+                                                    <SC.OutfitBox2 key={index}>
+                                                        <div>{coordi.title}</div>
+                                                        <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                                                            {coordi.items.slice(0, 3).map((item, idx) => (
+                                                                <img
+                                                                    key={idx}
+                                                                    src={`http://localhost:8080${item.croppedPath}`}
+                                                                    alt={`item-${idx}`}
+                                                                    style={{ height: '45px' }}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </SC.OutfitBox2>
+
+                                                ))
+                                            )}
                                         </SC.OutfitList>
                                     )}
+
                                 </SC.ContentBox2>
                             </SC.WhiteBox2>
                         </SC.GrayBox>

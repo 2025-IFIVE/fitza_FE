@@ -141,6 +141,7 @@ export const Back = styled.div`
 ======================================================================*/
 
 
+
 export const AddFnd = styled.div`
 
 `;
@@ -219,7 +220,12 @@ export const FriendList = styled.div`
   align-items: flex-start; /* 왼쪽 정렬 */
 `;
 
-
+export const EmptyMessage = styled.p`
+  text-align: center;
+  color: #888;
+  margin-top: 20px;
+  font-size: 14px;
+`;
 
 
 
@@ -323,4 +329,54 @@ export const CancelButton = styled.button`
 
     &:hover {
         background:rgba(93, 64, 55, 0.8);
+`;
+
+export const AcceptButton = styled.button`
+  background-color: #4CAF50;
+  color: white;
+  margin: 5px;
+`;
+
+export const RejectButton = styled.button`
+    background:rgba(93, 64, 55);
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+
+    &:hover {
+        background:rgba(93, 64, 55, 0.8);
+`;
+
+export const SectionTitle = styled.h2`
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #333;
+`;
+
+export const DeleteButton = styled.button`
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid red;
+  background-color: transparent;
+  color: red;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 20px;
+  padding: 0;
+  margin-left: 8px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 오른쪽으로 살짝 밀기 */
+  transform: translateX(-20px);
+
+  &:hover {
+    background-color: #ffe6e6;
+  }
 `;
