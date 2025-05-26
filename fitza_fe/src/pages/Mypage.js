@@ -84,7 +84,82 @@ function Mypage() {
                 setBodyType("none");
             });
     }, []);
+    { bodyType === "round" && <div style={{ fontSize: "12px", display: "flex" }}><p style={{ fontWeight: "bold", color: "brown" }}>{nickname}</p>님의 체형은 &nbsp;<p style={{ fontWeight: "bold", paddingBottom: "2px", color: "green" }}>라운드 체형</p>입니다.</div> }
+    { bodyType === "tri" && <div style={{ fontSize: "12px", display: "flex" }}><p style={{ fontWeight: "bold", color: "brown" }}>{nickname}</p>님의 체형은 &nbsp;<p style={{ fontWeight: "bold", paddingBottom: "2px", color: "green" }}>삼각형 체형</p>입니다.</div> }
+    { bodyType === "square" && <div style={{ fontSize: "12px", display: "flex" }}><p style={{ fontWeight: "bold", color: "brown" }}>{nickname}</p>님의 체형은 &nbsp;<p style={{ fontWeight: "bold", paddingBottom: "2px", color: "green" }}>사각형 체형</p>입니다.</div> }
+    { bodyType === "invertTri" && <div style={{ fontSize: "12px", display: "flex" }}><p style={{ fontWeight: "bold", color: "brown" }}>{nickname}</p>님의 체형은 &nbsp;<p style={{ fontWeight: "bold", paddingBottom: "2px", color: "green" }}>역삼각형 체형</p>입니다.</div> }
+    { bodyType === "hour" && <div style={{ fontSize: "12px", display: "flex" }}><p style={{ fontWeight: "bold", color: "brown" }}>{nickname}</p>님의 체형은 &nbsp;<p style={{ fontWeight: "bold", paddingBottom: "2px", color: "green" }}>모래시계 체형</p>입니다.</div> }
+    <div></div>
 
+    {/* 조건에 맞는 텍스트를 다르게 표시 3 */ }
+    {
+        bodyType === "round" && (
+            <div style={{ fontSize: "12px", paddingBottom: "2px" }}>
+                <div style={{ fontSize: "11px", lineHeight: "1.6" }}>
+                    라운드 체형은 복부와 상체 중심에 볼륨이 집중된 형태입니다.
+                    <br />👚 상의는 브이넥, 랩 스타일 등 목선을 드러내고 시선을 위로 끌어올릴 수 있는 디자인이 좋습니다.
+                    <br />🧥 허리를 강조하는 아우터나 벨트로 라인을 잡아주는 스타일을 추천합니다.
+                    <br />👖 하의는 어두운 컬러나 일자핏으로 깔끔한 실루엣을 연출하면 좋습니다.
+                    <br />💡 세로 라인을 강조하면 전체적으로 슬림해 보이는 효과가 있습니다.
+                </div>
+            </div>
+        )
+    }
+    {
+        bodyType === "tri" && (
+            <div style={{ fontSize: "12px", paddingBottom: "2px" }}>
+                <div style={{ fontSize: "11px", lineHeight: "1.6" }}>
+                    삼각형 체형에는 어깨가 좁고 하체가 상대적으로 넓은 특징이 있습니다.
+                    <br />👕 상의는 어깨를 넓어 보이게 하는 디자인이 좋습니다. 예를 들어, 어깨 패드가 있는 자켓이나 넓은 칼라가 있는 상의가 효과적입니다.
+                    <br />👖 하의는 다소 간결하고 깔끔한 스타일로, 너무 부풀지 않도록 피하는 것이 좋습니다.
+                    <br />💡 또한, 다리를 길어 보이게 할 수 있는 하이웨이스트 팬츠나 스커트를 선택하는 것도 좋은 방법입니다.
+                    <br />✨ 이런 스타일들은 전체적인 비율을 잘 맞춰주는 역할을 합니다.
+                </div>
+            </div>
+        )
+    }
+
+    {
+        bodyType === "square" && (
+            <div style={{ fontSize: "12px", paddingBottom: "2px" }}>
+                <div style={{ fontSize: "11px", lineHeight: "1.6" }}>
+                    사각형 체형은 어깨, 허리, 엉덩이 폭이 비슷해 직선적인 인상을 줍니다.
+                    <br />👚 곡선을 강조할 수 있는 프릴, 셔링 디테일의 상의가 효과적입니다.
+                    <br />🧥 허리 라인을 살려주는 자켓이나 벨트 활용도 좋습니다.
+                    <br />👗 A라인 스커트나 와이드 팬츠 등 하체에 볼륨감을 주는 스타일이 잘 어울립니다.
+                    <br />💡 전체적으로 곡선 실루엣을 살려주는 것이 포인트입니다.
+                </div>
+            </div>
+        )
+    }
+
+    {
+        bodyType === "invertTri" && (
+            <div style={{ fontSize: "12px", paddingBottom: "2px" }}>
+                <div style={{ fontSize: "11px", lineHeight: "1.6" }}>
+                    역삼각형 체형은 어깨가 넓고 하체가 상대적으로 좁은 형태입니다.
+                    <br />👚 상의는 브이넥이나 라운드넥 등 어깨 너비를 줄여 보이는 디자인이 좋습니다.
+                    <br />👗 A라인 스커트, 플레어 팬츠처럼 하체에 볼륨을 더해주는 아이템을 추천합니다.
+                    <br />👖 밝은 색상이나 디테일이 있는 하의는 시선을 분산시켜 밸런스를 맞춰줍니다.
+                    <br />🚫 어깨를 강조하는 퍼프 소매나 스퀘어넥은 피하는 것이 좋아요.
+                </div>
+            </div>
+        )
+    }
+
+    {
+        bodyType === "hour" && (
+            <div style={{ fontSize: "12px", paddingBottom: "2px" }}>
+                <div style={{ fontSize: "11px", lineHeight: "1.6" }}>
+                    모래시계 체형은 어깨와 엉덩이가 균형 있고 허리가 잘록한 이상적인 체형입니다.
+                    <br />👗 허리선을 강조하는 원피스나 투피스가 체형을 잘 살려줍니다.
+                    <br />👚 너무 루즈하지 않은 상의로 상체 실루엣을 살려주세요.
+                    <br />👖 하의는 하이웨이스트나 슬림핏 팬츠로 라인을 강조하면 더욱 돋보입니다.
+                    <br />✨ 다양한 스타일이 잘 어울리나, 허리 라인을 살리는 것이 핵심입니다.
+                </div>
+            </div>
+        )
+    }
 
     return (
         <MP.Background>

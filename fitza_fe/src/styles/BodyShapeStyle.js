@@ -230,14 +230,25 @@ export const Camera = styled.div`
 `;
 
 export const ProfileImagePreview = styled.div`
+  display: flex;
+  justify-content: center;
 
+  img.analyzed {
+    width: 100px;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 10px;
+    margin-top: 10px;
+  }
 
-  img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain; /* 이미지 전체 보이기 */
+  img.placeholder {
+    width: 100px;
+    height: 100px;
+    margin-top: 10px;
+    object-fit: contain;
   }
 `;
+
 
 export const AnalyzeButton = styled.button`
   font-family: 'NanumSquareNeo';
