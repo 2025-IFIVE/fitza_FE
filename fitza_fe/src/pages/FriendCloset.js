@@ -19,6 +19,7 @@ function FriendCloset() {
     const [sharedCoordis, setSharedCoordis] = useState([]);
 
     // ✅ 친구 프로필 정보 불러오기
+    // ✅ 친구 프로필 정보 불러오기
     useEffect(() => {
         if (!token || !id) return;
 
@@ -37,37 +38,44 @@ function FriendCloset() {
             })
             .catch(err => {
                 console.error("❌ 친구 프로필 조회 실패:", err.response?.data || err.message);
+
+                // ✅ fallback 기본값
+                setNickname("알 수 없음");
+                setProfileImage(null);
+                setIntro("친구의 프로필 정보를 불러올 수 없습니다.");
+                setTags([]);
             });
     }, [id, token]);
 
 
-    // ✅ 공유 코디 불러오기
+
+    // 공유 코디 불러오기
     useEffect(() => {
         if (!token || !id) return;
 
-        console.log("📦 요청 보냄: /api/share/friends?friendId=" + id);
+        console.log(`📦 요청 보냄: /api/share/friends/${id}`);
 
         setSharedCoordis([]); // 초기화
 
         axios.get(`http://localhost:8080/api/share/friends/${id}`, {
-
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                const coordis = Array.isArray(res.data) ? res.data : res.data?.data || [];
+                const coordis = Array.isArray(res.data) ? res.data : [];
 
-                console.log("📥 응답 받은 코디 수:", coordis.length);
-                console.log("📥 응답 내용 확인:", coordis);
+                console.log("응답 받은 코디 수:", coordis.length);
+                console.log("응답 내용 확인:", coordis);
 
-                // 혹시 ownerNickname이 여러 명 섞여 있는지 확인
-                const ownerList = coordis.map(c => c.ownerNickname);
-                const uniqueOwners = [...new Set(ownerList)];
-                console.log("👥 포함된 ownerNickname 목록:", uniqueOwners);
+                const owners = [...new Set(coordis.map(c => c.ownerNickname))];
+                console.log("포함된 ownerNickname 목록:", owners);
 
                 setSharedCoordis(coordis);
             })
-            .catch(err => console.error("❌ 공유 코디 불러오기 실패:", err));
+            .catch(err => {
+                console.error("공유 코디 불러오기 실패:", err.response?.data || err.message);
+            });
     }, [id, token]);
+
 
 
     return (
