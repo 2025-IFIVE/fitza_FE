@@ -197,13 +197,14 @@ function BodyShape() {
                         marginTop: "30px",
                         padding: "20px",
                         borderRadius: "15px",
-                        backgroundColor: "#fff8f2",
+                        backgroundColor: "white",
                         boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.08)",
-                        fontFamily: "'SUIT', sans-serif",
+                        fontFamily: "nanumSquare",
+                        border: "2px solid  #916b5d",
                         fontSize: "13px",
                         color: "#333",
                         lineHeight: 1.6,
-                        maxWidth: "700px",
+                        maxWidth: "400px",
                         marginLeft: "auto",
                         marginRight: "auto"
                     }}>
