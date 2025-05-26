@@ -16,6 +16,7 @@ import square from '../img/bodyType_sq.jpg';
 import invertTri from '../img/bodyType_invertTri.jpg';
 import hour from '../img/bodyType_hour.jpg';
 
+
 function Mypage() {
     const [nickname, setNickname] = useState('');
     const [bodyType, setBodyType] = useState('');
@@ -147,7 +148,7 @@ function Mypage() {
                             </div>
                         )}
 
-                        {/* ✨ 여기에 추천 문구 부분 그대로 유지해도 됩니다 (생략 가능) */}
+
                     </MP.BodytypeText>
                 </MP.BodytypeBox>
 
