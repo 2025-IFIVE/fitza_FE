@@ -35,7 +35,7 @@ function CalendarCreate() {
     상의: null,
     하의: null,
     아우터: null,
-    셋업: null,
+    원피스: null,
     신발: null,
     가방: null,
   });
@@ -43,7 +43,7 @@ function CalendarCreate() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const categoryList = ["상의", "하의", "아우터", "셋업", "신발", "가방"];
+  const categoryList = ["상의", "하의", "아우터", "원피스", "신발", "가방"];
 
   // 1. 옷장 불러오기
   useEffect(() => {
@@ -226,7 +226,7 @@ function CalendarCreate() {
                   .filter((item) => item.type === selectedTab)
                   .map((item, idx) => (
                     <C.ImageBox key={idx} onClick={() => handleImageSelect(selectedTab, item)}>
-                      <img src={`http://localhost:8080${item.imagePath}`} alt={`cloth-${item.clothid}`} />
+                      <img src={`http://localhost:8080${item.croppedPath}`} alt={`cloth-${item.clothid}`} />
                     </C.ImageBox>
                   ))}
               </C.ImageGrid>
