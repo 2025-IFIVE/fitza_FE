@@ -16,7 +16,7 @@ function CalendarDetail() {
   const [coordi, setCoordi] = useState(null);
   const [itemsByCategory, setItemsByCategory] = useState({});
 
-  const categoryList = ['상의', '하의', '아우터', '셋업', '신발', '가방'];
+  const categoryList = ['상의', '하의', '아우터', '원피스', '신발', '가방'];
 
   useEffect(() => {
     const fetchCoordi = async () => {
@@ -30,7 +30,6 @@ function CalendarDetail() {
         const data = res.data;
         setCoordi(data);
 
-        // 서버에서 clothId만 오므로 type 매핑을 위해 옷 정보 가져오기
         const clothMap = {};
         for (const item of data.items) {
           const clothRes = await axios.get(`http://localhost:8080/api/clothing/${item.clothId}`, {
@@ -40,13 +39,14 @@ function CalendarDetail() {
           if (clothType) {
             clothMap[clothType] = {
               ...item,
-              type: clothType
+              type: clothType,
+              croppedPath: clothRes.data?.croppedPath,
+              imagePath: clothRes.data?.imagePath
             };
           }
         }
 
         setItemsByCategory(clothMap);
-
       } catch (err) {
         console.error("코디 상세 조회 실패:", err);
       }
@@ -57,7 +57,6 @@ function CalendarDetail() {
 
   const handleDelete = async () => {
     if (!window.confirm("정말 이 코디를 삭제하시겠습니까?")) return;
-
     try {
       const token = localStorage.getItem("authToken");
       await axios.delete(`http://localhost:8080/api/coordination/${calendarId}`, {
@@ -72,7 +71,6 @@ function CalendarDetail() {
     }
   };
 
-
   return (
     <C.Background>
       <C.TopBox>
@@ -81,7 +79,7 @@ function CalendarDetail() {
 
       <C.Container>
         <C.Header>
-          <C.BackButton onClick={() => navigate(-1)}>
+          <C.BackButton onClick={() => navigate("/calendarpage")}>
             <img src={backButton} alt="뒤로 가기" />
           </C.BackButton>
           <C.Title>캘린더 상세</C.Title>
@@ -99,21 +97,42 @@ function CalendarDetail() {
 
         <C.CoordiName>{coordi?.title || "코디 이름 없음"}</C.CoordiName>
 
-        <C.Board>
-          {categoryList.map((cat, i) => (
-            <C.Section key={i}>
-              {itemsByCategory[cat] ? (
+        <C.RandomBoard>
+          {Object.entries(itemsByCategory).map(([cat, item], index) => {
+            const style = {
+              top: `${item.y}%`,
+              left: `${item.x}%`,
+              size: item.size ?? 100
+            };
+
+            return (
+              <C.RandomItem
+                key={index}
+                $top={style.top}
+                $left={style.left}
+                style={{
+                  position: "absolute",
+                  width: `${style.size}%`,
+                  cursor: "default",
+                  zIndex: 10 + index,
+                  userSelect: "none",
+                  transition: "all 0.1s ease"
+                }}
+              >
                 <img
-                  src={`http://localhost:8080${itemsByCategory[cat].croppedPath || itemsByCategory[cat].imagePath}`}
+                  src={`http://localhost:8080${item.croppedPath || item.imagePath}`}
                   alt={cat}
-                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    objectFit: "contain",
+                    pointerEvents: "none"
+                  }}
                 />
-              ) : (
-                <C.ImagePlaceholder>{cat} 없음</C.ImagePlaceholder>
-              )}
-            </C.Section>
-          ))}
-        </C.Board>
+              </C.RandomItem>
+            );
+          })}
+        </C.RandomBoard>
 
         <C.EditButton onClick={() => {
           navigate("/CalendarCreate", {
@@ -125,9 +144,7 @@ function CalendarDetail() {
               items: coordi.items
             }
           });
-        }}>수정하기
-        </C.EditButton>
-
+        }}>수정하기</C.EditButton>
       </C.Container>
 
       <C.BottomBox>

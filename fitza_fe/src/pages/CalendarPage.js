@@ -157,15 +157,14 @@ function CalendarPage() {
                   height: '70px',
                   paddingTop: '3px'
                 }}>
-                  {['상의', '하의', '아우터', '셋업', '신발', '가방'].map((cat, idx) => {
-                    const item = itemsByCategory[cat];
+                  {Object.values(itemsByCategory).map((item, idx) => {
                     const imagePath = item?.croppedPath || item?.imagePath;
                     return (
                       <div key={idx} style={{ width: '100%', height: '100%' }}>
                         {imagePath && (
                           <img
                             src={`http://localhost:8080${imagePath}`}
-                            alt={cat}
+                            alt={`coordi-${idx}`}
                             style={{
                               width: '100%',
                               height: '100%',
@@ -177,6 +176,7 @@ function CalendarPage() {
                       </div>
                     );
                   })}
+
                 </div>
               ) : null;
             }}

@@ -70,7 +70,7 @@ export const BackButton = styled.button`
   }
 `;
 
-export const Title= styled.div`
+export const Title = styled.div`
   position: relative; 
   font-size: 17px;
   color: black;
@@ -178,3 +178,32 @@ export const ImagePlaceholder = styled.p`
   margin: 0;
   padding: 5px;
 `;
+
+export const RandomBoard = styled.div`
+   position: relative;
+  width: 85%;
+  max-width: 500px;
+  aspect-ratio: 1 / 1.1;
+  background: #fff;
+  border: 1px solid #CE9694;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+`;
+
+export const RandomItem = styled.div`
+  position: absolute;
+  top: ${(props) => props.$top};
+  left: ${(props) => props.$left};
+  //transform: rotate(${(props) => props.$rotate || "0deg"});
+  z-index: 1;
+  transition: all 0.1s ease;
+`;
+
+
+

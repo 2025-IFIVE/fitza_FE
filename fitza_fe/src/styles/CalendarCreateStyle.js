@@ -41,6 +41,7 @@ export const BottomBox = styled.div`
   justify-content: space-around;
   padding: 0 10px;
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 9999 !important;
 `;
 
 export const Container = styled.div`
@@ -70,7 +71,7 @@ export const BackButton = styled.button`
   }
 `;
 
-export const Title= styled.div`
+export const Title = styled.div`
   position: relative; 
   font-size: 17px;
   color: black;
@@ -294,4 +295,32 @@ export const ImageBox = styled.div`
     height: auto;  /* 비율 유지 */
     object-fit: cover;  /* 이미지가 비율을 유지하면서 셀에 꽉 차도록 */
   }
+`;
+
+export const RandomItem = styled.div`
+  position: absolute;
+  width: 120px;
+  height: 160px;
+  top: ${(props) => props.$top};
+  left: ${(props) => props.$left};
+  //transform: rotate(${(props) => props.$rotate});
+  transition: all 0.1s ease;
+`;
+
+
+export const RandomBoard = styled.div`
+  position: relative;
+  width: 85%;
+  max-width: 500px;
+  aspect-ratio: 1 / 1.1;
+  background: #fff;
+  border: 1px solid #CE9694;
+  border-radius: 20px;
+  overflow: hidden;
+  /*display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;*/
+  gap: 10px;
+  margin-top: 15px;
 `;
