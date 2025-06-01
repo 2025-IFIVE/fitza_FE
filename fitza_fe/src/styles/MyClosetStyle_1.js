@@ -271,6 +271,7 @@ export const CoordiCardWrapperItem = styled.div`
 export const CoordiCard = styled.div`
   margin: 10px;
   text-align: center;
+  height: 120px;
   width: 100px;
   max-width: 150px;
   display: flex;
@@ -280,18 +281,28 @@ export const CoordiCard = styled.div`
   background-color: #f0f0f0;
   border-radius: 25px;
   padding: 10px;
-  overflow-x: auto;
+  overflow: visible; /* ✅ 이미지가 밖으로 튀지 않게 */
+  position: relative; /* ✅ 겹칠 기준이 되는 위치 기준 */
 
   ::-webkit-scrollbar {
     display: none;
   }
 
   img {
+    position: absolute;           /* ✅ 겹쳐지도록 */
+    top: 50%;                     /* 기본값 설정 (없으면 중심에서 어긋날 수 있음) */
+    left: 50%;
+    max-width: 100%;
+    max-height: 100%;
+    transform: translate(-50%, -50%);
     width: 100%;
     height: auto;
+    object-fit: contain;
+    pointer-events: none;         /* 클릭 방지 */
     border-radius: 8px;
   }
 `;
+
 
 export const Coordidate = styled.p`
   font-size: 14px;

@@ -129,9 +129,9 @@ export const ClosetItem = styled.div`
   flex-shrink: 0;
 
   img {
-    width: 70%;
+    width: 80%;
     height: 70%;
-    object-fit: cover;
+    object-fit: contain;
   }
 `;
 

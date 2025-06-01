@@ -14,8 +14,10 @@ const MyCloset_1 = () => {
   const navigate = useNavigate();
   const [weather, setWeather] = useState(null);
   const [dateInfo, setDateInfo] = useState({ day: "", date: "" });
+  const [recentCoordi, setRecentCoordi] = useState([]);
 
   useEffect(() => {
+    // ✅ 위도/경도 기반 날씨는 이미 잘 호출되고 있음
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -24,24 +26,25 @@ const MyCloset_1 = () => {
         },
         (error) => {
           console.error("위치 정보를 가져올 수 없습니다. 기본값(서울)으로 설정합니다.", error);
-          fetchWeather(37.5665, 126.9780); // 서울 기본 위치
+          fetchWeather(37.5665, 126.9780);
         }
       );
     } else {
-      console.error("Geolocation이 지원되지 않습니다. 기본값(서울)으로 설정합니다.");
       fetchWeather(37.5665, 126.9780);
     }
-
-    // 날짜 및 요일 설정
+  
     const today = new Date();
     const days = ["일", "월", "화", "수", "목", "금", "토"];
     setDateInfo({
       day: days[today.getDay()],
       date: `${today.getMonth() + 1}.${today.getDate()}`
     });
-
-  }, []);
-
+  
+    // ✅ 이 한 줄 추가!
+    fetchRecentCoordi();
+  
+  }, []);  // ← 의존성 배열은 그대로
+  
   // 🔹 날씨 설명과 아이콘을 매핑하는 함수
   const getWeatherIcon = (description, dt) => {
     console.log("받아온 날씨 설명:", description); // 받아온 값 확인
@@ -103,13 +106,55 @@ const MyCloset_1 = () => {
     }
   };
 
+  const fetchRecentCoordi = async () => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const listRes = await axios.get("http://localhost:8080/api/coordination/my", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const list = listRes.data;
+    list.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    console.log("🧪 응답 받은 코디 목록", list);
+
+    const top3 = await Promise.all(list.slice(0, 3).map(async (coordi) => {
+      const detailRes = await axios.get(`http://localhost:8080/api/coordination/${coordi.calendarId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    
+      const items = detailRes.data.items;
+      if (!items || items.length === 0) return null;
+    
+      // detail.items 안에서 직접 이미지 경로 추출
+      const imageList = items.map(item => ({
+        clothId: item.clothId,
+        x: item.x,
+        y: item.y,
+        size: item.size,
+        path: item.croppedPath || item.imagePath  // 👈 여기를 clothing 호출 없이 사용
+      })).filter(item => item.path);
+    
+      const dateObj = new Date(coordi.date + "T00:00:00");
+      const today = new Date();
+      const dayDiff = Math.floor((today - dateObj) / (1000 * 60 * 60 * 24));
+    
+      return {
+        id: coordi.calendarId,
+        date: coordi.date,
+        dayDiff,
+        images: imageList
+      };
+    }));
+
+    setRecentCoordi(top3.filter(Boolean)); // null 제거
+  } catch (err) {
+    console.error("최근 코디 불러오기 실패", err);
+  }
+};
+
   const categories = ["상의", "하의", "아우터", "원피스", "신발", "모자", "기타"];
 
-  const imageMap = {
-    1: sampleCoordi1,
-    2: sampleCoordi2,
-    3: sampleCoordi3,
-  };
   
   return (
     <M.Background>
@@ -175,19 +220,34 @@ const MyCloset_1 = () => {
         <M.RecentCoordiSection>
           <M.CoordiTitle>최근 코디</M.CoordiTitle>
           <M.CoordiCardWrapper>
-            {[1, 2, 3].map((day) => (
-              <M.CoordiCardWrapperItem key={day}>
-                <M.CoordiCard onClick={() => navigate(`/calendar/${day}`)}>
-                <img src={imageMap[day]} alt={`코디 ${day}일 전`} />
-                </M.CoordiCard>
-                <p>{day}일 전</p>
-                <p> (20xx.xx.xx)</p>
+            {recentCoordi.map((item) => (
+              <M.CoordiCardWrapperItem key={item.id}>
+                <M.CoordiCard onClick={() => navigate(`/calendarpage`)}>
+                {item.images.map((img, idx) => (
+                  <img
+                  key={idx}
+                  src={`http://localhost:8080${img.path}`}
+                  alt={`코디 아이템 ${idx}`}
+                  style={{
+                    position: "absolute",
+                    top: `${img.y ?? 50}%`,
+                    left: `${img.x ?? 50}%`,
+                    width: `${img.size ?? 100}%`,
+                    transform: "translate(0%, 0%)", // ✅ 중심 살짝 아래로
+                    objectFit: "contain",
+                    pointerEvents: "none"
+                  }}
+                />
+                
+                ))}
+              </M.CoordiCard>
+
+                <p>{item.dayDiff}일 전</p>
+                <p>({item.date})</p>
               </M.CoordiCardWrapperItem>
             ))}
           </M.CoordiCardWrapper>
         </M.RecentCoordiSection>
-
-
       </M.Container>
       <Footer />
     </M.Background>
