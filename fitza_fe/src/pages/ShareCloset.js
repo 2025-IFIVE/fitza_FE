@@ -281,13 +281,16 @@ function ShareCloset() {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                const imagePaths = res.data.items.map(item => item.croppedPath); // 또는 imagePath
-                setTodayCoordiImages(imagePaths);
+                setTodayCoordi(prev => ({
+                    ...prev,
+                    ...res.data // title, date, items 등
+                }));
             })
             .catch(err => {
-                console.error("오늘의 코디 상세 이미지 불러오기 실패", err);
+                console.error("오늘의 코디 상세 조회 실패:", err);
             });
-    }, [todayCoordi]);
+    }, [todayCoordi?.calendarId]);
+
 
 
 
@@ -399,14 +402,39 @@ function ShareCloset() {
                                 <SC.ContentBox2>
                                     {showTodayOutfit && (
                                         <SC.RecentOutfit>
-                                            {todayCoordi ? (
+                                            {todayCoordi && todayCoordi.items?.length > 0 ? (
                                                 <SC.OutfitBox3>
-                                                    <div > {todayCoordi.title}<br /> </div>
-                                                    <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }} >
-                                                        {todayCoordiImages.map((src, idx) => (
-                                                            <img key={idx} src={`http://localhost:8080${src}`} alt={`coordi-${idx}`} style={{ height: "60px" }} />
-                                                        ))}
+                                                    <div style={{ color: 'black', fontWeight: 'bold', marginBottom: '6px' }}>
+                                                        {todayCoordi.title}
                                                     </div>
+                                                    <SC.RandomBoard>
+                                                        {todayCoordi.items.map((item, idx) => {
+                                                            const { x = 0, y = 0, size = 30 } = item;
+                                                            return (
+                                                                <SC.RandomItem
+                                                                    key={idx}
+                                                                    style={{
+                                                                        left: `${x}%`,
+                                                                        top: `${y}%`,
+                                                                        width: `${size}%`,
+                                                                        zIndex: 10 + idx,
+                                                                    }}
+                                                                >
+                                                                    <img
+                                                                        src={`http://localhost:8080${item.croppedPath || item.imagePath}`}
+                                                                        alt={`item-${idx}`}
+                                                                        style={{
+                                                                            width: "100%",
+                                                                            height: "auto",
+                                                                            objectFit: "contain",
+                                                                            pointerEvents: "none"
+                                                                        }}
+                                                                        draggable={false}
+                                                                    />
+                                                                </SC.RandomItem>
+                                                            );
+                                                        })}
+                                                    </SC.RandomBoard>
                                                 </SC.OutfitBox3>
                                             ) : (
                                                 <SC.OutfitBox3>
@@ -415,6 +443,7 @@ function ShareCloset() {
                                             )}
                                         </SC.RecentOutfit>
                                     )}
+
 
 
                                     {showOutfitList && (
