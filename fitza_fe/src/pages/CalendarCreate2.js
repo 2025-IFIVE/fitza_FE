@@ -36,41 +36,41 @@ function CalendarCreate2() {
             alert("이미지를 먼저 선택해주세요.");
             return;
         }
-    
+
         const token = localStorage.getItem("authToken");
         if (!token) {
             alert("로그인이 필요합니다.");
             return;
         }
-    
+
         // ✅ 1. 오늘 날짜를 yyyy-mm-dd 형식으로 구하기
         const today = new Date();
         const formattedToday = today.toISOString().slice(0, 10); // 예: '2025-06-02'
-    
+
         try {
             // ✅ 2. 이미 등록된 코디들 가져오기
             const res = await axios.get("http://localhost:8080/api/coordination/my", {
                 headers: { Authorization: `Bearer ${token}` }
             });
-    
+
             const alreadyExists = res.data.some(item => item.date === formattedToday);
             if (alreadyExists) {
                 alert("⚠️ 오늘 이미 등록된 코디가 있습니다!\n캘린더에서 해당 코디를 수정하거나 날짜를 변경해주세요.");
                 return;
             }
-    
+
             // ✅ 3. 백엔드로 이미지 전송 → 매칭 요청
             const formData = new FormData();
             formData.append("file", imageFile);
-    
+
             const matchRes = await axios.post("http://localhost:8080/api/match/ootd", formData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-    
+
             const data = matchRes.data;
-    
+
             navigate("/CalendarCreate", {
                 state: {
                     matchedImages: data.matchedImages,
@@ -78,13 +78,13 @@ function CalendarCreate2() {
                     scores: data.scores,
                 }
             });
-    
+
         } catch (error) {
             console.error("❌ 매칭 실패 또는 중복 검사 실패:", error.response || error);
             alert("옷 매칭 또는 등록 확인 중 오류가 발생했습니다.");
         }
     };
-    
+
 
     return (
         <C.Background>
@@ -154,7 +154,7 @@ function CalendarCreate2() {
                     disabled={!bodyImage}
                     onClick={handleCalendarSubmit} // 🔸 매칭 함수 호출
                 >
-                    캘린더 등록하기
+                    OOTD 등록하기
                 </C.AnalyzeButton>
             </C.Container>
             <C.BottomBox><Footer /></C.BottomBox>
