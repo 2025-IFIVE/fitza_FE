@@ -404,7 +404,7 @@ function ShareCloset() {
                                         <SC.RecentOutfit>
                                             {todayCoordi && todayCoordi.items?.length > 0 ? (
                                                 <SC.OutfitBox3>
-                                                    <div style={{ color: 'black', fontWeight: 'bold', marginBottom: '6px' }}>
+                                                    <div >
                                                         {todayCoordi.title}
                                                     </div>
                                                     <SC.RandomBoard>
@@ -463,21 +463,40 @@ function ShareCloset() {
                                             ) : (
                                                 sharedCoordis.map((coordi, index) => (
                                                     <SC.OutfitBox2 key={index}>
-                                                        <div>{coordi.title}</div>
-                                                        <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
-                                                            {coordi.items.slice(0, 3).map((item, idx) => (
-                                                                <img
-                                                                    key={idx}
-                                                                    src={`http://localhost:8080${item.croppedPath}`}
-                                                                    alt={`item-${idx}`}
-                                                                    style={{ height: '45px' }}
-                                                                />
-                                                            ))}
-                                                        </div>
+                                                        <div style={{ fontWeight: 'bold', marginBottom: '6px' }}>{coordi.title}</div>
+                                                        <SC.RandomBoard style={{ position: 'relative', height: '300px' }}>
+                                                            {coordi.items.map((item, idx) => {
+                                                                const { x = 0, y = 0, size = 30 } = item;
+                                                                return (
+                                                                    <SC.RandomItem
+                                                                        key={idx}
+                                                                        style={{
+                                                                            position: "absolute",
+                                                                            left: `${x}%`,
+                                                                            top: `${y}%`,
+                                                                            width: `${size}%`,
+                                                                            zIndex: 10 + idx,
+                                                                        }}
+                                                                    >
+                                                                        <img
+                                                                            src={`http://localhost:8080${item.croppedPath || item.imagePath}`}
+                                                                            alt={`item-${idx}`}
+                                                                            style={{
+                                                                                width: "100%",
+                                                                                height: "auto",
+                                                                                objectFit: "contain",
+                                                                                pointerEvents: "none",
+                                                                            }}
+                                                                            draggable={false}
+                                                                        />
+                                                                    </SC.RandomItem>
+                                                                );
+                                                            })}
+                                                        </SC.RandomBoard>
                                                     </SC.OutfitBox2>
-
                                                 ))
                                             )}
+
                                         </SC.OutfitList>
                                     )}
 

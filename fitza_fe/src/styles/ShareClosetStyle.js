@@ -520,11 +520,13 @@ export const ToggleButton = styled.div`
 //오늘의 코디, 코디 목록 요소들 정렬하는 박스
 export const ContentBox2 = styled.div`
     font-family: 'NanumSquareNeo';
-
 `;
 
 export const RecentOutfit = styled.div`
     font-family: 'NanumSquareNeo';
+    border-radius: 20px; /* 둥근 테두리 */
+    border: 2px solid #D19492; /* 테두리 색상 */
+    fonnt-size: 11px; /* 폰트 크기 */
 
 `;
 export const OutfitList = styled.div`
@@ -566,9 +568,9 @@ export const OutfitBox1 = styled.div`
     flex-direction: column; /* 내부 요소들을 세로 정렬 */
     align-items: center; /* 가로 중앙 정렬 */
     justify-content: center; /* 세로 중앙 정렬 */
-   width: 150px;
-    height: 150px;
-    border: 2px dotted #D19492; /* 점선 핑크색 테두리 */
+    width: 160px;
+    height: 160px;
+
     border-radius: 20px; /* 둥근 테두리 */
     text-align: center;
 `;
@@ -596,6 +598,7 @@ export const OutfitBox2 = styled.div`
     border-radius: 20px;
     text-align: center;
     padding: 8px 4px; /* 공간 확보 */
+    
 `;
 
 export const RandomItem = styled.div`
@@ -613,15 +616,12 @@ export const RandomBoard = styled.div`
   position: relative;
   width: 85%;
   max-width: 500px;
-  aspect-ratio: 1 / 1.1;
+  aspect-ratio: 1 / 1.1;  
   background: #fff;
-  border: 1px solid #CE9694;
-  border-radius: 20px;
   overflow: hidden;
   /*display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;*/
   gap: 10px;
-  margin-top: 15px;
 `;
