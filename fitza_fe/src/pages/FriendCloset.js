@@ -1,26 +1,24 @@
+// FriendCloset.js - 공유 옷장도 ShareCloset처럼 제목 + 박스 + 위치 기반 배치로 수정
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import * as SC from "../styles/ShareClosetStyle";
-import Footer from "../components/Footer";
 import TopBar from "../components/TopBar";
+import Footer from "../components/Footer";
 import backIcon from "../img/backButton.png";
 import friends from "../img/shareClosetPage_friends.png";
 import axios from "axios";
 
 function FriendCloset() {
-    const { id } = useParams(); // 친구 ID
+    const { id } = useParams();
     const navigate = useNavigate();
-    const token = localStorage.getItem("authToken");
-
     const [nickname, setNickname] = useState("");
     const [profileImage, setProfileImage] = useState(null);
-    const [intro, setIntro] = useState("친구 소개글은 비공개입니다.");
+    const [intro, setIntro] = useState("");
     const [tags, setTags] = useState([]);
     const [sharedCoordis, setSharedCoordis] = useState([]);
 
-    // ✅ 친구 프로필 정보 불러오기
-    // ✅ 친구 프로필 정보 불러오기
     useEffect(() => {
+        const token = localStorage.getItem("authToken");
         if (!token || !id) return;
 
         axios.get(`http://localhost:8080/api/profile/${id}`, {
@@ -29,60 +27,31 @@ function FriendCloset() {
             .then(res => {
                 const data = res.data?.data;
                 if (data) {
-                    setNickname(data.nickname || "");
+                    setNickname(data.nickname || "이름없음");
                     setProfileImage(data.imagePath || null);
-                    setIntro(data.comment || "친구 소개글은 비공개입니다.");
-                    const styleTags = data.style ? data.style.split(",") : [];
-                    setTags(styleTags);
+                    setIntro(data.comment || "");
+                    setTags(data.style?.split(",").map(tag => tag.trim()) || []);
                 }
             })
-            .catch(err => {
-                console.error("❌ 친구 프로필 조회 실패:", err.response?.data || err.message);
+            .catch(err => console.error("친구 프로필 조회 실패:", err));
+    }, [id]);
 
-                // ✅ fallback 기본값
-                setNickname("알 수 없음");
-                setProfileImage(null);
-                setIntro("친구의 프로필 정보를 불러올 수 없습니다.");
-                setTags([]);
-            });
-    }, [id, token]);
-
-
-
-    // 공유 코디 불러오기
     useEffect(() => {
+        const token = localStorage.getItem("authToken");
         if (!token || !id) return;
-
-        console.log(`📦 요청 보냄: /api/share/friends/${id}`);
-
-        setSharedCoordis([]); // 초기화
 
         axios.get(`http://localhost:8080/api/share/friends/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                const coordis = Array.isArray(res.data) ? res.data : [];
-
-                console.log("응답 받은 코디 수:", coordis.length);
-                console.log("응답 내용 확인:", coordis);
-
-                const owners = [...new Set(coordis.map(c => c.ownerNickname))];
-                console.log("포함된 ownerNickname 목록:", owners);
-
-                setSharedCoordis(coordis);
+                setSharedCoordis(res.data || []);
             })
-            .catch(err => {
-                console.error("공유 코디 불러오기 실패:", err.response?.data || err.message);
-            });
-    }, [id, token]);
-
-
+            .catch(err => console.error("공유 코디 조회 실패:", err));
+    }, [id]);
 
     return (
         <SC.Background>
-            <SC.TopBox>
-                <TopBar />
-            </SC.TopBox>
+            <SC.TopBox><TopBar /></SC.TopBox>
 
             <SC.Container>
                 <SC.Header>
@@ -110,9 +79,11 @@ function FriendCloset() {
 
                             <SC.WhiteBox>
                                 <SC.ProfImg>
-                                    {profileImage
-                                        ? <img src={`http://localhost:8080${profileImage}`} alt="profile" />
-                                        : <div className="no-image-text">프로필 사진이 없습니다</div>}
+                                    {profileImage ? (
+                                        <img src={`http://localhost:8080/${profileImage.replace(/^\/+/, '')}`} alt="profile" />
+                                    ) : (
+                                        <div className="no-image-text">프로필 사진이 없습니다</div>
+                                    )}
                                 </SC.ProfImg>
                                 <SC.ProfTxt>
                                     <SC.NameBox>
@@ -135,19 +106,38 @@ function FriendCloset() {
                                                 <div>공유된 코디가 없습니다</div>
                                             </SC.OutfitBox2>
                                         ) : (
-                                            sharedCoordis.map((coordi) => (
-                                                <SC.OutfitBox2 key={coordi.shareId}>
-                                                    <div>{coordi.title || coordi.date}</div>
-                                                    <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
-                                                        {coordi.items.slice(0, 3).map((item, idx) => (
-                                                            <img
-                                                                key={idx}
-                                                                src={`http://localhost:8080${item.croppedPath || item.imagePath}`}
-                                                                alt={`shared-${idx}`}
-                                                                style={{ height: "50px" }}
-                                                            />
-                                                        ))}
-                                                    </div>
+                                            sharedCoordis.map((coordi, index) => (
+                                                <SC.OutfitBox2 key={index}>
+                                                    <div >{coordi.title}</div>
+                                                    <SC.RandomBoard style={{ position: 'relative', height: '300px' }}>
+                                                        {coordi.items.map((item, idx) => {
+                                                            const { x = 0, y = 0, size = 30 } = item;
+                                                            return (
+                                                                <SC.RandomItem
+                                                                    key={idx}
+                                                                    style={{
+                                                                        position: "absolute",
+                                                                        left: `${x}%`,
+                                                                        top: `${y}%`,
+                                                                        width: `${size}%`,
+                                                                        zIndex: 10 + idx,
+                                                                    }}
+                                                                >
+                                                                    <img
+                                                                        src={`http://localhost:8080${item.croppedPath || item.imagePath}`}
+                                                                        alt={`item-${idx}`}
+                                                                        style={{
+                                                                            width: "100%",
+                                                                            height: "auto",
+                                                                            objectFit: "contain",
+                                                                            pointerEvents: "none",
+                                                                        }}
+                                                                        draggable={false}
+                                                                    />
+                                                                </SC.RandomItem>
+                                                            );
+                                                        })}
+                                                    </SC.RandomBoard>
                                                 </SC.OutfitBox2>
                                             ))
                                         )}
@@ -159,9 +149,7 @@ function FriendCloset() {
                 </SC.ContentBox>
             </SC.Container>
 
-            <SC.BottomBox>
-                <Footer />
-            </SC.BottomBox>
+            <SC.BottomBox><Footer /></SC.BottomBox>
         </SC.Background>
     );
 }
