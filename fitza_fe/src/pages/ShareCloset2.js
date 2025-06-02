@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as C from "../styles/CalendarCreateStyle";
 import Footer from "../components/Footer";
 import TopBar from "../components/TopBar";
@@ -22,6 +22,10 @@ const formatDate = (date) => {
 
 function ShareCloset2() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const isEditMode = location.state?.mode === "edit";
+    const editCalendarId = location.state?.calendarId;
     const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
     const [selectedTab, setSelectedTab] = useState("상의");
     const [coordiName, setCoordiName] = useState("");
@@ -30,12 +34,24 @@ function ShareCloset2() {
         상의: null,
         하의: null,
         아우터: null,
-        셋업: null,
+        원피스: null,
         신발: null,
         가방: null,
     });
+    const [imageStyles, setImageStyles] = useState({});
+    const [dragState, setDragState] = useState({});
+    const [resizeState, setResizeState] = useState({});
+    const boardRef = useRef(null);
 
-    const categoryList = ["상의", "하의", "아우터", "셋업", "신발", "가방"];
+    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+
+    const categoryList = ["상의", "하의", "아우터", "원피스", "신발", "가방"];
+
+    const getRandomStyle = () => ({
+        top: `${Math.floor(Math.random() * 60)}%`,
+        left: `${Math.floor(Math.random() * 60)}%`,
+    });
 
     useEffect(() => {
         const fetchClothing = async () => {
@@ -53,6 +69,43 @@ function ShareCloset2() {
     }, []);
 
     useEffect(() => {
+        if (isEditMode && location.state) {
+            setCoordiName(location.state.title);
+            setSelectedDate(new Date(location.state.date));
+
+            const fetchTypes = async () => {
+                const token = localStorage.getItem("authToken");
+                const imagesByCat = {};
+                const stylesByCat = {};
+
+                for (const item of location.state.items) {
+                    try {
+                        const res = await axios.get(`http://localhost:8080/api/clothing/${item.clothId}`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                        });
+                        const type = res.data?.type;
+                        if (type) {
+                            imagesByCat[type] = { ...item, type };
+                            stylesByCat[type] = {
+                                top: `${item.y}%`,
+                                left: `${item.x}%`,
+                                size: item.size ?? 100
+                            };
+                        }
+                    } catch (err) {
+                        console.error("cloth type 불러오기 실패:", err);
+                    }
+                }
+
+                setSelectedImages(imagesByCat);
+                setImageStyles(stylesByCat);
+            };
+
+            fetchTypes();
+        }
+    }, [location]);
+
+    useEffect(() => {
         document.body.style.overflow = isBottomSheetOpen ? "hidden" : "auto";
         return () => {
             document.body.style.overflow = "auto";
@@ -60,22 +113,152 @@ function ShareCloset2() {
     }, [isBottomSheetOpen]);
 
     const handleImageSelect = (tab, item) => {
-        setSelectedImages((prev) => ({ ...prev, [tab]: item }));
+        setSelectedImages((prev) => {
+            const current = prev[tab];
+            const currentId = current?.clothId || current?.clothid;
+            const newId = item.clothId || item.clothid;
+
+            // 같은 아이템을 다시 누른 경우: 제거
+            if (current && currentId === newId) {
+                const newImages = { ...prev };
+                delete newImages[tab];
+
+                // 스타일도 같이 삭제
+                setImageStyles((prevStyle) => {
+                    const newStyles = { ...prevStyle };
+                    delete newStyles[tab];
+                    return newStyles;
+                });
+
+                return newImages;
+            }
+
+            // 새로운 아이템 선택
+            return { ...prev, [tab]: item };
+        });
+
+        // 스타일 추가는 기존에 없을 때만 (삭제 시에는 실행되지 않음)
+        setImageStyles((prev) => {
+            if (prev[tab]) return prev;
+            const { top, left } = getRandomStyle();
+            return { ...prev, [tab]: { top, left, size: 30 } };
+        });
     };
+
+    const handleMouseDown = (cat, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const boardRect = boardRef.current?.getBoundingClientRect();
+        if (!boardRect) return;
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+
+        const currentStyle = imageStyles[cat] || { left: "0%", top: "0%" };
+        const currentLeft = parseFloat(currentStyle.left.replace("%", ""));
+        const currentTop = parseFloat(currentStyle.top.replace("%", ""));
+
+        setDragState({
+            isDragging: true,
+            category: cat,
+            startX,
+            startY,
+            startLeft: currentLeft,
+            startTop: currentTop
+        });
+    };
+
+    const handleMouseMove = (e) => {
+        if (!dragState.isDragging || !boardRef.current) return;
+        e.preventDefault();
+
+        const boardRect = boardRef.current.getBoundingClientRect();
+        const deltaX = e.clientX - dragState.startX;
+        const deltaY = e.clientY - dragState.startY;
+        const deltaXPercent = (deltaX / boardRect.width) * 100;
+        const deltaYPercent = (deltaY / boardRect.height) * 100;
+
+        const newLeft = Math.max(0, Math.min(dragState.startLeft + deltaXPercent, 85));
+        const newTop = Math.max(0, Math.min(dragState.startTop + deltaYPercent, 85));
+
+        setImageStyles(prev => ({
+            ...prev,
+            [dragState.category]: {
+                ...prev[dragState.category],
+                left: `${newLeft}%`,
+                top: `${newTop}%`
+            }
+        }));
+    };
+
+    const handleMouseUp = () => setDragState({});
+
+    const handleResizeMouseDown = (cat, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setResizeState({
+            isResizing: true,
+            category: cat,
+            startX: e.clientX,
+            startSize: imageStyles[cat]?.size || 100,
+        });
+    };
+
+    const handleResizeMouseMove = (e) => {
+        if (!resizeState.isResizing) return;
+        const deltaX = e.clientX - resizeState.startX;
+        const newSize = Math.max(30, resizeState.startSize + deltaX * 0.5);
+        setImageStyles(prev => ({
+            ...prev,
+            [resizeState.category]: {
+                ...prev[resizeState.category],
+                size: newSize
+            }
+        }));
+    };
+
+    const handleResizeMouseUp = () => setResizeState({});
+
+    useEffect(() => {
+        if (dragState.isDragging) {
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            return () => {
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            };
+        }
+    }, [dragState]);
+
+    useEffect(() => {
+        if (resizeState.isResizing) {
+            document.addEventListener('mousemove', handleResizeMouseMove);
+            document.addEventListener('mouseup', handleResizeMouseUp);
+            return () => {
+                document.removeEventListener('mousemove', handleResizeMouseMove);
+                document.removeEventListener('mouseup', handleResizeMouseUp);
+            };
+        }
+    }, [resizeState]);
 
     const handleSubmit = async () => {
         const token = localStorage.getItem("authToken");
-        const items = Object.values(selectedImages)
-            .filter((item) => item !== null)
-            .map((item) => ({
-                clothId: item.clothId || item.clothid,
-                x: item.x ?? null,
-                y: item.y ?? null,
-                size: item.size ?? null,
-            }));
+
+        const items = Object.entries(selectedImages)
+            .filter(([, item]) => item !== null)
+            .map(([cat, item]) => {
+                const { left = "0%", top = "0%", size = 100 } = imageStyles[cat] || {};
+                return {
+                    clothId: item.clothId || item.clothid,
+                    x: parseFloat(left.replace("%", "")),
+                    y: parseFloat(top.replace("%", "")),
+                    size
+                };
+            });
 
         const dataToSend = {
             title: coordiName,
+            date: formatDate(selectedDate),
             weather: "맑음",
             items,
         };
@@ -113,21 +296,53 @@ function ShareCloset2() {
                     onChange={(e) => setCoordiName(e.target.value)}
                 />
 
-                <C.Board>
-                    {categoryList.map((cat, i) => (
-                        <C.Section key={i}>
-                            {selectedImages[cat] ? (
-                                <img
-                                    src={`http://localhost:8080${selectedImages[cat].croppedPath || selectedImages[cat].imagePath}`}
-                                    alt={cat}
-                                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
-                                />
-                            ) : (
-                                <C.ImagePlaceholder>{cat} 없음</C.ImagePlaceholder>
-                            )}
-                        </C.Section>
-                    ))}
-                </C.Board>
+                <C.RandomBoard ref={boardRef}>
+                    {Object.entries(selectedImages)
+                        .filter(([, item]) => item && (item.croppedPath || item.imagePath))
+                        .map(([cat, item], index) => {
+                            const style = imageStyles[cat] || { top: "0%", left: "0%", size: 100 };
+                            return (
+                                <C.RandomItem
+                                    key={`${cat}-${index}`}
+                                    $top={style.top}
+                                    $left={style.left}
+                                    style={{
+                                        position: "absolute",
+                                        width: `${style.size}%`,
+                                        cursor: dragState.isDragging && dragState.category === cat ? 'grabbing' : 'grab',
+                                        zIndex: dragState.category === cat ? 100 : 10 + index,
+                                        userSelect: 'none',
+                                        transition: 'all 0.1s ease'
+                                    }}
+                                    onMouseDown={(e) => handleMouseDown(cat, e)}
+                                >
+                                    <img
+                                        src={`http://localhost:8080${selectedImages[cat].croppedPath || selectedImages[cat].imagePath}`}
+                                        alt={cat}
+                                        style={{
+                                            width: "100%",
+                                            height: "auto",
+                                            objectFit: "contain",
+                                            //pointerEvents: "none"
+                                        }}
+                                        draggable={false}
+                                    />
+                                    <div
+                                        onMouseDown={(e) => handleResizeMouseDown(cat, e)}
+                                        style={{
+                                            width: 10,
+                                            height: 10,
+                                            backgroundColor: "gray",
+                                            position: "absolute",
+                                            bottom: 0,
+                                            right: 0,
+                                            cursor: "nwse-resize"
+                                        }}
+                                    />
+                                </C.RandomItem>
+                            );
+                        })}
+                </C.RandomBoard>
 
                 <C.ButtonContainer>
                     <C.EditButton onClick={() => setIsBottomSheetOpen(true)}>옷장에서 선택</C.EditButton>
@@ -135,7 +350,7 @@ function ShareCloset2() {
                 </C.ButtonContainer>
 
                 {isBottomSheetOpen && (
-                    <C.BottomSheet>
+                    <C.BottomSheet style={{ zIndex: 9999 }}>
                         <C.CloseButton onClick={() => setIsBottomSheetOpen(false)}>완료</C.CloseButton>
                         <C.TabContainer>
                             {categoryList.map((tab, index) => (
