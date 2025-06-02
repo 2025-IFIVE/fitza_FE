@@ -48,6 +48,18 @@ function CalendarCreate() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  const labelToCategory = (label) => {
+    const labelMap = {
+      "20": "상의",
+      "21": "하의",
+      "22": "아우터",
+      "23": "원피스",
+      "24": "신발",
+      "25": "가방"
+    };
+    return labelMap[label] || `기타${label}`;
+  };
+  
   const categoryList = ["상의", "하의", "아우터", "원피스", "신발", "가방"];
 
   const getRandomStyle = () => ({
@@ -106,6 +118,31 @@ function CalendarCreate() {
       fetchTypes();
     }
   }, [location]);
+
+  useEffect(() => {
+    const matched = location.state?.matchedImages;
+    const labels = location.state?.labels;
+  
+    if (matched && labels && matched.length === labels.length) {
+      const newImages = {};
+      const newStyles = {};
+  
+      matched.forEach((url, idx) => {
+        const type = labelToCategory(labels[idx]);
+  
+        newImages[type] = {
+          imagePath: url.replace("http://localhost:8080", ""),
+          clothid: `matched-${idx}`, // 임시 ID
+        };
+  
+        newStyles[type] = getRandomStyle();
+      });
+  
+      setSelectedImages((prev) => ({ ...prev, ...newImages }));
+      setImageStyles((prev) => ({ ...prev, ...newStyles }));
+    }
+  }, [location]);
+  
 
   useEffect(() => {
     document.body.style.overflow = isBottomSheetOpen ? "hidden" : "auto";
@@ -363,10 +400,31 @@ function CalendarCreate() {
                       width: "100%",
                       height: "auto",
                       objectFit: "contain",
-                      //pointerEvents: "none"
                     }}
                     draggable={false}
                   />
+                  <div
+                    onClick={() => handleImageSelect(cat, item)}
+                    style={{
+                      position: "absolute",
+                      top: 2,
+                      right: 2,
+                      width: 16,
+                      height: 16,
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      color: "white",
+                      borderRadius: "50%",
+                      fontSize: 12,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      zIndex: 999,
+                      lineHeight: 1
+                    }}
+                  >
+                    ×
+                  </div>
                   <div
                     onMouseDown={(e) => handleResizeMouseDown(cat, e)}
                     style={{
@@ -380,6 +438,7 @@ function CalendarCreate() {
                     }}
                   />
                 </C.RandomItem>
+
               );
             })}
         </C.RandomBoard>

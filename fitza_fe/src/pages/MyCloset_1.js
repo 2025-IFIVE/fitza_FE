@@ -15,6 +15,7 @@ const MyCloset_1 = () => {
   const [weather, setWeather] = useState(null);
   const [dateInfo, setDateInfo] = useState({ day: "", date: "" });
   const [recentCoordi, setRecentCoordi] = useState([]);
+  const [recommendation, setRecommendation] = useState(null);
 
   useEffect(() => {
     // ✅ 위도/경도 기반 날씨는 이미 잘 호출되고 있음
@@ -72,16 +73,15 @@ const MyCloset_1 = () => {
   };
 
   const fetchWeather = async (lat, lon) => {
-    const API_KEY = "4edb7b32837f2109fc0331b22deb698c"; // OpenWeatherMap API Key
+    const API_KEY = "4edb7b32837f2109fc0331b22deb698c";
     const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=kr`;
-
+  
     try {
       const response = await axios.get(url);
       const data = response.data;
-      const weatherDesc = data.list[0].weather[0].description; // 첫 번째 예보 데이터의 날씨 설명
-      const weatherIcon = getWeatherIcon(weatherDesc, data.list[0].dt); // 로컬 아이콘 URL 가져오기
-
-      // 하루의 최고/최저 온도를 forecast에서 추출
+      const weatherDesc = data.list[0].weather[0].description;
+      const weatherIcon = getWeatherIcon(weatherDesc, data.list[0].dt);
+  
       const dailyTemps = data.list.reduce(
         (acc, curr) => {
           const temp = curr.main.temp;
@@ -91,20 +91,33 @@ const MyCloset_1 = () => {
         },
         { max: -Infinity, min: Infinity }
       );
-
+  
+      // 날씨 상태 업데이트
       setWeather({
-        temp: Math.round(data.list[0].main.temp), // 현재 온도 (첫 번째 예보 시간 기준)
-        temp_max: Math.round(dailyTemps.max), // 최고 온도 (예보 데이터에서 추출)
-        temp_min: Math.round(dailyTemps.min), // 최저 온도 (예보 데이터에서 추출)
-        description: weatherDesc, // 날씨 설명
-        icon: weatherIcon, // 로컬 아이콘
-        rain: data.list[0].rain ? (data.list[0].rain["1h"] || data.list[0].rain["3h"]) : 0 // 첫 번째 예보 데이터에서 강수량
+        temp: Math.round(data.list[0].main.temp),
+        temp_max: Math.round(dailyTemps.max),
+        temp_min: Math.round(dailyTemps.min),
+        description: weatherDesc,
+        icon: weatherIcon,
+        rain: data.list[0].rain ? (data.list[0].rain["1h"] || data.list[0].rain["3h"]) : 0
       });
-
+  
+      // 🔹 추천 API 호출
+      const rangeStr = `${Math.round(dailyTemps.min)}~${Math.round(dailyTemps.max)}도`;
+  
+      const token = localStorage.getItem("authToken");
+      const recRes = await axios.post("http://localhost:8080/api/recommend", {
+        weather: rangeStr
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+  
+      setRecommendation(recRes.data.data.recommendation);
     } catch (error) {
-      console.error("날씨 정보를 가져오는데 실패했습니다.", error);
+      console.error("날씨 정보 또는 추천 정보를 가져오는데 실패했습니다:", error);
     }
   };
+  
 
   const fetchRecentCoordi = async () => {
   try {
@@ -114,11 +127,28 @@ const MyCloset_1 = () => {
     });
 
     const list = listRes.data;
-    list.sort((a, b) => new Date(b.date) - new Date(a.date));
+    //list.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     console.log("🧪 응답 받은 코디 목록", list);
 
-    const top3 = await Promise.all(list.slice(0, 3).map(async (coordi) => {
+    // 🔽 날짜 중복 제거: 같은 날짜의 코디는 하나만 유지
+    const uniqueByDate = {};
+    list.forEach(item => {
+      const date = item.date;
+    
+      if (!uniqueByDate[date]) {
+        uniqueByDate[date] = item;
+      } else {
+        // ✅ calendarId가 더 큰 (= 최신) 걸 남긴다
+        if (item.calendarId > uniqueByDate[date].calendarId) {
+          uniqueByDate[date] = item;
+        }
+      }
+    });
+    
+    const uniqueList = Object.values(uniqueByDate).sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    const top3 = await Promise.all(uniqueList.slice(0, 3).map(async (coordi) => {
       const detailRes = await axios.get(`http://localhost:8080/api/coordination/${coordi.calendarId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -200,8 +230,27 @@ const MyCloset_1 = () => {
         <M.DailyCodiSection>
           <M.DailyCodiTitle>데일리 코디 추천</M.DailyCodiTitle>
           <M.DailyCodiLook>
-          <img src={dailycodiExImg} alt="데일리 코디 예시 이미지" />
+            {recommendation ? (
+              recommendation.items.map((item, idx) => (
+                <img
+                  key={idx}
+                  src={`http://localhost:8080${item.imageUrl}`}
+                  alt={`추천 아이템 ${idx}`}
+                  style={{
+                    position: "absolute",
+                    top: `${40 + idx * 5}%`, // 간단한 겹침 효과
+                    left: `${40 + idx * 5}%`,
+                    width: "50%",
+                    objectFit: "contain",
+                    pointerEvents: "none"
+                  }}
+                />
+              ))
+            ) : (
+              <img src={dailycodiExImg} alt="데일리 코디 예시 이미지" />
+            )}
           </M.DailyCodiLook>
+
 
         </M.DailyCodiSection>
         </M.WeatherandDailyCodi>

@@ -109,7 +109,12 @@ function SignUp() {
             />
           </S.InputField>
           <S.InputField>
-            <label htmlFor="phone">전화번호<S.Required>*</S.Required></label>
+            <label htmlFor="phone" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              전화번호<S.Required>*</S.Required>
+              <span style={{ fontSize: "12px", color: "#888" }}>
+                (010-0000-0000 형식으로 입력해주세요)
+              </span>
+            </label>
             <input
               type="text"
               name="phone"
@@ -119,6 +124,7 @@ function SignUp() {
               required
             />
           </S.InputField>
+
           <S.ButtonContainer>
             {errorMessage && <S.ErrorMessage>{errorMessage}</S.ErrorMessage>}
             <S.SubmitButton type="submit">회원가입하기</S.SubmitButton>
