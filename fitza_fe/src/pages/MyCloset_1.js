@@ -4,11 +4,8 @@ import axios from "axios";
 import * as M from "../styles/MyClosetStyle_1";
 import TopBar from '../components/TopBar';
 import Footer from '../components/Footer';
+import refreshIcon from "../img/refresh.png";
 
-import sampleCoordi1 from "../img/domi5.jpg";
-import sampleCoordi2 from "../img/domi6.jpg";
-import sampleCoordi3 from "../img/domi13.jpg";
-import dailycodiExImg from "../img/dailycodi_ex-img.png";
 
 const MyCloset_1 = () => {
   const navigate = useNavigate();
@@ -23,17 +20,21 @@ const MyCloset_1 = () => {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
-          fetchWeather(latitude, longitude);
+          const temps = await fetchWeather(latitude, longitude);
+          fetchRecommendation(temps.min, temps.max);  // ✅ 처음 한 번만 실행
         },
         (error) => {
-          console.error("위치 정보를 가져올 수 없습니다. 기본값(서울)으로 설정합니다.", error);
-          fetchWeather(37.5665, 126.9780);
+          console.error("위치 정보 실패, 서울로 대체", error);
+          fetchWeather(37.5665, 126.9780).then((temps) =>
+            fetchRecommendation(temps.min, temps.max)
+          );
         }
       );
     } else {
-      fetchWeather(37.5665, 126.9780);
+      fetchWeather(37.5665, 126.9780).then((temps) =>
+        fetchRecommendation(temps.min, temps.max)
+      );
     }
-  
     const today = new Date();
     const days = ["일", "월", "화", "수", "목", "금", "토"];
     setDateInfo({
@@ -72,52 +73,68 @@ const MyCloset_1 = () => {
     }
   };
 
-  const fetchWeather = async (lat, lon) => {
-    const API_KEY = "4edb7b32837f2109fc0331b22deb698c";
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=kr`;
-  
-    try {
-      const response = await axios.get(url);
-      const data = response.data;
-      const weatherDesc = data.list[0].weather[0].description;
-      const weatherIcon = getWeatherIcon(weatherDesc, data.list[0].dt);
-  
-      const dailyTemps = data.list.reduce(
-        (acc, curr) => {
-          const temp = curr.main.temp;
-          acc.max = Math.max(acc.max, temp);
-          acc.min = Math.min(acc.min, temp);
-          return acc;
-        },
-        { max: -Infinity, min: Infinity }
-      );
-  
-      // 날씨 상태 업데이트
-      setWeather({
-        temp: Math.round(data.list[0].main.temp),
-        temp_max: Math.round(dailyTemps.max),
-        temp_min: Math.round(dailyTemps.min),
-        description: weatherDesc,
-        icon: weatherIcon,
-        rain: data.list[0].rain ? (data.list[0].rain["1h"] || data.list[0].rain["3h"]) : 0
-      });
-  
-      // 🔹 추천 API 호출
-      const rangeStr = `${Math.round(dailyTemps.min)}~${Math.round(dailyTemps.max)}도`;
-  
-      const token = localStorage.getItem("authToken");
-      const recRes = await axios.post("http://localhost:8080/api/recommend", {
-        weather: rangeStr
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-  
-      setRecommendation(recRes.data.data.recommendation);
-    } catch (error) {
-      console.error("날씨 정보 또는 추천 정보를 가져오는데 실패했습니다:", error);
-    }
+  // 날씨만 불러옴
+const fetchWeather = async (lat, lon) => {
+  const API_KEY = "4edb7b32837f2109fc0331b22deb698c";
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=kr`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+    const weatherDesc = data.list[0].weather[0].description;
+    const weatherIcon = getWeatherIcon(weatherDesc, data.list[0].dt);
+
+    const dailyTemps = data.list.reduce(
+      (acc, curr) => {
+        const temp = curr.main.temp;
+        acc.max = Math.max(acc.max, temp);
+        acc.min = Math.min(acc.min, temp);
+        return acc;
+      },
+      { max: -Infinity, min: Infinity }
+    );
+
+    setWeather({
+      temp: Math.round(data.list[0].main.temp),
+      temp_max: Math.round(dailyTemps.max),
+      temp_min: Math.round(dailyTemps.min),
+      description: weatherDesc,
+      icon: weatherIcon,
+      rain: data.list[0].rain ? (data.list[0].rain["1h"] || data.list[0].rain["3h"]) : 0
+    });
+
+    return { min: dailyTemps.min, max: dailyTemps.max }; // ✅ 추가
+
+  } catch (error) {
+    console.error("날씨 정보 가져오기 실패:", error);
+  }
+};
+
+const fetchRecommendation = async (min, max) => {
+  const getWeatherRangeKey = (min, max) => {
+    const avg = (min + max) / 2;
+    if (avg >= 28) return "28도 이상";
+    if (avg >= 23) return "23~27도";
+    if (avg >= 17) return "17~22도";
+    if (avg >= 12) return "12~16도";
+    return "11도 이하";
   };
-  
+
+  const rangeStr = getWeatherRangeKey(min, max);
+  const token = localStorage.getItem("authToken");
+
+  try {
+    const recRes = await axios.post("http://localhost:8080/api/recommend", {
+      weather: rangeStr
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    setRecommendation(recRes.data.data.recommendation);
+  } catch (error) {
+    console.error("추천 정보를 가져오는데 실패했습니다:", error);
+  }
+};
 
   const fetchRecentCoordi = async () => {
   try {
@@ -227,32 +244,54 @@ const MyCloset_1 = () => {
         </M.WeatherContainer>
 
         {/* 데일리 코디 추천*/}
-        <M.DailyCodiSection>
-          <M.DailyCodiTitle>데일리 코디 추천</M.DailyCodiTitle>
-          <M.DailyCodiLook>
-            {recommendation ? (
-              recommendation.items.map((item, idx) => (
-                <img
-                  key={idx}
-                  src={`http://localhost:8080${item.imageUrl}`}
-                  alt={`추천 아이템 ${idx}`}
-                  style={{
-                    position: "absolute",
-                    top: `${40 + idx * 5}%`, // 간단한 겹침 효과
-                    left: `${40 + idx * 5}%`,
-                    width: "50%",
-                    objectFit: "contain",
-                    pointerEvents: "none"
-                  }}
-                />
-              ))
-            ) : (
-              <img src={dailycodiExImg} alt="데일리 코디 예시 이미지" />
-            )}
-          </M.DailyCodiLook>
+        <M.DailyCodiSection style={{ position: "relative", overflow: "hidden", padding: "10px" }}>
+  <M.DailyCodiTitle style={{ marginBottom: "5px" }}>데일리 코디 추천</M.DailyCodiTitle>
 
+  <button
+    onClick={() => weather && fetchRecommendation(weather.temp_min, weather.temp_max)}
+    style={{
+      position: "absolute",
+      top: "10px",
+      right: "10px",
+      background: "none",
+      border: "none",
+      cursor: "pointer",
+      padding: "4px"
+    }}
+  >
+    <img
+      src={refreshIcon}
+      alt="새로고침"
+      style={{ width: "18px", height: "18px" }}
+      title="새로 추천받기"
+    />
+  </button>
 
-        </M.DailyCodiSection>
+  <M.DailyCodiLook>
+  {recommendation?.items?.length > 0 ? (
+    recommendation.items.map((item, idx) => (
+      <img
+        key={idx}
+        src={`http://localhost:8080${item.imageUrl}`}
+        alt=""
+        style={{
+          width: "80px",
+          height: "100px",
+          objectFit: "contain"
+        }}
+      />
+    ))
+  ) : recommendation === null ? (
+    // 🔹 recommendation이 아직 없는 첫 방문 상태 → 아무 것도 표시하지 않음
+    null
+  ) : (
+    // 🔹 recommendation은 있지만 items가 비어 있을 때
+    <p style={{ fontSize: "0.85rem", color: "#666" }}>추천 코디가 없습니다.</p>
+  )}
+</M.DailyCodiLook>
+
+</M.DailyCodiSection>
+
         </M.WeatherandDailyCodi>
 
         {/* 카테고리 */}

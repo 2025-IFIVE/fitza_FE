@@ -164,14 +164,15 @@ export const DailyCodiTitle = styled.h2`
 `;
 
 export const DailyCodiLook = styled.div`
-  width: 90%;
-  height: 150px; /* 원하는 높이 설정 */
-  margin: 0px 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #fff;
-
+display: grid;
+grid-template-columns: repeat(2, 1fr);  // 2열 고정
+gap: 10px;
+justify-items: center;
+align-items: center;
+padding: 10px;
+box-sizing: border-box;
+max-height: 220px;        // ✅ 박스 안 넘치게 제한
+overflow: hidden;
   img {
     max-width: 100%;
     max-height: 90%;
