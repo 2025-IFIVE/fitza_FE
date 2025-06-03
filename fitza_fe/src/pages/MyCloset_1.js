@@ -271,7 +271,12 @@ const MyCloset_1 = () => {
           <M.CoordiCardWrapper>
             {recentCoordi.map((item) => (
               <M.CoordiCardWrapperItem key={item.id}>
-                <M.CoordiCard onClick={() => navigate(`/calendarpage`)}>
+                <M.CoordiCard onClick={() => navigate("/calendardetail", {
+                  state: {
+                    calendarId: item.id,
+                    selectedDate: item.date
+                  }
+                })}>
                 {item.images.map((img, idx) => (
                   <img
                   key={idx}

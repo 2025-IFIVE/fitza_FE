@@ -79,7 +79,7 @@ function CalendarDetail() {
 
       <C.Container>
         <C.Header>
-          <C.BackButton onClick={() => navigate("/calendarpage")}>
+          <C.BackButton onClick={() => navigate(-1)}>
             <img src={backButton} alt="뒤로 가기" />
           </C.BackButton>
           <C.Title>캘린더 상세</C.Title>
