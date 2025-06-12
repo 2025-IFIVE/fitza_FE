@@ -7,7 +7,7 @@ import smallPlus from '../img/cameraImage.png';
 import backIcon from "../img/backButton.png";
 import axios from "axios";
 
-function CalendarCreate2() {
+function CalendarCreate3() {
     const navigate = useNavigate();
     const [bodyImage, setBodyImage] = useState(null);
     const [imageFile, setImageFile] = useState(null); // 🔹 File 객체 추가
@@ -74,13 +74,9 @@ function CalendarCreate2() {
 
             navigate("/CalendarCreate", {
                 state: {
-                    matchedImages: [
-                    "http://localhost:8080/uploads/cropped/51e4623d-3c6c-4971-978b-4145a3f354ef_2e100913-9266-462f-b074-67031a9266e2_processed.png",
-                    "http://localhost:8080/uploads/cropped/2d5a81f9-757e-452c-918a-e954ee020f25_ca53f76b-99ad-4a2c-ba61-151c41a429de_processed.png",
-                    "http://localhost:8080/uploads/cropped/1aaf676a-0fff-47cf-908d-6a661fc5d226_8ce10c67-41f7-4d48-9e98-140851637451_processed.png"
-                    ],
-                    labels: ["34", "35", "36"],
-                    scores: [101, 202, 303],
+                    matchedImages: data.matchedImages,
+                    labels: data.labels,
+                    scores: data.scores,
                 }
             });
 
@@ -167,4 +163,4 @@ function CalendarCreate2() {
     );
 }
 
-export default CalendarCreate2;
+export default CalendarCreate3;
