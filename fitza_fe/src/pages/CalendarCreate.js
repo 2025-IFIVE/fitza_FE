@@ -128,16 +128,18 @@ function CalendarCreate() {
       const newStyles = {};
   
       matched.forEach((url, idx) => {
-        const type = labelToCategory(labels[idx]);
-  
-        newImages[type] = {
+        const clothId = parseInt(labels[idx]);
+
+        newImages[clothId] = {
           imagePath: url.replace(process.env.REACT_APP_API, ""),
-          clothid: `matched-${idx}`, // 임시 ID
+          clothid: clothId,
         };
-  
-        newStyles[type] = getRandomStyle();
+        //수정ㅇ
+        const { top, left } = getRandomStyle();
+        newStyles[clothId] = { top, left, size: 30 };
+
       });
-  
+
       setSelectedImages((prev) => ({ ...prev, ...newImages }));
       setImageStyles((prev) => ({ ...prev, ...newStyles }));
     }
@@ -295,6 +297,8 @@ function CalendarCreate() {
       };
     });
 
+
+
   const dataToSend = {
     title: coordiName,
     date: formatDate(selectedDate),
@@ -373,7 +377,7 @@ function CalendarCreate() {
           onChange={(e) => setCoordiName(e.target.value)}
         />
 
-        <C.RandomBoard ref={boardRef}>
+<C.RandomBoard ref={boardRef}>
           {Object.entries(selectedImages)
             .filter(([, item]) => item && (item.croppedPath || item.imagePath))
             .map(([cat, item], index) => {
@@ -394,13 +398,23 @@ function CalendarCreate() {
                   onMouseDown={(e) => handleMouseDown(cat, e)}
                 >
                   {(() => {
-                      const rawPath = item.croppedPath || item.imagePath || "";
-                      const fullPath = rawPath.startsWith("http")
-                        ? rawPath
-                        : `${process.env.REACT_APP_API}/${rawPath.replace(/^\//, "")}`;
+                    const rawPath = item.croppedPath || item.imagePath || "";
 
-                      return (
-                        <img
+                    let fullPath = "";
+                    if (rawPath.startsWith("http://localhost") || rawPath.startsWith("http://127.0.0.1")) {
+                      // localhost가 포함된 경우 => REACT_APP_API로 강제 치환
+                      fullPath = rawPath
+                        .replace("http://localhost:8080", process.env.REACT_APP_API)
+                        .replace("http://127.0.0.1:8080", process.env.REACT_APP_API);
+                    } else if (rawPath.startsWith("http")) {
+                      fullPath = rawPath;
+                    } else {
+                      // 절대 경로 아닌 경우
+                      fullPath = `${process.env.REACT_APP_API}/${rawPath.replace(/^\//, "")}`;
+                    }
+  
+                          return (
+                            <img
                           src={fullPath}
                           alt={cat}
                           style={{
@@ -409,13 +423,28 @@ function CalendarCreate() {
                             objectFit: "contain",
                           }}
                           onError={(e) => {
-                            console.error("이미지 로드 실패:", fullPath);
+                            // 화면에 실패 메시지 표시
+                            const errorDiv = document.createElement('div');
+                            errorDiv.innerText = "이미지 로드 실패: " + fullPath;
+                            errorDiv.style.color = 'red';
+                            errorDiv.style.fontSize = '14px';
+                            errorDiv.style.position = 'fixed';
+                            errorDiv.style.top = '10px';
+                            errorDiv.style.left = '10px';
+                            errorDiv.style.zIndex = '9999';
+                            errorDiv.style.backgroundColor = 'white';
+                            errorDiv.style.padding = '5px';
+                            errorDiv.style.border = '1px solid red';
+                            document.body.appendChild(errorDiv);
+
+                            // 기존 이미지 숨기기
                             e.target.style.display = "none";
                           }}
                           draggable={false}
                         />
-                      );
-                    })()}
+
+                          );
+                        })()}
 
                   <div
                     onClick={() => handleImageSelect(cat, item)}
