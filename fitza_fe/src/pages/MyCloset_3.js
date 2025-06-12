@@ -461,7 +461,7 @@ const handleSingleSelect = (selected, setSelected, item) => {
             {(croppedPath || imagePath || imageSrc) ? (
               <>
                 <img
-                  src={`${process.env.REACT_APP_API}/${croppedPath || imagePath || imageSrc}`}
+                  src={`${process.env.REACT_APP_API}${croppedPath || imagePath || imageSrc}`}
                   alt="선택한 옷"
                 />
                 <button onClick={openEditModal} style={{ marginTop: "10px" }}>

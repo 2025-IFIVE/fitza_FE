@@ -182,8 +182,8 @@ function Mypage() {
                 </MP.BodytypeBox>
 
                 <MP.ClickBox>
-                    <MP.Click to="/statistic">
-                        <img src={chartIcon} alt="통계" style={{ width: '20px', height: '20px' }} /> 통계
+                    <MP.Click to="/friends">
+                        <img src={chartIcon} alt="친구" style={{ width: '20px', height: '20px' }} /> 친구
                     </MP.Click>
                     <MP.Click to="/calendarpage">
                         <img src={calendarIcon} alt="캘린더" style={{ width: '20px', height: '20px' }} /> 캘린더
