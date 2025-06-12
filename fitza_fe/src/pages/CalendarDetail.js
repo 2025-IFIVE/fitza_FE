@@ -23,7 +23,7 @@ function CalendarDetail() {
       if (!calendarId) return;
       try {
         const token = localStorage.getItem("authToken");
-        const res = await axios.get(`http://localhost:8080/api/coordination/${calendarId}`, {
+        const res = await axios.get(`${process.env.REACT_APP_API}/api/coordination/${calendarId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -32,7 +32,7 @@ function CalendarDetail() {
 
         const clothMap = {};
         for (const item of data.items) {
-          const clothRes = await axios.get(`http://localhost:8080/api/clothing/${item.clothId}`, {
+          const clothRes = await axios.get(`${process.env.REACT_APP_API}/api/clothing/${item.clothId}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           const clothType = clothRes.data?.type;
@@ -59,7 +59,7 @@ function CalendarDetail() {
     if (!window.confirm("정말 이 코디를 삭제하시겠습니까?")) return;
     try {
       const token = localStorage.getItem("authToken");
-      await axios.delete(`http://localhost:8080/api/coordination/${calendarId}`, {
+      await axios.delete(`${process.env.REACT_APP_API}/api/coordination/${calendarId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -120,7 +120,7 @@ function CalendarDetail() {
                 }}
               >
                 <img
-                  src={`http://localhost:8080${item.croppedPath || item.imagePath}`}
+                  src={`${process.env.REACT_APP_API}/${(item.croppedPath || item.imagePath).replace(/^\/?/, "")}`}
                   alt={cat}
                   style={{
                     width: "100%",

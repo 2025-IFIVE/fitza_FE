@@ -45,7 +45,7 @@ function CalendarPage() {
       try {
         const token = localStorage.getItem("authToken");
 
-        const listRes = await axios.get("http://localhost:8080/api/coordination/my", {
+        const listRes = await axios.get(`${process.env.REACT_APP_API}/api/coordination/my`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -55,7 +55,7 @@ function CalendarPage() {
         await Promise.all(
           coordiList.map(async (coordi) => {
             try {
-              const detailRes = await axios.get(`http://localhost:8080/api/coordination/${coordi.calendarId}`, {
+              const detailRes = await axios.get(`${process.env.REACT_APP_API}/api/coordination/${coordi.calendarId}`, {
                 headers: { Authorization: `Bearer ${token}` }
               });
 
@@ -63,7 +63,7 @@ function CalendarPage() {
               const itemsByCategory = {};
 
               for (const item of detail.items) {
-                const clothRes = await axios.get(`http://localhost:8080/api/clothing/${item.clothId}`, {
+                const clothRes = await axios.get(`${process.env.REACT_APP_API}/api/clothing/${item.clothId}`, {
                   headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -163,7 +163,7 @@ function CalendarPage() {
                       <div key={idx} style={{ width: '100%', height: '100%' }}>
                         {imagePath && (
                           <img
-                            src={`http://localhost:8080${imagePath}`}
+                          src={`${process.env.REACT_APP_API}/${imagePath.replace(/^\//, "")}`}
                             alt={`coordi-${idx}`}
                             style={{
                               width: '100%',

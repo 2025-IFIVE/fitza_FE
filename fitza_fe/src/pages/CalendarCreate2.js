@@ -49,7 +49,7 @@ function CalendarCreate2() {
 
         try {
             // ✅ 2. 이미 등록된 코디들 가져오기
-            const res = await axios.get("http://localhost:8080/api/coordination/my", {
+            const res = await axios.get(`${process.env.REACT_APP_API}/api/coordination/my`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -63,7 +63,8 @@ function CalendarCreate2() {
             const formData = new FormData();
             formData.append("file", imageFile);
 
-            const matchRes = await axios.post("http://localhost:8080/api/match/ootd", formData, {
+            const matchRes = await axios.post(`${process.env.REACT_APP_API}/api/match/ootd`, formData, {
+
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

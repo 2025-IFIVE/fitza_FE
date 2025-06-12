@@ -71,7 +71,7 @@ function CalendarCreate() {
     const fetchClothing = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        const res = await axios.get("http://localhost:8080/api/clothing/my", {
+        const res = await axios.get(`${process.env.REACT_APP_API}/api/clothing/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setClothingData(res.data);
@@ -94,7 +94,7 @@ function CalendarCreate() {
 
         for (const item of location.state.items) {
           try {
-            const res = await axios.get(`http://localhost:8080/api/clothing/${item.clothId}`, {
+            const res = await axios.get(`${process.env.REACT_APP_API}/api/clothing/${item.clothId}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             const type = res.data?.type;
@@ -131,7 +131,7 @@ function CalendarCreate() {
         const type = labelToCategory(labels[idx]);
   
         newImages[type] = {
-          imagePath: url.replace("http://localhost:8080", ""),
+          imagePath: url.replace(process.env.REACT_APP_API, ""),
           clothid: `matched-${idx}`, // 임시 ID
         };
   
@@ -304,7 +304,7 @@ function CalendarCreate() {
 
   try {
     if (isEditMode) {
-      await axios.put(`http://localhost:8080/api/coordination/${editCalendarId}`, dataToSend, {
+      await axios.put(`${process.env.REACT_APP_API}/api/coordination/${editCalendarId}`, dataToSend, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("코디 수정 성공!");
@@ -315,7 +315,7 @@ function CalendarCreate() {
         },
       });
     } else {
-      await axios.post("http://localhost:8080/api/coordination", dataToSend, {
+      await axios.post(`${process.env.REACT_APP_API}/api/coordination`, dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
         });
       alert("코디 등록 성공!");
@@ -394,7 +394,7 @@ function CalendarCreate() {
                   onMouseDown={(e) => handleMouseDown(cat, e)}
                 >
                   <img
-                    src={`http://localhost:8080${item.croppedPath || item.imagePath}`}
+                    src={`${process.env.REACT_APP_API}/${(item.croppedPath || item.imagePath).replace(/^\//, "")}`}
                     alt={cat}
                     style={{
                       width: "100%",
@@ -468,7 +468,7 @@ function CalendarCreate() {
                   .filter((item) => item.type === selectedTab)
                   .map((item, idx) => (
                     <C.ImageBox key={idx} onClick={() => handleImageSelect(selectedTab, item)}>
-                      <img src={`http://localhost:8080${item.croppedPath}`} alt={`cloth-${item.clothid}`} />
+                      <img src={`${process.env.REACT_APP_API}/${item.croppedPath.replace(/^\//, "")}`} alt={`cloth-${item.clothid}`} />
                     </C.ImageBox>
                   ))}
               </C.ImageGrid>

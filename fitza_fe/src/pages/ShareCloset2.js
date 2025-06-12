@@ -68,7 +68,7 @@ function ShareCloset2() {
         const fetchClothing = async () => {
             try {
                 const token = localStorage.getItem("authToken");
-                const res = await axios.get("http://localhost:8080/api/clothing/my", {
+                const res = await axios.get(`${process.env.REACT_APP_API}/api/clothing/my`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setClothingData(res.data);
@@ -91,7 +91,7 @@ function ShareCloset2() {
 
                 for (const item of location.state.items) {
                     try {
-                        const res = await axios.get(`http://localhost:8080/api/clothing/${item.clothId}`, {
+                        const res = await axios.get(`${process.env.REACT_APP_API}/api/clothing/${item.clothId}`, {
                             headers: { Authorization: `Bearer ${token}` },
                         });
                         const type = res.data?.type;
@@ -127,7 +127,7 @@ function ShareCloset2() {
                 const type = labelToCategory(labels[idx]);
 
                 newImages[type] = {
-                    imagePath: url.replace("http://localhost:8080", ""),
+                    imagePath: url.replace(process.env.REACT_APP_API, ""),
                     clothid: `matched-${idx}`, // 임시 ID
                 };
 
@@ -299,7 +299,7 @@ function ShareCloset2() {
         };
 
         try {
-            await axios.post("http://localhost:8080/api/share", dataToSend, {
+            await axios.post(`${process.env.REACT_APP_API}/api/share`, dataToSend, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             alert("공유 코디 등록 성공!");
@@ -352,7 +352,7 @@ function ShareCloset2() {
                                     onMouseDown={(e) => handleMouseDown(cat, e)}
                                 >
                                     <img
-                                        src={`http://localhost:8080${selectedImages[cat].croppedPath || selectedImages[cat].imagePath}`}
+                                        src={`${process.env.REACT_APP_API}/${(selectedImages[cat].croppedPath || selectedImages[cat].imagePath).replace(/^\/+/, '')}`}
                                         alt={cat}
                                         style={{
                                             width: "100%",
@@ -426,7 +426,7 @@ function ShareCloset2() {
                                     .filter((item) => item.type === selectedTab)
                                     .map((item, idx) => (
                                         <C.ImageBox key={idx} onClick={() => handleImageSelect(selectedTab, item)}>
-                                            <img src={`http://localhost:8080${item.croppedPath || item.imagePath}`} alt={`cloth-${item.clothid}`} />
+                                            <img src={`${process.env.REACT_APP_API}/${(item.croppedPath || item.imagePath).replace(/^\/+/, '')}`} alt={`cloth-${item.clothid}`} />
                                         </C.ImageBox>
                                     ))}
                             </C.ImageGrid>

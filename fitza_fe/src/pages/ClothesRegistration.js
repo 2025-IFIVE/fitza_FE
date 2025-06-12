@@ -35,7 +35,7 @@ function ClothesRegistration() {
         try {
             const token = localStorage.getItem('authToken');
             console.log("토큰", token)
-            const response = await fetch("http://localhost:8080/api/clothing/upload", {
+            const response = await fetch(`${process.env.REACT_APP_API}/api/clothing/upload`, {
                 method: "POST",
                 headers: {
                     'Authorization': `Bearer ${token}`, // 예시
@@ -55,7 +55,7 @@ function ClothesRegistration() {
             navigate("/MyCloset_3", {
                 state: {
                 id: result.clothid,
-                imageSrc: `http://localhost:8080${result.imagePath || result.image_path}`,
+                imageSrc: `${process.env.REACT_APP_API}/${result.imagePath || result.image_path}`,
                 category: result.category,
                 type: result.type,           // ✅ type도 함께 넘기기
                 clothId: result.clothid,     // ✅ id와 함께 clothId도 넘기기 (MyCloset_3에서 사용)
