@@ -483,8 +483,14 @@ function ShareCloset() {
                                                                             zIndex: 10 + idx,
                                                                         }}
                                                                     >
-                                                                        <img
-                                                                            src={`${process.env.REACT_APP_API}/${item.croppedPath || item.imagePath}`}
+                                                                        {(() => {
+                                                                        const rawPath = item.croppedPath || item.imagePath || "";
+                                                                        const fullPath = rawPath.startsWith("http")
+                                                                            ? rawPath
+                                                                            : `${process.env.REACT_APP_API}/${rawPath.replace(/^\//, "")}`;
+                                                                        return (
+                                                                            <img
+                                                                            src={fullPath}
                                                                             alt={`item-${idx}`}
                                                                             style={{
                                                                                 width: "100%",
@@ -493,7 +499,14 @@ function ShareCloset() {
                                                                                 pointerEvents: "none",
                                                                             }}
                                                                             draggable={false}
-                                                                        />
+                                                                            onError={(e) => {
+                                                                                console.error("이미지 로딩 실패:", fullPath);
+                                                                                e.target.style.display = "none";
+                                                                            }}
+                                                                            />
+                                                                        );
+                                                                        })()}
+
                                                                     </SC.RandomItem>
                                                                 );
                                                             })}
