@@ -393,16 +393,30 @@ function CalendarCreate() {
                   }}
                   onMouseDown={(e) => handleMouseDown(cat, e)}
                 >
-                  <img
-                    src={`${process.env.REACT_APP_API}/${(item.croppedPath || item.imagePath).replace(/^\//, "")}`}
-                    alt={cat}
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      objectFit: "contain",
-                    }}
-                    draggable={false}
-                  />
+                  {(() => {
+                      const rawPath = item.croppedPath || item.imagePath || "";
+                      const fullPath = rawPath.startsWith("http")
+                        ? rawPath
+                        : `${process.env.REACT_APP_API}/${rawPath.replace(/^\//, "")}`;
+
+                      return (
+                        <img
+                          src={fullPath}
+                          alt={cat}
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            objectFit: "contain",
+                          }}
+                          onError={(e) => {
+                            console.error("이미지 로드 실패:", fullPath);
+                            e.target.style.display = "none";
+                          }}
+                          draggable={false}
+                        />
+                      );
+                    })()}
+
                   <div
                     onClick={() => handleImageSelect(cat, item)}
                     style={{
