@@ -24,6 +24,8 @@ import CalendarDetail from "./pages/CalendarDetail";
 import CalendarCreate from "./pages/CalendarCreate";
 import ClothesRegistration from "./pages/ClothesRegistration";
 import CalendarCreate2 from "./pages/CalendarCreate2";
+import CalendarCreate3 from "./pages/CalendarCreate3";
+import CalendarCreate4 from "./pages/CalendarCreate4";
 import ShoesHats from "./pages/ShoesHats";
 
 function App() {
@@ -54,6 +56,8 @@ function App() {
         <Route exact path="/clothesRegistration" element={<ClothesRegistration />} />
         <Route exact path="/calendarcreate2" element={<CalendarCreate2 />} />
         <Route exact path="/shoeshats" element={<ShoesHats />} />
+        <Route exact path="/calendarcreate3" element={<CalendarCreate3 />} />
+        <Route exact path="/calendarcreate4" element={<CalendarCreate4 />} />
       </Routes>
     </div>
   );

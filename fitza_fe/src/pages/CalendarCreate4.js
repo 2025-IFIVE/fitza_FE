@@ -21,7 +21,7 @@ const formatDate = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-function CalendarCreate() {
+function CalendarCreate4() {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -358,7 +358,7 @@ function CalendarCreate() {
           </C.dateContainer>
           <C.RegisterContainer>
             <C.Register>촬영하기</C.Register>
-            <Link to="/CalendarCreate2">
+            <Link to="/Camera">
               <img src={smallPlus} alt="plus" />
             </Link>
           </C.RegisterContainer>
@@ -527,4 +527,4 @@ function CalendarCreate() {
   );
 }
 
-export default CalendarCreate;
+export default CalendarCreate4;
