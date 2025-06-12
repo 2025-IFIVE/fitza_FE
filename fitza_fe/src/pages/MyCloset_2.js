@@ -22,7 +22,7 @@ function MyCloset_2() {
     const fetchClothing = async () => {
       try {
         const token = localStorage.getItem('authToken'); // 실제 저장된 토큰 키 확인 필요
-        const response = await axios.get("http://localhost:8080/api/clothing/my", {
+        const response = await axios.get(`${process.env.REACT_APP_API}/api/clothing/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -49,7 +49,7 @@ function MyCloset_2() {
   const handleBoxClick = (item) => {
     navigate("/MyCloset_3", {
       state: {
-        imageSrc: `http://localhost:8080${item.croppedPath}`,
+        imageSrc: `${process.env.REACT_APP_API}${item.croppedPath}`,
         category: item.type,
         clothId: item.clothid, // 상세정보 연동용
         type: item.type   // type도 넘겨주자
@@ -88,7 +88,7 @@ function MyCloset_2() {
             .map((image, index) => (
               <M.Box key={index} onClick={() => handleBoxClick(image)}>
                 <M.BoxImage 
-                  src={`http://localhost:8080${image.croppedPath}`}
+                  src={`${process.env.REACT_APP_API}${image.croppedPath}`}
                   alt={`옷 ${index + 1}`}
                 />
               </M.Box>

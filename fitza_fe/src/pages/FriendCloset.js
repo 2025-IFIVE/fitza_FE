@@ -21,7 +21,7 @@ function FriendCloset() {
         const token = localStorage.getItem("authToken");
         if (!token || !id) return;
 
-        axios.get(`http://localhost:8080/api/profile/${id}`, {
+        axios.get(`${process.env.REACT_APP_API}/api/profile/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -40,7 +40,7 @@ function FriendCloset() {
         const token = localStorage.getItem("authToken");
         if (!token || !id) return;
 
-        axios.get(`http://localhost:8080/api/share/friends/${id}`, {
+        axios.get(`${process.env.REACT_APP_API}/api/share/friends/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -80,7 +80,7 @@ function FriendCloset() {
                             <SC.WhiteBox>
                                 <SC.ProfImg>
                                     {profileImage ? (
-                                        <img src={`http://localhost:8080/${profileImage.replace(/^\/+/, '')}`} alt="profile" />
+                                        <img src={`${process.env.REACT_APP_API}/${profileImage.replace(/^\/+/, '')}`} alt="profile" />
                                     ) : (
                                         <div className="no-image-text">프로필 사진이 없습니다</div>
                                     )}
@@ -124,7 +124,7 @@ function FriendCloset() {
                                                                     }}
                                                                 >
                                                                     <img
-                                                                        src={`http://localhost:8080${item.croppedPath || item.imagePath}`}
+                                                                        src={`${process.env.REACT_APP_API}/${item.croppedPath || item.imagePath}`}
                                                                         alt={`item-${idx}`}
                                                                         style={{
                                                                             width: "100%",

@@ -28,7 +28,7 @@ function Join() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/login",
+        `${process.env.REACT_APP_API}/login`,
         {
           username: formData.username,
           password: formData.password

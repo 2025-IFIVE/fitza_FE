@@ -124,7 +124,7 @@ const fetchRecommendation = async (min, max) => {
   const token = localStorage.getItem("authToken");
 
   try {
-    const recRes = await axios.post("http://localhost:8080/api/recommend", {
+    const recRes = await axios.post(`${process.env.REACT_APP_API}/api/recommend`, {
       weather: rangeStr
     }, {
       headers: { Authorization: `Bearer ${token}` }
@@ -139,7 +139,7 @@ const fetchRecommendation = async (min, max) => {
   const fetchRecentCoordi = async () => {
   try {
     const token = localStorage.getItem("authToken");
-    const listRes = await axios.get("http://localhost:8080/api/coordination/my", {
+    const listRes = await axios.get(`${process.env.REACT_APP_API}/api/coordination/my`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -166,7 +166,7 @@ const fetchRecommendation = async (min, max) => {
     const uniqueList = Object.values(uniqueByDate).sort((a, b) => new Date(b.date) - new Date(a.date));
     
     const top3 = await Promise.all(uniqueList.slice(0, 3).map(async (coordi) => {
-      const detailRes = await axios.get(`http://localhost:8080/api/coordination/${coordi.calendarId}`, {
+      const detailRes = await axios.get(`${process.env.REACT_APP_API}/api/coordination/${coordi.calendarId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
     
@@ -272,7 +272,7 @@ const fetchRecommendation = async (min, max) => {
     recommendation.items.map((item, idx) => (
       <img
         key={idx}
-        src={`http://localhost:8080${item.imageUrl}`}
+        src={`${process.env.REACT_APP_API}${item.imageUrl}`}
         alt=""
         style={{
           width: "80px",
@@ -319,7 +319,7 @@ const fetchRecommendation = async (min, max) => {
                 {item.images.map((img, idx) => (
                   <img
                   key={idx}
-                  src={`http://localhost:8080${img.path}`}
+                  src={`${process.env.REACT_APP_API}${img.path}`}
                   alt={`코디 아이템 ${idx}`}
                   style={{
                     position: "absolute",

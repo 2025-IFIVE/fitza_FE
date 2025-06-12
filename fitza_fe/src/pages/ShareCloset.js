@@ -23,6 +23,7 @@ function ShareCloset() {
     const [nickname, setNickname] = useState(""); // 닉네임
     const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 편집 모달
     const [profileImage, setProfileImage] = useState(null); // 프로필 이미지
+    const [previewImage, setPreviewImage] = useState(null); 
     const [intro, setIntro] = useState(""); // 자기소개
     const [tag, setTag] = useState('');  // 태그 입력 필드 값
     const [tags, setTags] = useState([]); // 태그 배열 상태
@@ -37,7 +38,7 @@ function ShareCloset() {
         }
 
         // 🔹 닉네임 가져오기
-        fetch("http://localhost:8080/mypage", {
+        fetch(`${process.env.REACT_APP_API}/mypage`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -64,11 +65,15 @@ function ShareCloset() {
 
     // 프사 업로드
     const handleImageUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setProfileImage(file);  // 이미지 파일 자체 저장
+        const file = event.target.files?.[0];
+        if (file && file instanceof File) {
+            setProfileImage(file);  // 서버 전송용
+            setPreviewImage(URL.createObjectURL(file));  // 미리보기용
+        } else {
+            console.warn("⚠️ 올바른 이미지 파일이 아닙니다.");
         }
     };
+    
 
     // 태그 입력 후 엔터 누를 때
     const handleKeyPress = (e) => {
@@ -123,19 +128,19 @@ function ShareCloset() {
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/api/profile", formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API}/api/profile`, formData, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                 }
             });
-
+            
             const resData = response.data?.data;
             localStorage.setItem("profileImage", resData.imagePath);
             setProfileImage(resData.imagePath);
             setIntro(resData.comment);
             setTags(resData.style.split(',').map(tag => tag.trim()));
             setNickname(resData.nickname);
-
+            
 
 
             console.log("프로필 업데이트 성공:", resData);
@@ -157,7 +162,7 @@ function ShareCloset() {
             return;
         }
 
-        fetch("http://localhost:8080/api/profile", {
+        fetch(`${process.env.REACT_APP_API}/api/profile`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -252,7 +257,7 @@ function ShareCloset() {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
-        axios.get("http://localhost:8080/api/coordination/my", {
+        axios.get(`${process.env.REACT_APP_API}/api/coordination/my`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -277,7 +282,7 @@ function ShareCloset() {
         const token = localStorage.getItem("authToken");
         if (!token || !todayCoordi?.calendarId) return;
 
-        axios.get(`http://localhost:8080/api/coordination/${todayCoordi.calendarId}`, {
+        axios.get(`${process.env.REACT_APP_API}/api/coordination/${todayCoordi.calendarId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -305,7 +310,7 @@ function ShareCloset() {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
-        axios.get("http://localhost:8080/api/share/my", {
+        axios.get(`${process.env.REACT_APP_API}/api/share/my`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -355,7 +360,7 @@ function ShareCloset() {
                                         <img
                                             src={
                                                 typeof profileImage === "string"
-                                                    ? `http://localhost:8080/${profileImage.replace(/^\/+/, '')}`
+                                                    ? `${process.env.REACT_APP_API}/${profileImage.replace(/^\/+/, '')}`
                                                     : URL.createObjectURL(profileImage)
                                             }
                                             alt="profile"
@@ -421,7 +426,7 @@ function ShareCloset() {
                                                                     }}
                                                                 >
                                                                     <img
-                                                                        src={`http://localhost:8080${item.croppedPath || item.imagePath}`}
+                                                                       src={`${process.env.REACT_APP_API}/${(item.croppedPath || item.imagePath).replace(/^\/+/, '')}`}
                                                                         alt={`item-${idx}`}
                                                                         style={{
                                                                             width: "100%",
@@ -479,7 +484,7 @@ function ShareCloset() {
                                                                         }}
                                                                     >
                                                                         <img
-                                                                            src={`http://localhost:8080${item.croppedPath || item.imagePath}`}
+                                                                            src={`${process.env.REACT_APP_API}/${item.croppedPath || item.imagePath}`}
                                                                             alt={`item-${idx}`}
                                                                             style={{
                                                                                 width: "100%",
@@ -526,11 +531,24 @@ function ShareCloset() {
                             {/* 프로필 사진 수정 */}
                             <SC.ProfileImagePreview>
                                 {profileImage ? (
-                                    <img src={profileImage} alt="프로필 이미지" className="profile-image-preview" />
+                                    typeof profileImage === "string" ? (
+                                    <img
+                                        src={`${process.env.REACT_APP_API}/${profileImage.replace(/^\/+/, '')}`}
+                                        alt="프로필 이미지"
+                                        className="profile-image-preview"
+                                    />
+                                    ) : (
+                                    <img
+                                        src={URL.createObjectURL(profileImage)}
+                                        alt="프로필 이미지"
+                                        className="profile-image-preview"
+                                    />
+                                    )
                                 ) : (
                                     <div>현재 프로필 사진이 없습니다</div>
                                 )}
-                            </SC.ProfileImagePreview>
+                                </SC.ProfileImagePreview>
+
                             {/* 커스터마이즈된 파일 선택 버튼 */}
                             <label
                                 htmlFor="file-upload"
@@ -596,7 +614,7 @@ function ShareCloset() {
 
                         {/* 버튼들 */}
                         <SC.ButtonBox>
-                            <SC.SaveButton onClick={handleSaveProfile}>저장</SC.SaveButton>
+                        <SC.SaveButton type="button" onClick={handleSaveProfile}>저장</SC.SaveButton>
                             <SC.CancelButton onClick={closeEditModal}>취소</SC.CancelButton>
                         </SC.ButtonBox>
                     </SC.ModalContent>

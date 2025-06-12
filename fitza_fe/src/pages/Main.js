@@ -15,13 +15,13 @@ function Main() {
     const fetchClothes = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        const response = await axios.get("http://localhost:8080/api/clothing/my", {
+        const response = await axios.get(`${process.env.REACT_APP_API}/api/clothing/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         // 1. 이미지 경로 생성
         let items = response.data.map(item => ({
-          src: `http://localhost:8080${item.croppedPath}`,
+          src: `${process.env.REACT_APP_API}${item.croppedPath}`,
           id: item.clothid
         }));
 

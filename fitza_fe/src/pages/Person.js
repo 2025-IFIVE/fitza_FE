@@ -26,7 +26,7 @@ function Person() {
             return;
         }
 
-        axios.get("http://localhost:8080/mypage", {
+        axios.get(`${process.env.REACT_APP_API}/mypage`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
@@ -61,7 +61,7 @@ function Person() {
         }
 
         // 기존 유저 정보
-        axios.get("http://localhost:8080/mypage", {
+        axios.get(`${process.env.REACT_APP_API}/mypage`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
@@ -79,7 +79,7 @@ function Person() {
             });
 
         // 프로필 정보 추가
-        axios.get("http://localhost:8080/api/profile", {
+        axios.get(`${process.env.REACT_APP_API}/api/profile`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

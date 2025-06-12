@@ -29,7 +29,7 @@ function Mypage() {
         }
 
         // 🔹 닉네임 가져오기
-        fetch("http://localhost:8080/mypage", {
+        fetch(`${process.env.REACT_APP_API}/mypage`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -51,7 +51,7 @@ function Mypage() {
             });
 
         // 🔹 체형 정보 가져오기 (수정된 부분)
-        fetch("http://localhost:8080/api/body/info", {
+        fetch(`${process.env.REACT_APP_API}/api/body/info`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`

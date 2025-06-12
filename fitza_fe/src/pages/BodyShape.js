@@ -64,7 +64,7 @@ function BodyShape() {
         const fetchBodyShape = async () => {
             try {
                 const token = localStorage.getItem("authToken");
-                const res = await axios.get("http://localhost:8080/api/body/info", {
+                const res = await axios.get(`${process.env.REACT_APP_API}/api/body/info`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -104,7 +104,7 @@ function BodyShape() {
         try {
             setLoading(true);
             const token = localStorage.getItem("authToken");
-            const res = await axios.post("http://localhost:8080/api/body/analyze", formData, {
+            const res = await axios.post(`${process.env.REACT_APP_API}/api/body/analyze`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

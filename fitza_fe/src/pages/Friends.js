@@ -22,7 +22,7 @@ function Friends() {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
-        axios.get("http://localhost:8080/api/friends/list", {
+        axios.get(`${process.env.REACT_APP_API}/api/friends/list`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
@@ -55,7 +55,7 @@ function Friends() {
             ? friendNumber
             : friendNumber.replace(/^(\d{3})(\d{4})(\d{4})$/, "$1-$2-$3");
 
-        axios.post("http://localhost:8080/api/friends/request", {
+        axios.post(`${process.env.REACT_APP_API}/api/friends/request`, {
             phone: normalizedPhone
         }, {
             headers: {
@@ -93,7 +93,7 @@ function Friends() {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
-        axios.get("http://localhost:8080/api/friends/received", {
+        axios.get(`${process.env.REACT_APP_API}/api/friends/received`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
@@ -118,7 +118,7 @@ function Friends() {
         const token = localStorage.getItem("authToken");
         if (!token || selectedRequestId === null) return;
 
-        axios.post(`http://localhost:8080/api/friends/respond/${selectedRequestId}?accept=${accept}`, null, {
+        axios.post(`${process.env.REACT_APP_API}/api/friends/respond/${selectedRequestId}?accept=${accept}`, null, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(() => {
@@ -147,7 +147,7 @@ function Friends() {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
-        axios.delete(`http://localhost:8080/api/friends/delete/${friendId}`, {
+        axios.delete(`${process.env.REACT_APP_API}/api/friends/delete/${friendId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(() => {

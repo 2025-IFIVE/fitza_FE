@@ -41,7 +41,7 @@ function MyCloset_3() {
       const token = localStorage.getItem("authToken");
   
       const response = await axios.put(
-        `http://localhost:8080/api/clothing/${clothId}/cropped-image`,
+        `${process.env.REACT_APP_API}/api/clothing/${clothId}/cropped-image`,
         formData,
         {
           headers: {
@@ -210,7 +210,7 @@ const id = location.state?.clothId || clothData?.clothid;
           croppedPath,
         };
         
-        await axios.put(`http://localhost:8080/api/clothing/${id}`, payload, {
+        await axios.put(`${process.env.REACT_APP_API}/api/clothing/${id}`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -241,7 +241,7 @@ const id = location.state?.clothId || clothData?.clothid;
   const fetchClothingInfo = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get(`http://localhost:8080/api/clothing/${id}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API}/api/clothing/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -461,7 +461,7 @@ const handleSingleSelect = (selected, setSelected, item) => {
             {(croppedPath || imagePath || imageSrc) ? (
               <>
                 <img
-                  src={`http://localhost:8080${croppedPath || imagePath || imageSrc}`}
+                  src={`${process.env.REACT_APP_API}/${croppedPath || imagePath || imageSrc}`}
                   alt="선택한 옷"
                 />
                 <button onClick={openEditModal} style={{ marginTop: "10px" }}>
@@ -774,7 +774,7 @@ const handleSingleSelect = (selected, setSelected, item) => {
         onClick={async () => {
           try {
             const token = localStorage.getItem("authToken");
-            await axios.delete(`http://localhost:8080/api/clothing/${id}`, {
+            await axios.delete(`${process.env.REACT_APP_API}/api/clothing/${id}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             alert("삭제가 완료되었습니다.");

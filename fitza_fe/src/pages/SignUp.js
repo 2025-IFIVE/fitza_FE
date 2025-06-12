@@ -37,7 +37,7 @@ function SignUp() {
         phone: formData.phone
       };
 
-      const response = await axios.post("http://localhost:8080/register", requestData, {
+      const response = await axios.post(`${process.env.REACT_APP_API}/register`, requestData, {
         headers: { "Content-Type": "application/json" }
       });
 
