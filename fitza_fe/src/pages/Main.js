@@ -40,9 +40,9 @@ function Main() {
   const newsItems = [
     { id: 1, 
       image: news1, 
-      title: "올여름 내내 믿고 의지할 수 있는, 미디스커트에 발레 펌프스 조합", 
-      description: "옷 입는 재미로 사는 사람들에게 한국의 여름은 고통스러운 계절입니다. 땀이 날 수밖에 없는 날씨 탓에, 옷차림이 무척 제한되기 때문이죠.",
-      link: "https://www.vogue.co.kr/2025/06/06/%ec%98%ac%ec%97%ac%eb%a6%84-%eb%82%b4%eb%82%b4-%eb%af%bf%ea%b3%a0-%ec%9d%98%ec%a7%80%ed%95%a0-%ec%88%98-%ec%9e%88%eb%8a%94-%eb%af%b8%eb%94%94%ec%8a%a4%ec%bb%a4%ed%8a%b8%ec%97%90-%eb%b0%9c%eb%a0%88/"
+      title: "클린 걸은 나가주세요, 엉망진창 ‘메시 걸’이 옵니다", 
+      description: "혼란스러움을 사과하지 않는 멋진 여자! 프랑스 <보그> 친구들이 메시 걸을 이렇게 소개하더군요. 2025년, ‘인디 슬리즈’가 고유의 미학을 넘어 새로운 국면으로 돌아왔습니다.",
+      link: "https://www.vogue.co.kr/2025/06/12/%ed%81%b4%eb%a6%b0-%ea%b1%b8%ec%9d%80-%eb%82%98%ea%b0%80%ec%a3%bc%ec%84%b8%ec%9a%94-%ec%97%89%eb%a7%9d%ec%a7%84%ec%b0%bd-%eb%a9%94%ec%8b%9c-%ea%b1%b8%ec%9d%b4-%ec%98%b5%eb%8b%88%eb%8b%a4/"
     },
     { id: 2, 
       image: news2, 
