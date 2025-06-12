@@ -1,4 +1,3 @@
-// FriendCloset.js - 공유 옷장도 ShareCloset처럼 제목 + 박스 + 위치 기반 배치로 수정
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import * as SC from "../styles/ShareClosetStyle";
@@ -108,10 +107,14 @@ function FriendCloset() {
                                         ) : (
                                             sharedCoordis.map((coordi, index) => (
                                                 <SC.OutfitBox2 key={index}>
-                                                    <div >{coordi.title}</div>
+                                                    <div>{coordi.title}</div>
                                                     <SC.RandomBoard style={{ position: 'relative', height: '300px' }}>
                                                         {coordi.items.map((item, idx) => {
                                                             const { x = 0, y = 0, size = 30 } = item;
+                                                            const rawPath = item.croppedPath || item.imagePath || "";
+                                                            const fullPath = rawPath.startsWith("http")
+                                                                ? rawPath
+                                                                : `${process.env.REACT_APP_API}/${rawPath.replace(/^\/+/, "")}`;
                                                             return (
                                                                 <SC.RandomItem
                                                                     key={idx}
@@ -124,7 +127,7 @@ function FriendCloset() {
                                                                     }}
                                                                 >
                                                                     <img
-                                                                        src={`${process.env.REACT_APP_API}/${item.croppedPath || item.imagePath}`}
+                                                                        src={fullPath}
                                                                         alt={`item-${idx}`}
                                                                         style={{
                                                                             width: "100%",
