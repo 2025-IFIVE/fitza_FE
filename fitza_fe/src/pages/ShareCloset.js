@@ -23,7 +23,7 @@ function ShareCloset() {
     const [nickname, setNickname] = useState(""); // 닉네임
     const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 편집 모달
     const [profileImage, setProfileImage] = useState(null); // 프로필 이미지
-    const [previewImage, setPreviewImage] = useState(null); 
+    const [previewImage, setPreviewImage] = useState(null);
     const [intro, setIntro] = useState(""); // 자기소개
     const [tag, setTag] = useState('');  // 태그 입력 필드 값
     const [tags, setTags] = useState([]); // 태그 배열 상태
@@ -73,7 +73,7 @@ function ShareCloset() {
             console.warn("⚠️ 올바른 이미지 파일이 아닙니다.");
         }
     };
-    
+
 
     // 태그 입력 후 엔터 누를 때
     const handleKeyPress = (e) => {
@@ -87,6 +87,8 @@ function ShareCloset() {
     const handleTagDelete = (tagToDelete) => {
         setTags(tags.filter((item) => item !== tagToDelete));
     };
+
+    // 프로필 사진 저장하기
 
     // 프로필 사진 저장하기
     const handleSaveProfile = async () => {
@@ -133,25 +135,51 @@ function ShareCloset() {
                     "Authorization": `Bearer ${token}`,
                 }
             });
-            
+
             const resData = response.data?.data;
             localStorage.setItem("profileImage", resData.imagePath);
             setProfileImage(resData.imagePath);
             setIntro(resData.comment);
             setTags(resData.style.split(',').map(tag => tag.trim()));
             setNickname(resData.nickname);
-            
 
 
             console.log("프로필 업데이트 성공:", resData);
 
             closeEditModal();
 
+            // 프로필 업데이트 완료 후 전체 페이지 캡처
+            setTimeout(() => {
+                handleCaptureFullPage();
+            }, 500); // 모달이 닫힌 후 약간의 딜레이
+
         } catch (error) {
             console.error("프로필 업데이트 실패:", error.response?.data || error.message);
         }
 
 
+    };
+
+
+    // 전체 페이지 캡처 함수
+    const handleCaptureFullPage = () => {
+        const element = document.body; // 또는 document.documentElement
+
+        html2canvas(element, {
+            useCORS: true,
+            allowTaint: false,
+            logging: true,
+            scale: 2, // 해상도 개선
+            width: window.innerWidth,
+            height: window.innerHeight,
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'full-page-capture.png';
+            link.click();
+        }).catch(err => {
+            console.error("전체 페이지 캡처 오류:", err);
+        });
     };
 
     // 프로필 이미지 가져오기
@@ -376,7 +404,7 @@ function ShareCloset() {
                                 <SC.ProfTxt>
                                     <SC.NameBox>
                                         <SC.Name>{nickname} </SC.Name>
-                                        <SC.Down onClick={handleDownloadProfileBox}> <img src={down} alt="download" /></SC.Down>
+                                        <SC.Down onClick={handleCaptureFullPage}> <img src={down} alt="download" /></SC.Down>
                                         <SC.Edit onClick={openEditModal}> <img src={edit} alt="edit" /> </SC.Edit>
                                     </SC.NameBox>
                                     <SC.Intro>{intro || "자기소개가 없습니다."}</SC.Intro>
@@ -426,7 +454,7 @@ function ShareCloset() {
                                                                     }}
                                                                 >
                                                                     <img
-                                                                       src={`${process.env.REACT_APP_API}/${(item.croppedPath || item.imagePath).replace(/^\/+/, '')}`}
+                                                                        src={`${process.env.REACT_APP_API}/${(item.croppedPath || item.imagePath).replace(/^\/+/, '')}`}
                                                                         alt={`item-${idx}`}
                                                                         style={{
                                                                             width: "100%",
@@ -484,27 +512,27 @@ function ShareCloset() {
                                                                         }}
                                                                     >
                                                                         {(() => {
-                                                                        const rawPath = item.croppedPath || item.imagePath || "";
-                                                                        const fullPath = rawPath.startsWith("http")
-                                                                            ? rawPath
-                                                                            : `${process.env.REACT_APP_API}/${rawPath.replace(/^\//, "")}`;
-                                                                        return (
-                                                                            <img
-                                                                            src={fullPath}
-                                                                            alt={`item-${idx}`}
-                                                                            style={{
-                                                                                width: "100%",
-                                                                                height: "auto",
-                                                                                objectFit: "contain",
-                                                                                pointerEvents: "none",
-                                                                            }}
-                                                                            draggable={false}
-                                                                            onError={(e) => {
-                                                                                console.error("이미지 로딩 실패:", fullPath);
-                                                                                e.target.style.display = "none";
-                                                                            }}
-                                                                            />
-                                                                        );
+                                                                            const rawPath = item.croppedPath || item.imagePath || "";
+                                                                            const fullPath = rawPath.startsWith("http")
+                                                                                ? rawPath
+                                                                                : `${process.env.REACT_APP_API}/${rawPath.replace(/^\//, "")}`;
+                                                                            return (
+                                                                                <img
+                                                                                    src={fullPath}
+                                                                                    alt={`item-${idx}`}
+                                                                                    style={{
+                                                                                        width: "100%",
+                                                                                        height: "auto",
+                                                                                        objectFit: "contain",
+                                                                                        pointerEvents: "none",
+                                                                                    }}
+                                                                                    draggable={false}
+                                                                                    onError={(e) => {
+                                                                                        console.error("이미지 로딩 실패:", fullPath);
+                                                                                        e.target.style.display = "none";
+                                                                                    }}
+                                                                                />
+                                                                            );
                                                                         })()}
 
                                                                     </SC.RandomItem>
@@ -545,22 +573,22 @@ function ShareCloset() {
                             <SC.ProfileImagePreview>
                                 {profileImage ? (
                                     typeof profileImage === "string" ? (
-                                    <img
-                                        src={`${process.env.REACT_APP_API}/${profileImage.replace(/^\/+/, '')}`}
-                                        alt="프로필 이미지"
-                                        className="profile-image-preview"
-                                    />
+                                        <img
+                                            src={`${process.env.REACT_APP_API}/${profileImage.replace(/^\/+/, '')}`}
+                                            alt="프로필 이미지"
+                                            className="profile-image-preview"
+                                        />
                                     ) : (
-                                    <img
-                                        src={URL.createObjectURL(profileImage)}
-                                        alt="프로필 이미지"
-                                        className="profile-image-preview"
-                                    />
+                                        <img
+                                            src={URL.createObjectURL(profileImage)}
+                                            alt="프로필 이미지"
+                                            className="profile-image-preview"
+                                        />
                                     )
                                 ) : (
                                     <div>현재 프로필 사진이 없습니다</div>
                                 )}
-                                </SC.ProfileImagePreview>
+                            </SC.ProfileImagePreview>
 
                             {/* 커스터마이즈된 파일 선택 버튼 */}
                             <label
@@ -627,7 +655,7 @@ function ShareCloset() {
 
                         {/* 버튼들 */}
                         <SC.ButtonBox>
-                        <SC.SaveButton type="button" onClick={handleSaveProfile}>저장</SC.SaveButton>
+                            <SC.SaveButton type="button" onClick={handleSaveProfile}>저장</SC.SaveButton>
                             <SC.CancelButton onClick={closeEditModal}>취소</SC.CancelButton>
                         </SC.ButtonBox>
                     </SC.ModalContent>
