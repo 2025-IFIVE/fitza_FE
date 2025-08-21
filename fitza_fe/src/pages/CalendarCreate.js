@@ -43,6 +43,7 @@ function CalendarCreate() {
   const [imageStyles, setImageStyles] = useState({});
   const [dragState, setDragState] = useState({});
   const [resizeState, setResizeState] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const boardRef = useRef(null);
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -55,11 +56,11 @@ function CalendarCreate() {
       "22": "아우터",
       "23": "원피스",
       "24": "신발",
-      "25": "가방"
+      "25": "가방",
     };
     return labelMap[label] || `기타${label}`;
   };
-  
+
   const categoryList = ["상의", "하의", "아우터", "원피스", "신발", "가방"];
 
   const getRandomStyle = () => ({
@@ -67,6 +68,7 @@ function CalendarCreate() {
     left: `${Math.floor(Math.random() * 60)}%`,
   });
 
+  // 내 옷장 불러오기
   useEffect(() => {
     const fetchClothing = async () => {
       try {
@@ -74,7 +76,7 @@ function CalendarCreate() {
         const res = await axios.get(`${process.env.REACT_APP_API}/api/clothing/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setClothingData(res.data);
+        setClothingData(res.data || []);
       } catch (err) {
         console.error("옷장 불러오기 실패:", err);
       }
@@ -82,70 +84,95 @@ function CalendarCreate() {
     fetchClothing();
   }, []);
 
+  // 편집 모드: 기존 좌표/사이즈/이미지 복원
   useEffect(() => {
-    if (isEditMode && location.state) {
-      setCoordiName(location.state.title);
-      setSelectedDate(new Date(location.state.date));
+    if (!isEditMode || !location.state) return;
 
-      const fetchTypes = async () => {
-        const token = localStorage.getItem("authToken");
-        const imagesByCat = {};
-        const stylesByCat = {};
+    setCoordiName(location.state.title || "");
+    setSelectedDate(new Date(location.state.date));
 
-        for (const item of location.state.items) {
-          try {
-            const res = await axios.get(`${process.env.REACT_APP_API}/api/clothing/${item.clothId}`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            const type = res.data?.type;
-            if (type) {
-              imagesByCat[type] = { ...item, type };
-              stylesByCat[type] = {
-                top: `${item.y}%`,
-                left: `${item.x}%`,
-                size: item.size ?? 100
-              };
-            }
-          } catch (err) {
-            console.error("cloth type 불러오기 실패:", err);
+    const fetchTypes = async () => {
+      const token = localStorage.getItem("authToken");
+      const imagesByCat = {};
+      const stylesByCat = {};
+
+      for (const item of location.state.items || []) {
+        try {
+          const cid = item.clothid || item.clothId; // 보정
+          if (!cid) continue;
+          const res = await axios.get(`${process.env.REACT_APP_API}/api/clothing/${cid}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const type = res.data?.type;
+          if (type) {
+            const imagePath = (res.data?.croppedPath || res.data?.imagePath || "").replace(/^\//, "");
+            imagesByCat[type] = {
+              ...item,
+              type,
+              clothid: Number(cid),
+              imagePath,
+            };
+            stylesByCat[type] = {
+              top: `${item.y}%`,
+              left: `${item.x}%`,
+              size: item.size ?? 100,
+            };
           }
+        } catch (err) {
+          console.error("cloth type 불러오기 실패:", err);
         }
+      }
 
-        setSelectedImages(imagesByCat);
-        setImageStyles(stylesByCat);
-      };
+      setSelectedImages((prev) => ({ ...prev, ...imagesByCat }));
+      setImageStyles((prev) => ({ ...prev, ...stylesByCat }));
+    };
 
-      fetchTypes();
-    }
-  }, [location]);
+    fetchTypes();
+  }, [isEditMode, location]);
 
+  // 자동 매칭 수신 (CalendarCreate3 → CalendarCreate)
+  // 권장: location.state.matchedIds (실제 DB clothid[])를 함께 전달
   useEffect(() => {
-    const matched = location.state?.matchedImages;
-    const labels = location.state?.labels;
-  
-    if (matched && labels && matched.length === labels.length) {
-      const newImages = {};
-      const newStyles = {};
-  
-      matched.forEach((url, idx) => {
-        const clothId = parseInt(labels[idx]);
+    const matched = location.state?.matchedImages; // URL[]
+    const labels = location.state?.labels;         // "20"~"25"
+    const matchedIds = location.state?.matchedIds; // 실제 clothid[]
 
-        newImages[clothId] = {
-          imagePath: url.replace(process.env.REACT_APP_API, ""),
-          clothid: clothId,
-        };
-        //수정ㅇ
-        const { top, left } = getRandomStyle();
-        newStyles[clothId] = { top, left, size: 30 };
+    if (!matched || !labels || matched.length !== labels.length) return;
+    // matchedIds가 없고 아직 옷장 목록이 비었다면 역매칭 불가 → 대기
+    if (!matchedIds && clothingData.length === 0) return;
 
+    const findClothIdByUrl = (url) => {
+      const norm = url.replace(process.env.REACT_APP_API || "", "").replace(/^\//, "");
+      const found = clothingData.find((c) => {
+        const p = (c?.croppedPath || c?.imagePath || "").replace(/^\//, "");
+        return p && (p === norm || norm.endsWith(p) || p.endsWith(norm));
       });
+      return found?.clothid;
+    };
 
+    const newImages = {};
+    const newStyles = {};
+
+    matched.forEach((url, idx) => {
+      const cat = labelToCategory(String(labels[idx]));
+      const realId = matchedIds?.[idx] ?? findClothIdByUrl(url);
+      if (!realId) return; // clothid 없으면 제외
+
+      newImages[cat] = {
+        imagePath: url.replace(process.env.REACT_APP_API || "", "").replace(/^\//, ""),
+        clothid: Number(realId),
+      };
+      const { top, left } = getRandomStyle();
+      newStyles[cat] = { top, left, size: 30 };
+    });
+
+    if (Object.keys(newImages).length > 0) {
       setSelectedImages((prev) => ({ ...prev, ...newImages }));
       setImageStyles((prev) => ({ ...prev, ...newStyles }));
     }
-  }, [location]);
-  
+  }, [location, clothingData]);
 
+  // 바텀시트 열릴 때 스크롤 잠금
   useEffect(() => {
     document.body.style.overflow = isBottomSheetOpen ? "hidden" : "auto";
     return () => {
@@ -156,15 +183,14 @@ function CalendarCreate() {
   const handleImageSelect = (tab, item) => {
     setSelectedImages((prev) => {
       const current = prev[tab];
-      const currentId = current?.clothId || current?.clothid;
-      const newId = item.clothId || item.clothid;
+      const currentId = current?.clothid || current?.clothId;
+      const newId = item.clothid || item.clothId;
 
-      // 같은 아이템을 다시 누른 경우: 제거
+      // 같은 아이템 다시 누르면 제거
       if (current && currentId === newId) {
         const newImages = { ...prev };
         delete newImages[tab];
 
-        // 스타일도 같이 삭제
         setImageStyles((prevStyle) => {
           const newStyles = { ...prevStyle };
           delete newStyles[tab];
@@ -173,12 +199,11 @@ function CalendarCreate() {
 
         return newImages;
       }
-
-      // 새로운 아이템 선택
+      // 새 선택
       return { ...prev, [tab]: item };
     });
 
-    // 스타일 추가는 기존에 없을 때만 (삭제 시에는 실행되지 않음)
+    // 스타일 기본값
     setImageStyles((prev) => {
       if (prev[tab]) return prev;
       const { top, left } = getRandomStyle();
@@ -196,8 +221,8 @@ function CalendarCreate() {
     const startY = e.clientY;
 
     const currentStyle = imageStyles[cat] || { left: "0%", top: "0%" };
-    const currentLeft = parseFloat(currentStyle.left.replace("%", ""));
-    const currentTop = parseFloat(currentStyle.top.replace("%", ""));
+    const currentLeft = parseFloat(currentStyle.left.replace("%", "")) || 0;
+    const currentTop = parseFloat(currentStyle.top.replace("%", "")) || 0;
 
     setDragState({
       isDragging: true,
@@ -205,7 +230,7 @@ function CalendarCreate() {
       startX,
       startY,
       startLeft: currentLeft,
-      startTop: currentTop
+      startTop: currentTop,
     });
   };
 
@@ -222,13 +247,13 @@ function CalendarCreate() {
     const newLeft = Math.max(0, Math.min(dragState.startLeft + deltaXPercent, 85));
     const newTop = Math.max(0, Math.min(dragState.startTop + deltaYPercent, 85));
 
-    setImageStyles(prev => ({
+    setImageStyles((prev) => ({
       ...prev,
       [dragState.category]: {
         ...prev[dragState.category],
         left: `${newLeft}%`,
-        top: `${newTop}%`
-      }
+        top: `${newTop}%`,
+      },
     }));
   };
 
@@ -249,12 +274,12 @@ function CalendarCreate() {
     if (!resizeState.isResizing) return;
     const deltaX = e.clientX - resizeState.startX;
     const newSize = Math.max(30, resizeState.startSize + deltaX * 0.5);
-    setImageStyles(prev => ({
+    setImageStyles((prev) => ({
       ...prev,
       [resizeState.category]: {
         ...prev[resizeState.category],
-        size: newSize
-      }
+        size: newSize,
+      },
     }));
   };
 
@@ -262,75 +287,107 @@ function CalendarCreate() {
 
   useEffect(() => {
     if (dragState.isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
       return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
       };
     }
   }, [dragState]);
 
   useEffect(() => {
     if (resizeState.isResizing) {
-      document.addEventListener('mousemove', handleResizeMouseMove);
-      document.addEventListener('mouseup', handleResizeMouseUp);
+      document.addEventListener("mousemove", handleResizeMouseMove);
+      document.addEventListener("mouseup", handleResizeMouseUp);
       return () => {
-        document.removeEventListener('mousemove', handleResizeMouseMove);
-        document.removeEventListener('mouseup', handleResizeMouseUp);
+        document.removeEventListener("mousemove", handleResizeMouseMove);
+        document.removeEventListener("mouseup", handleResizeMouseUp);
       };
     }
   }, [resizeState]);
 
   const handleSubmit = async () => {
-  const token = localStorage.getItem("authToken");
+    if (isSubmitting) return; // 중복 전송 방지
+    setIsSubmitting(true);
 
-  const items = Object.entries(selectedImages)
-    .filter(([, item]) => item !== null)
-    .map(([cat, item]) => {
+    const token = localStorage.getItem("authToken");
+
+    const entries = Object.entries(selectedImages).filter(([, item]) => !!item);
+
+    // clothid 누락 카테고리 표시
+    const missingCats = entries
+      .filter(([, item]) => !(item.clothid || item.clothId))
+      .map(([cat]) => cat);
+    if (missingCats.length > 0) {
+      alert(`아래 항목은 clothid를 찾지 못했습니다. 옷장에서 다시 선택해주세요:\n- ${missingCats.join(", ")}`);
+      setIsSubmitting(false);
+      return;
+    }
+
+    const items = entries.map(([cat, item]) => {
       const { left = "0%", top = "0%", size = 100 } = imageStyles[cat] || {};
-      return {
-        clothId: item.clothId || item.clothid,
-        x: parseFloat(left.replace("%", "")),
-        y: parseFloat(top.replace("%", "")),
-        size
-      };
+      const id = Number(item.clothid || item.clothId);
+      const x = Math.max(0, Math.min(100, parseFloat(String(left).replace("%", "")) || 0));
+      const y = Math.max(0, Math.min(100, parseFloat(String(top).replace("%", "")) || 0));
+      const s = Math.max(10, Math.min(200, Math.round(Number(size) || 100)));
+      return { clothId: id, clothid: id, x, y, size: s };
     });
 
-
-
-  const dataToSend = {
-    title: coordiName,
-    date: formatDate(selectedDate),
-    weather: "맑음",
-    items,
-  };
-
-  try {
-    if (isEditMode) {
-      await axios.put(`${process.env.REACT_APP_API}/api/coordination/${editCalendarId}`, dataToSend, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert("코디 수정 성공!");
-      navigate("/CalendarDetail", {
-        state: {
-          calendarId: editCalendarId,
-          selectedDate: formatDate(selectedDate),
-        },
-      });
-    } else {
-      await axios.post(`${process.env.REACT_APP_API}/api/coordination`, dataToSend, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      alert("코디 등록 성공!");
-      navigate("/Calendarpage");
+    // 숫자성 검증
+    const invalid = items.filter((it) => !Number.isFinite(it.clothid));
+    if (invalid.length > 0) {
+      alert("일부 아이템의 clothid가 숫자가 아닙니다. 선택을 다시 해주세요.");
+      setIsSubmitting(false);
+      return;
     }
-  } catch (err) {
-    console.error("등록/수정 실패:", err);
-    alert("요청 실패");
-  }
-};
 
+    if (!coordiName.trim()) {
+      alert("코디 이름을 입력하세요.");
+      setIsSubmitting(false);
+      return;
+    }
+    if (items.length === 0) {
+      alert("옷을 선택해주세요.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const dataToSend = {
+      title: coordiName.trim(),
+      date: formatDate(selectedDate),
+      weather: "맑음",
+      items,
+    };
+
+    console.log("[coordination payload]", dataToSend);
+
+    try {
+      if (isEditMode) {
+        await axios.put(`${process.env.REACT_APP_API}/api/coordination/${editCalendarId}`, dataToSend, {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        });
+        alert("코디 수정 성공!");
+        navigate("/CalendarDetail", {
+          state: {
+            calendarId: editCalendarId,
+            selectedDate: formatDate(selectedDate),
+          },
+        });
+      } else {
+        await axios.post(`${process.env.REACT_APP_API}/api/coordination`, dataToSend, {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        });
+        alert("코디 등록 성공!");
+        navigate("/Calendarpage");
+      }
+    } catch (err) {
+      console.error("등록/수정 실패:", { status: err?.response?.status, data: err?.response?.data });
+      alert(`요청 실패: ${err?.response?.data?.message || "서버 오류"}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <C.Background>
@@ -354,11 +411,13 @@ function CalendarCreate() {
             >
               <img src={calendar_black} alt="calendar_black" />
             </button>
-            <C.Title1>{selectedDate.toLocaleDateString("ko-KR").replace(/\. /g, "-").replace(".", "")}</C.Title1>
+            <C.Title1>
+              {selectedDate.toLocaleDateString("ko-KR").replace(/\. /g, "-").replace(".", "")}
+            </C.Title1>
           </C.dateContainer>
           <C.RegisterContainer>
             <C.Register>촬영하기</C.Register>
-            <Link to="/CalendarCreate2">
+            <Link to="/CalendarCreate3">
               <img src={smallPlus} alt="plus" />
             </Link>
           </C.RegisterContainer>
@@ -377,7 +436,7 @@ function CalendarCreate() {
           onChange={(e) => setCoordiName(e.target.value)}
         />
 
-<C.RandomBoard ref={boardRef}>
+        <C.RandomBoard ref={boardRef}>
           {Object.entries(selectedImages)
             .filter(([, item]) => item && (item.croppedPath || item.imagePath))
             .map(([cat, item], index) => {
@@ -390,61 +449,39 @@ function CalendarCreate() {
                   style={{
                     position: "absolute",
                     width: `${style.size}%`,
-                    cursor: dragState.isDragging && dragState.category === cat ? 'grabbing' : 'grab',
+                    cursor: dragState.isDragging && dragState.category === cat ? "grabbing" : "grab",
                     zIndex: dragState.category === cat ? 100 : 10 + index,
-                    userSelect: 'none',
-                    transition: 'all 0.1s ease'
+                    userSelect: "none",
+                    transition: "all 0.1s ease",
                   }}
                   onMouseDown={(e) => handleMouseDown(cat, e)}
                 >
                   {(() => {
                     const rawPath = item.croppedPath || item.imagePath || "";
-
                     let fullPath = "";
                     if (rawPath.startsWith("http://localhost") || rawPath.startsWith("http://127.0.0.1")) {
-                      // localhost가 포함된 경우 => REACT_APP_API로 강제 치환
                       fullPath = rawPath
                         .replace("http://localhost:8080", process.env.REACT_APP_API)
                         .replace("http://127.0.0.1:8080", process.env.REACT_APP_API);
                     } else if (rawPath.startsWith("http")) {
                       fullPath = rawPath;
                     } else {
-                      // 절대 경로 아닌 경우
                       fullPath = `${process.env.REACT_APP_API}/${rawPath.replace(/^\//, "")}`;
                     }
-  
-                          return (
-                            <img
-                          src={fullPath}
-                          alt={cat}
-                          style={{
-                            width: "100%",
-                            height: "auto",
-                            objectFit: "contain",
-                          }}
-                          onError={(e) => {
-                            // 화면에 실패 메시지 표시
-                            const errorDiv = document.createElement('div');
-                            errorDiv.innerText = "이미지 로드 실패: " + fullPath;
-                            errorDiv.style.color = 'red';
-                            errorDiv.style.fontSize = '14px';
-                            errorDiv.style.position = 'fixed';
-                            errorDiv.style.top = '10px';
-                            errorDiv.style.left = '10px';
-                            errorDiv.style.zIndex = '9999';
-                            errorDiv.style.backgroundColor = 'white';
-                            errorDiv.style.padding = '5px';
-                            errorDiv.style.border = '1px solid red';
-                            document.body.appendChild(errorDiv);
 
-                            // 기존 이미지 숨기기
-                            e.target.style.display = "none";
-                          }}
-                          draggable={false}
-                        />
-
-                          );
-                        })()}
+                    return (
+                      <img
+                        src={fullPath}
+                        alt={cat}
+                        style={{ width: "100%", height: "auto", objectFit: "contain" }}
+                        onError={(e) => {
+                          console.warn("이미지 로드 실패:", fullPath);
+                          e.target.style.display = "none";
+                        }}
+                        draggable={false}
+                      />
+                    );
+                  })()}
 
                   <div
                     onClick={() => handleImageSelect(cat, item)}
@@ -463,7 +500,7 @@ function CalendarCreate() {
                       justifyContent: "center",
                       cursor: "pointer",
                       zIndex: 999,
-                      lineHeight: 1
+                      lineHeight: 1,
                     }}
                   >
                     ×
@@ -477,18 +514,19 @@ function CalendarCreate() {
                       position: "absolute",
                       bottom: 0,
                       right: 0,
-                      cursor: "nwse-resize"
+                      cursor: "nwse-resize",
                     }}
                   />
                 </C.RandomItem>
-
               );
             })}
         </C.RandomBoard>
 
         <C.ButtonContainer>
           <C.EditButton onClick={() => setIsBottomSheetOpen(true)}>옷장에서 선택</C.EditButton>
-          <C.FinishButton onClick={handleSubmit}>{isEditMode ? "수정 완료" : "등록하기"}</C.FinishButton>
+          <C.FinishButton onClick={handleSubmit} disabled={isSubmitting}>
+            {isEditMode ? (isSubmitting ? "수정 중..." : "수정 완료") : (isSubmitting ? "등록 중..." : "등록하기")}
+          </C.FinishButton>
         </C.ButtonContainer>
 
         {isBottomSheetOpen && (
@@ -511,7 +549,10 @@ function CalendarCreate() {
                   .filter((item) => item.type === selectedTab)
                   .map((item, idx) => (
                     <C.ImageBox key={idx} onClick={() => handleImageSelect(selectedTab, item)}>
-                      <img src={`${process.env.REACT_APP_API}/${item.croppedPath.replace(/^\//, "")}`} alt={`cloth-${item.clothid}`} />
+                      <img
+                        src={`${process.env.REACT_APP_API}/${(item.croppedPath || "").replace(/^\//, "")}`}
+                        alt={`cloth-${item.clothid}`}
+                      />
                     </C.ImageBox>
                   ))}
               </C.ImageGrid>

@@ -47,7 +47,7 @@ const Footer = () => {
           옷 등록
           </button>
             <button className="modal-button" onClick={() => { navigate("/shoeshats"); closeModal(); }}>잡화 등록</button>
-            <button className="modal-button" onClick={() => { navigate("/calendarcreate2"); closeModal(); }}>OOTD 등록</button>
+            <button className="modal-button" onClick={() => { navigate("/calendarcreate3"); closeModal(); }}>OOTD 등록</button>
             <button className="modal-button" onClick={() => { navigate("/bodyshape"); closeModal(); }}>체형 분석</button>
             <button className="close-button" onClick={closeModal}>닫기</button>
           </div>
