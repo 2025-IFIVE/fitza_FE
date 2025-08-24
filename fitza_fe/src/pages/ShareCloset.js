@@ -175,7 +175,8 @@ function ShareCloset() {
         }).then(canvas => {
             const link = document.createElement('a');
             link.href = canvas.toDataURL('image/png');
-            link.download = 'full-page-capture.png';
+            const safeName = nickname && nickname.trim() !== "" ? nickname : "user";
+            link.download = `${safeName}.png`;
             link.click();
         }).catch(err => {
             console.error("전체 페이지 캡처 오류:", err);
