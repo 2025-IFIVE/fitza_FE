@@ -8,9 +8,6 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from "axios";
 
-import img2 from '../img/img6.png';
-import img8 from '../img/img8.png';
-import img9 from '../img/img9.png';
 
 const formatDateForDisplay = (date) => {
   const year = date.getFullYear();
@@ -34,12 +31,7 @@ function CalendarPage() {
   const [currentDate, setCurrentDate] = useState('');
   const [outfits, setOutfits] = useState({});
 
-  const dummyMostWorn = [
-    { category: "상의", image: img2, count: 10 },
-    { category: "하의", image: img8, count: 8 },
-    { category: "기타", image: img9, count: 5 },
-  ];
-
+  
   useEffect(() => {
     const fetchCoordis = async () => {
       try {
@@ -184,16 +176,7 @@ function CalendarPage() {
           />
         </C.CalendarWrapper>
 
-        <C.OftenTitle>가장 많이 입은 옷</C.OftenTitle>
-        <C.OftenContainer>
-          {dummyMostWorn.map((item, index) => (
-            <C.OftenItem key={index}>
-              <C.OftenCateg>{item.category}</C.OftenCateg>
-              <C.OftenImage src={item.image} alt={item.category} />
-              <C.OftenCount>{item.count}회 착용</C.OftenCount>
-            </C.OftenItem>
-          ))}
-        </C.OftenContainer>
+        
       </C.Container>
 
       <C.BottomBox><Footer /></C.BottomBox>
