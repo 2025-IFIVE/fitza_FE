@@ -61,7 +61,7 @@ function CalendarCreate() {
     return labelMap[label] || `기타${label}`;
   };
 
-  const categoryList = ["상의", "하의", "아우터", "원피스", "신발", "가방"];
+  const categoryList = ["상의", "하의", "아우터", "원피스", "모자", "기타"];
 
   const getRandomStyle = () => ({
     top: `${Math.floor(Math.random() * 60)}%`,

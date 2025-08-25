@@ -200,7 +200,7 @@ const fetchRecommendation = async (min, max) => {
   }
 };
 
-  const categories = ["상의", "하의", "아우터", "원피스", "신발", "모자", "기타"];
+  const categories = ["상의", "하의", "아우터", "원피스", "모자", "기타"];
 
   
   return (
