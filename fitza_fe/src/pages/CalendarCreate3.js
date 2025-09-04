@@ -109,7 +109,7 @@ function CalendarCreate3() {
         <C.LargeText><div>⚠️아직 등록된 OOTD 사진이 없습니다⚠️</div></C.LargeText>
         <C.SmallText><div>캘린더에 OOTD를 등록하기 위해 전신 사진을 찍어주세요</div></C.SmallText>
         <C.LargeText><div>📷전신 사진을 찍어주세요📷</div></C.LargeText>
-        <C.SmallText><div>보다 정확한 자동 매칭을 위해 좋은 사진을 넣어라</div></C.SmallText>
+        <C.SmallText><div>정확한 자동 매칭을 위해 상하의가 잘 보이는 사진을 넣어주세요</div></C.SmallText>
 
         {/* 버튼 영역 */}
         <div style={{ marginTop: "20px", display: "flex", gap: 8 }}>
