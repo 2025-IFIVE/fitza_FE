@@ -1,1 +1,8 @@
-/*  /index.html  200
+# 백엔드 프록시
+/api/*        https://www.fitza.cloud/:splat   200
+/login        https://www.fitza.cloud/login    200
+/register     https://www.fitza.cloud/register 200
+/mypage       https://www.fitza.cloud/mypage   200
+
+# SPA 새로고침 처리 (마지막)
+*              /index.html                     200
