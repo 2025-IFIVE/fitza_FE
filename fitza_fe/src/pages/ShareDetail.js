@@ -11,7 +11,9 @@ import axios from "axios";
 function ShareDetail() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const shareId = state?.shareId; // 옵션 B: state로 shareId 전달받음
+  //const shareId = state?.shareId; // 옵션 B: state로 shareId 전달받음
+  const shareId = state?.shareId;
+  const readOnly = !!state?.readOnly; //삭제,수정버튼 readOnly
 
   const [detail, setDetail] = useState(null);
   const [itemsByCategory, setItemsByCategory] = useState({});
@@ -108,15 +110,14 @@ function ShareDetail() {
 
         <S.TitleBox1>
           <S.Title1>{detail?.date || ""}</S.Title1>
-          <S.RegisterContainer>
-            <S.Register>삭제하기</S.Register>
-            <button
-              onClick={handleDelete}
-              style={{ background: "none", border: "none", cursor: "pointer" }}
-            >
-              <img src={minusButton} alt="minus" className="minusImage" />
-            </button>
-          </S.RegisterContainer>
+          {!readOnly && (
+            <S.RegisterContainer>
+              <S.Register>삭제하기</S.Register>
+              <button onClick={handleDelete} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                <img src={minusButton} alt="minus" className="minusImage" />
+              </button>
+            </S.RegisterContainer>
+          )}
         </S.TitleBox1>
 
         <S.CoordiName>{detail?.title || "코디 이름 없음"}</S.CoordiName>
@@ -154,7 +155,7 @@ function ShareDetail() {
           })}
         </S.RandomBoard>
 
-        <S.EditButton onClick={handleEdit}>수정하기</S.EditButton>
+        {!readOnly && <S.EditButton onClick={handleEdit}>수정하기</S.EditButton>}
       </S.Container>
 
       <S.BottomBox>
