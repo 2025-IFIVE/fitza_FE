@@ -354,6 +354,7 @@ const handleCaptureFullPage = async () => {
                                   {src ? (
                                     <img
                                       src={src}
+                                      crossOrigin="anonymous"
                                       alt={`item-${idx}`}
                                       style={{ width: "100%", height: "auto", objectFit: "contain", pointerEvents: "none" }}
                                       draggable={false}
