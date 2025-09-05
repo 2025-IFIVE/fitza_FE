@@ -151,7 +151,7 @@ export default function ShareDetail() {
                 {item.src ? (
                   <img
                     src={item.src}
-                    crossOrigin="anonymous"
+                    //crossOrigin="anonymous"
                     alt={item?.type || `item-${idx}`}
                     style={{ width: "100%", height: "auto", objectFit: "contain", pointerEvents: "none" }}
                     onError={(e) => { e.currentTarget.style.display = "none"; }}
