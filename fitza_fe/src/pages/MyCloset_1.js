@@ -133,6 +133,15 @@ const fetchRecommendation = async (min, max) => {
 
     setRecommendation(recRes.data.data.recommendation);
   } catch (error) {
+    console.error("[/api/recommend] request payload:", payload);
+    console.error("[/api/recommend] axios error:", {
+      message: err.message,
+      status: err.response?.status,
+      data: err.response?.data,   
+      headers: err.response?.headers,
+      url: err.config?.url,
+      method: err.config?.method,
+    });
     console.error("추천 정보를 가져오는데 실패했습니다:", error);
   }
 };
