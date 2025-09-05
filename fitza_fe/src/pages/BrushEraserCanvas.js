@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { normalizeAbsoluteUrl } from "../utils/url";
+import { normalizeAbsoluteUrl } from "../utils/url.ts";
 
 const BrushEraserCanvas = ({ imageUrl, onExport }) => {
   const canvasRef = useRef(null);
