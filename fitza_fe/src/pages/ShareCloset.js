@@ -44,6 +44,25 @@ function ShareCloset() {
     navigate("/sharedetail", { state: { shareId } }); // state 전달 방식
   };
 
+  // yyyy.mm.dd 형태로 변환
+  const formatDateForDisplay = (date) => {
+    const d = new Date(date);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}.${mm}.${dd}`;
+  };
+
+  // 오늘의 코디 상세 이동
+  const openTodayDetail = () => {
+    if (!todayCoordi?.calendarId || !todayCoordi?.date) return;
+    const selectedDate = formatDateForDisplay(todayCoordi.date);
+    navigate("/CalendarDetail", {
+      state: { selectedDate, calendarId: todayCoordi.calendarId },
+    });
+  };
+
+
   // 파일 업로드 핸들러(프로필)
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
@@ -154,23 +173,38 @@ function ShareCloset() {
   };
 
   // 페이지 캡처
-  const handleCaptureFullPage = () => {
-    html2canvas(document.body, {
+const waitForImagesToLoad = async (root = document) => {
+  const imgs = Array.from(root.querySelectorAll("img"));
+  await Promise.all(
+    imgs.map((img) =>
+      img.complete
+        ? Promise.resolve()
+        : new Promise((res) => {
+            img.onload = img.onerror = res;
+          })
+    )
+  );
+};
+
+const handleCaptureFullPage = async () => {
+  try {
+    await waitForImagesToLoad(document); // ⬅️ 모든 이미지 로딩 대기
+    const canvas = await html2canvas(document.body, {
       useCORS: true,
       allowTaint: false,
       logging: true,
       scale: 2,
       width: window.innerWidth,
       height: window.innerHeight,
-    })
-      .then((canvas) => {
-        const link = document.createElement("a");
-        link.href = canvas.toDataURL("image/png");
-        link.download = `${(nickname || "user").trim() || "user"}.png`;
-        link.click();
-      })
-      .catch((err) => console.error("캡처 오류:", err));
-  };
+    });
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = `${(nickname || "user").trim() || "user"}.png`;
+    link.click();
+  } catch (err) {
+    console.error("캡처 오류:", err);
+  }
+};
 
   // 오늘의 코디 메타
   useEffect(() => {
