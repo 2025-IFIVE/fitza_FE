@@ -6,6 +6,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import backButton from '../img/backButton.png';
 import minusButton from '../img/minusButton.png';
 import axios from "axios";
+import { normalizeAbsoluteUrl } from "../utils/url.ts";
 
 function CalendarDetail() {
   const navigate = useNavigate();
@@ -120,7 +121,7 @@ function CalendarDetail() {
                 }}
               >
                 <img
-                  src={`${process.env.REACT_APP_API}/${(item.croppedPath || item.imagePath).replace(/^\/?/, "")}`}
+                  src={normalizeAbsoluteUrl(item.croppedPath || item.imagePath, process.env.REACT_APP_API)}
                   alt={cat}
                   style={{
                     width: "100%",

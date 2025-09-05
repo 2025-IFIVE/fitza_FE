@@ -11,6 +11,7 @@ import Modal from "react-modal";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axios from "axios";
+import { normalizeAbsoluteUrl } from "../utils/url.ts";
 
 Modal.setAppElement("#root");
 
@@ -458,16 +459,7 @@ function CalendarCreate() {
                 >
                   {(() => {
                     const rawPath = item.croppedPath || item.imagePath || "";
-                    let fullPath = "";
-                    if (rawPath.startsWith("http://localhost") || rawPath.startsWith("http://127.0.0.1")) {
-                      fullPath = rawPath
-                        .replace("http://localhost:8080", process.env.REACT_APP_API)
-                        .replace("http://127.0.0.1:8080", process.env.REACT_APP_API);
-                    } else if (rawPath.startsWith("http")) {
-                      fullPath = rawPath;
-                    } else {
-                      fullPath = `${process.env.REACT_APP_API}/${rawPath.replace(/^\//, "")}`;
-                    }
+                    const fullPath = normalizeAbsoluteUrl(rawPath, process.env.REACT_APP_API);
 
                     return (
                       <img
@@ -549,10 +541,7 @@ function CalendarCreate() {
                   .filter((item) => item.type === selectedTab)
                   .map((item, idx) => (
                     <C.ImageBox key={idx} onClick={() => handleImageSelect(selectedTab, item)}>
-                      <img
-                        src={`${process.env.REACT_APP_API}/${(item.croppedPath || "").replace(/^\//, "")}`}
-                        alt={`cloth-${item.clothid}`}
-                      />
+                      <img src={normalizeAbsoluteUrl(item.croppedPath || "", process.env.REACT_APP_API)} alt={`cloth-${item.clothid}`} />
                     </C.ImageBox>
                   ))}
               </C.ImageGrid>

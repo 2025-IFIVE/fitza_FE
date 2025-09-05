@@ -8,6 +8,8 @@ import news1 from '../img/news1.png';
 import news2 from '../img/news2.png';
 import news3 from '../img/news3.png';
 
+import { normalizeAbsoluteUrl } from "../utils/url.ts";
+
 function Main() {
   const [closetItems, setClosetItems] = useState([]);
 
@@ -20,10 +22,12 @@ function Main() {
         });
 
         // 1. 이미지 경로 생성
-        let items = response.data.map(item => ({
-          src: `${process.env.REACT_APP_API}${item.croppedPath}`,
-          id: item.clothid
-        }));
+        let items = response.data
+          .filter(item => item?.croppedPath || item?.imagePath)
+          .map(item => ({
+            src: normalizeAbsoluteUrl(item.croppedPath || item.imagePath, process.env.REACT_APP_API),
+            id: item.clothid
+          }));
 
         // 2. 랜덤 순서로 섞고 앞에서 6개만 선택
         items = items.sort(() => Math.random() - 0.5).slice(0, 6);

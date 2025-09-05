@@ -11,6 +11,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 
+import { normalizeAbsoluteUrl } from "../utils/url.ts";
+
 Modal.setAppElement("#root");
 
 const formatDate = (date) => {
@@ -352,7 +354,10 @@ function ShareCloset2() {
                                     onMouseDown={(e) => handleMouseDown(cat, e)}
                                 >
                                     <img
-                                        src={`${process.env.REACT_APP_API}/${(selectedImages[cat].croppedPath || selectedImages[cat].imagePath).replace(/^\/+/, '')}`}
+                                        src={normalizeAbsoluteUrl(
+                                            selectedImages[cat].croppedPath || selectedImages[cat].imagePath,
+                                            process.env.REACT_APP_API
+                                        )}
                                         alt={cat}
                                         style={{
                                             width: "100%",
@@ -426,7 +431,7 @@ function ShareCloset2() {
                                     .filter((item) => item.type === selectedTab)
                                     .map((item, idx) => (
                                         <C.ImageBox key={idx} onClick={() => handleImageSelect(selectedTab, item)}>
-                                            <img src={`${process.env.REACT_APP_API}/${(item.croppedPath || item.imagePath).replace(/^\/+/, '')}`} alt={`cloth-${item.clothid}`} />
+                                            <img src={normalizeAbsoluteUrl(item.croppedPath || item.imagePath, process.env.REACT_APP_API)} alt={`cloth-${item.clothid}`} />
                                         </C.ImageBox>
                                     ))}
                             </C.ImageGrid>

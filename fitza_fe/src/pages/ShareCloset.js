@@ -12,15 +12,9 @@ import down from "../img/shareClosetPage_download.png";
 import edit from "../img/shareClosetPage_edit.png";
 import addoutfitbutton from "../img/shareClosetPage_addoutfitbutton.png";
 
-// URL 안전 조립 유틸 (중복 슬래시 제거, 절대 URL 존중)
-const joinUrl = (base, path) => {
-  const b = String(base || "");
-  const p = String(path || "");
-  if (!b) return p;                     // base 없으면 path만
-  if (!p) return b.replace(/\/+$/, ""); // path 없으면 base만
-  if (/^https?:\/\//i.test(p)) return p; // 이미 절대 URL
-  return `${b.replace(/\/+$/, "")}/${p.replace(/^\/+/, "")}`;
-};
+import { normalizeAbsoluteUrl } from "../utils/url.ts";
+
+
 
 function ShareCloset() {
   // 1) 프로필 상태
@@ -89,7 +83,7 @@ function ShareCloset() {
     const token = localStorage.getItem("authToken");
     if (!token) return;
 
-    fetch(joinUrl(API_BASE, "mypage"), {
+    fetch(normalizeAbsoluteUrl("mypage", API_BASE), {
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
@@ -108,7 +102,7 @@ function ShareCloset() {
     const token = localStorage.getItem("authToken");
     if (!token) return;
 
-    fetch(joinUrl(API_BASE, "api/profile"), {
+    fetch(normalizeAbsoluteUrl("api/profile", API_BASE), {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
@@ -135,7 +129,7 @@ function ShareCloset() {
     if (intro.trim()) fd.append("comment", intro.trim());
 
     try {
-      const res = await axios.post(joinUrl(API_BASE, "api/profile"), fd, {
+      const res = await axios.post(normalizeAbsoluteUrl("api/profile", API_BASE), fd, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const d = res.data?.data;
@@ -178,8 +172,7 @@ function ShareCloset() {
     const token = localStorage.getItem("authToken");
     if (!token) return;
 
-    axios
-      .get(joinUrl(API_BASE, "api/coordination/my"), { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(normalizeAbsoluteUrl("api/coordination/my", API_BASE), { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         const today = getTodayKST();
         const item = (res.data || []).find((it) => new Date(it.date).toISOString().split("T")[0] === today);
@@ -193,8 +186,7 @@ function ShareCloset() {
     const token = localStorage.getItem("authToken");
     if (!token || !todayCoordi?.calendarId) return;
 
-    axios
-      .get(joinUrl(API_BASE, `api/coordination/${todayCoordi.calendarId}`), {
+    axios.get(normalizeAbsoluteUrl(`api/coordination/${todayCoordi.calendarId}`, API_BASE), {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setTodayCoordi((prev) => ({ ...prev, ...(res.data || {}) })))
@@ -206,18 +198,11 @@ function ShareCloset() {
     const token = localStorage.getItem("authToken");
     if (!token) return;
 
-    axios
-      .get(joinUrl(API_BASE, "api/share/my"), { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(normalizeAbsoluteUrl("api/share/my", API_BASE), { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => setSharedCoordis(res.data || []))
       .catch((e) => console.error("공유 코디 실패:", e));
   }, [API_BASE]);
 
-  // 이미지 src 생성기 (절대경로 지원, 상대경로는 joinUrl)
-  const toImgSrc = (raw) => {
-    if (!raw) return null;
-    const s = String(raw);
-    return /^https?:\/\//i.test(s) ? s : joinUrl(API_BASE, s);
-  };
 
   const handleGoToCalendarCreate = () => navigate("/sharecloset2");
 
@@ -255,7 +240,9 @@ function ShareCloset() {
                 <SC.ProfImg>
                   {profileImage ? (
                     (() => {
-                      const src = profileImage instanceof File ? previewImage : toImgSrc(profileImage);
+                      const src = profileImage instanceof File
+                        ? previewImage
+                        : normalizeAbsoluteUrl(profileImage, API_BASE);
                       return src ? (
                         <img
                           src={src}
@@ -318,7 +305,7 @@ function ShareCloset() {
                             {todayCoordi.items.map((item, idx) => {
                               const { x = 0, y = 0, size = 30 } = item || {};
                               const rawPath = item?.croppedPath || item?.imagePath || "";
-                              const src = toImgSrc(rawPath);
+                              const src = normalizeAbsoluteUrl(rawPath, API_BASE);
                               return (
                                 <SC.RandomItem
                                   key={`${rawPath}-${idx}`}
@@ -372,7 +359,7 @@ function ShareCloset() {
                               {coordi.items.map((item, idx) => {
                                 const { x = 0, y = 0, size = 30 } = item || {};
                                 const rawPath = item?.croppedPath || item?.imagePath || "";
-                                const src = toImgSrc(rawPath);
+                                const src = normalizeAbsoluteUrl(rawPath, API_BASE);
                                 return (
                                   <SC.RandomItem
                                     key={`${rawPath}-${idx}`}
@@ -421,7 +408,9 @@ function ShareCloset() {
               <SC.ProfileImagePreview>
                 {profileImage ? (
                   (() => {
-                    const src = profileImage instanceof File ? previewImage : toImgSrc(profileImage);
+                    const src = profileImage instanceof File
+                       ? previewImage
+                       : normalizeAbsoluteUrl(profileImage, API_BASE);
                     return src ? (
                       <img
                         src={src}

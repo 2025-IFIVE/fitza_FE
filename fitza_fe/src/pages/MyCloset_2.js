@@ -8,7 +8,7 @@ import smallPlus from '../img/smallPlus.png';
 import backbtn from '../img/backButton.png';
 
 import axios from "axios";
-
+import { normalizeAbsoluteUrl } from "../utils/url.ts";
 
 function MyCloset_2() {
   const navigate = useNavigate();
@@ -49,7 +49,10 @@ function MyCloset_2() {
   const handleBoxClick = (item) => {
     navigate("/MyCloset_3", {
       state: {
-        imageSrc: `${process.env.REACT_APP_API}${item.croppedPath}`,
+        imageSrc: normalizeAbsoluteUrl(
+        item.croppedPath || item.imagePath || item.imageUrl,
+        process.env.REACT_APP_API
+      ),
         category: item.type,
         clothId: item.clothid, // 상세정보 연동용
         type: item.type   // type도 넘겨주자
@@ -88,7 +91,7 @@ function MyCloset_2() {
             .map((image, index) => (
               <M.Box key={index} onClick={() => handleBoxClick(image)}>
                 <M.BoxImage 
-                  src={`${process.env.REACT_APP_API}${image.croppedPath}`}
+                  src={normalizeAbsoluteUrl(image.croppedPath, process.env.REACT_APP_API)}
                   alt={`옷 ${index + 1}`}
                 />
               </M.Box>

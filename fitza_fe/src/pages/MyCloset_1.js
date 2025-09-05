@@ -5,6 +5,7 @@ import * as M from "../styles/MyClosetStyle_1";
 import TopBar from '../components/TopBar';
 import Footer from '../components/Footer';
 import refreshIcon from "../img/refresh.png";
+import { normalizeAbsoluteUrl } from "../utils/url.ts";
 
 
 const MyCloset_1 = () => {
@@ -272,7 +273,7 @@ const fetchRecommendation = async (min, max) => {
     recommendation.items.map((item, idx) => (
       <img
         key={idx}
-        src={`${process.env.REACT_APP_API}${item.imageUrl}`}
+        src={normalizeAbsoluteUrl(item.imageUrl, process.env.REACT_APP_API)}
         alt=""
         style={{
           width: "80px",
@@ -319,7 +320,7 @@ const fetchRecommendation = async (min, max) => {
                 {item.images.map((img, idx) => (
                   <img
                   key={idx}
-                  src={`${process.env.REACT_APP_API}${img.path}`}
+                  src={normalizeAbsoluteUrl(img.path, process.env.REACT_APP_API)}
                   alt={`코디 아이템 ${idx}`}
                   style={{
                     position: "absolute",

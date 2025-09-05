@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import backIcon from "../img/backButton.png";
 import friends from "../img/shareClosetPage_friends.png";
 import axios from "axios";
+import { normalizeAbsoluteUrl } from "../utils/url.ts";
 
 function FriendCloset() {
     const { id } = useParams();
@@ -79,7 +80,7 @@ function FriendCloset() {
                             <SC.WhiteBox>
                                 <SC.ProfImg>
                                     {profileImage ? (
-                                        <img src={`${process.env.REACT_APP_API}/${profileImage.replace(/^\/+/, '')}`} alt="profile" />
+                                        <img src={normalizeAbsoluteUrl(profileImage, process.env.REACT_APP_API)} alt="profile" />
                                     ) : (
                                         <div className="no-image-text">프로필 사진이 없습니다</div>
                                     )}
@@ -112,9 +113,7 @@ function FriendCloset() {
                                                         {coordi.items.map((item, idx) => {
                                                             const { x = 0, y = 0, size = 30 } = item;
                                                             const rawPath = item.croppedPath || item.imagePath || "";
-                                                            const fullPath = rawPath.startsWith("http")
-                                                                ? rawPath
-                                                                : `${process.env.REACT_APP_API}/${rawPath.replace(/^\/+/, "")}`;
+                                                            const fullPath = normalizeAbsoluteUrl(rawPath, process.env.REACT_APP_API);
                                                             return (
                                                                 <SC.RandomItem
                                                                     key={idx}

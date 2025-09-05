@@ -7,6 +7,7 @@ import smallPlus from '../img/smallPlus.png';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from "axios";
+import { normalizeAbsoluteUrl } from "../utils/url.ts";
 
 
 const formatDateForDisplay = (date) => {
@@ -155,7 +156,7 @@ function CalendarPage() {
                       <div key={idx} style={{ width: '100%', height: '100%' }}>
                         {imagePath && (
                           <img
-                          src={`${process.env.REACT_APP_API}/${imagePath.replace(/^\//, "")}`}
+                          src={normalizeAbsoluteUrl(imagePath, process.env.REACT_APP_API)}
                             alt={`coordi-${idx}`}
                             style={{
                               width: '100%',
