@@ -1,5 +1,5 @@
 // 절대면 그대로, 상대면 base 붙이기, 'https//' 오타 교정, 이중 프리픽스 방지
-function normalizeAbsoluteUrl(input?: string, base?: string) {
+export function normalizeAbsoluteUrl(input?: string, base?: string) {
   if (!input) return "";
 
   let u = String(input).trim();
