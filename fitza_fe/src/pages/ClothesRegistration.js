@@ -5,6 +5,7 @@ import TopBar from '../components/TopBar';
 import { useNavigate } from "react-router-dom";
 import smallPlus from '../img/cameraImage.png';
 import backIcon from "../img/backButton.png";
+import { toAbsoluteUrl } from "../utils/url";
 
 function ClothesRegistration() {
   const navigate = useNavigate();
@@ -61,7 +62,12 @@ function ClothesRegistration() {
       navigate("/MyCloset_3", {
         state: {
           id: result.clothid,
-          imageSrc: `${process.env.REACT_APP_API}${result.imagePath || result.image_path}`,
+          //imageSrc: `${process.env.REACT_APP_API}${result.imagePath || result.image_path}`,
+          imageSrc: toAbsoluteUrl(
+          // 백엔드가 어떤 키를 주는지 모두 커버
+          result.imageUrl || result.image_url || result.imagePath || result.image_path,
+          process.env.REACT_APP_API // 만약 상대경로인 경우에만 base로 사용
+          ),
           category: result.category,
           type: result.type,           // ✅ type도 함께 넘기기
           clothId: result.clothid,     // ✅ id와 함께 clothId도 넘기기 (MyCloset_3에서 사용)
