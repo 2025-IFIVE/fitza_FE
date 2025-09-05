@@ -383,7 +383,7 @@ function ShareCloset() {
                       <img
                         src={src}
                         alt={`item-${idx}`}
-                        //crossOrigin="anonymous"
+                        crossOrigin="anonymous"
                         style={{ width: "100%", height: "auto", objectFit: "contain", pointerEvents: "none" }}
                         draggable={false}
                         onError={(e) => { e.currentTarget.style.display = "none"; }}
@@ -427,6 +427,7 @@ function ShareCloset() {
                     return src ? (
                       <img
                         src={src}
+                        crossOrigin="anonymous"
                         alt="프로필 이미지"
                         className="profile-image-preview"
                         onError={(e) => {
