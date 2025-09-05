@@ -61,7 +61,7 @@ function ClothesRegistration() {
       navigate("/MyCloset_3", {
         state: {
           id: result.clothid,
-          imageSrc: `${process.env.REACT_APP_API}/${result.imagePath || result.image_path}`,
+          imageSrc: `${process.env.REACT_APP_API}${result.imagePath || result.image_path}`,
           category: result.category,
           type: result.type,           // ✅ type도 함께 넘기기
           clothId: result.clothid,     // ✅ id와 함께 clothId도 넘기기 (MyCloset_3에서 사용)
