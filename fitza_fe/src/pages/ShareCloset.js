@@ -383,7 +383,7 @@ function ShareCloset() {
                       <img
                         src={src}
                         alt={`item-${idx}`}
-                        crossOrigin="anonymous"
+                        //crossOrigin="anonymous"
                         style={{ width: "100%", height: "auto", objectFit: "contain", pointerEvents: "none" }}
                         draggable={false}
                         onError={(e) => { e.currentTarget.style.display = "none"; }}
