@@ -39,6 +39,11 @@ function ShareCloset() {
 
   const handleBackClick = () => navigate(-1);
 
+  const openShareDetail = (shareId) => {
+    if (!shareId) return;
+    navigate("/sharedetail", { state: { shareId } }); // state 전달 방식
+  };
+
   // 파일 업로드 핸들러(프로필)
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
@@ -340,55 +345,62 @@ function ShareCloset() {
                   )}
 
                   {showOutfitList && (
-                    <SC.OutfitList>
-                      <SC.OutfitBox1>
-                        <div>코디 등록하기</div>
-                        <SC.AddOutfitButton onClick={() => navigate("/sharecloset2")}>
-                          <img src={addoutfitbutton} alt="addoutfitbutton" />
-                        </SC.AddOutfitButton>
-                      </SC.OutfitBox1>
+  <SC.OutfitList>
+    <SC.OutfitBox1>
+      <div>코디 등록하기</div>
+      <SC.AddOutfitButton onClick={() => navigate("/sharecloset2")}>
+        <img src={addoutfitbutton} alt="addoutfitbutton" />
+      </SC.AddOutfitButton>
+    </SC.OutfitBox1>
 
-                      {sharedCoordis.length === 0 ? (
-                        <SC.OutfitBox2>
-                          <div>공유된 코디가 없습니다</div>
-                        </SC.OutfitBox2>
-                      ) : (
-                        sharedCoordis.map((coordi, index) => (
-                          <SC.OutfitBox2 key={`coordi-${index}`}>
-                            <div style={{ fontWeight: "bold", marginBottom: 6 }}>{coordi.title}</div>
-                            <SC.RandomBoard style={{ position: "relative", height: 300 }}>
-                              {coordi.items.map((item, idx) => {
-                                const { x = 0, y = 0, size = 30 } = item || {};
-                                const rawPath = item?.croppedPath || item?.imagePath || "";
-                                const src = normalizeAbsoluteUrl(rawPath, API_BASE);
-                                return (
-                                  <SC.RandomItem
-                                    key={`${rawPath}-${idx}`}
-                                    style={{ position: "absolute", left: `${x}%`, top: `${y}%`, width: `${size}%`, zIndex: 10 + idx }}
-                                  >
-                                    {src ? (
-                                      <img
-                                        src={src}
-                                        alt={`item-${idx}`}
-                                        style={{ width: "100%", height: "auto", objectFit: "contain", pointerEvents: "none" }}
-                                        draggable={false}
-                                        onError={(e) => {
-                                          console.error("공유 코디 이미지 로딩 실패:", src);
-                                          e.currentTarget.style.display = "none"; // 치환 없음
-                                        }}
-                                      />
-                                    ) : (
-                                      <div style={{ color: "#999", fontSize: 12 }}>이미지 경로 없음</div>
-                                    )}
-                                  </SC.RandomItem>
-                                );
-                              })}
-                            </SC.RandomBoard>
-                          </SC.OutfitBox2>
-                        ))
-                      )}
-                    </SC.OutfitList>
-                  )}
+    {sharedCoordis.length === 0 ? (
+      <SC.OutfitBox2>
+        <div>공유된 코디가 없습니다</div>
+      </SC.OutfitBox2>
+    ) : (
+      sharedCoordis.map((coordi, index) => {
+        const shareId = coordi.shareId ?? coordi.id; // 백엔드 필드 두 가지 대응
+        return (
+          <SC.OutfitBox2
+            key={`coordi-${index}`}
+            onClick={() => openShareDetail(shareId)}   // ⬅️ 클릭 시 상세로
+            style={{ cursor: "pointer" }}
+            role="button"
+            aria-label={`${coordi.title} 상세보기`}
+          >
+            <div style={{ fontWeight: "bold", marginBottom: 6 }}>{coordi.title}</div>
+            <SC.RandomBoard style={{ position: "relative", height: 300 }}>
+              {(coordi.items || []).map((item, idx) => {
+                const { x = 0, y = 0, size = 30 } = item || {};
+                const rawPath = item?.croppedPath || item?.imagePath || "";
+                const src = normalizeAbsoluteUrl(rawPath, API_BASE); // ⬅️ 배포용 유틸로 정규화
+                return (
+                  <SC.RandomItem
+                    key={`${rawPath}-${idx}`}
+                    style={{ position: "absolute", left: `${x}%`, top: `${y}%`, width: `${size}%`, zIndex: 10 + idx }}
+                  >
+                    {src ? (
+                      <img
+                        src={src}
+                        alt={`item-${idx}`}
+                        crossOrigin="anonymous"
+                        style={{ width: "100%", height: "auto", objectFit: "contain", pointerEvents: "none" }}
+                        draggable={false}
+                        onError={(e) => { e.currentTarget.style.display = "none"; }}
+                      />
+                    ) : (
+                      <div style={{ color: "#999", fontSize: 12 }}>이미지 경로 없음</div>
+                    )}
+                  </SC.RandomItem>
+                );
+              })}
+            </SC.RandomBoard>
+          </SC.OutfitBox2>
+        );
+      })
+    )}
+  </SC.OutfitList>
+)}
                 </SC.ContentBox2>
               </SC.WhiteBox2>
             </SC.GrayBox>
