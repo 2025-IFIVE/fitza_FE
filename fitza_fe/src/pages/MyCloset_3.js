@@ -13,6 +13,8 @@ import img9 from '../img/img9.png';
 import penIcon from '../img/MyCloset_3_pen.png';
 import checkedIcon from '../img/MyCloset_3_checked.png';
 
+import { normalizeAbsoluteUrl } from "../utils/url";
+
 function MyCloset_3() {
   const navigate = useNavigate(); // navigate 훅 사용
   const location = useLocation(); // useLocation 훅을 사용하여 상태값 가져오기
@@ -461,7 +463,7 @@ const handleSingleSelect = (selected, setSelected, item) => {
             {(croppedPath || imagePath || imageSrc) ? (
               <>
                 <img
-                  src={`${process.env.REACT_APP_API}${croppedPath || imagePath || imageSrc}`}
+                  src={normalizeAbsoluteUrl(croppedPath || imagePath || imageSrc, process.env.REACT_APP_API)}
                   alt="선택한 옷"
                 />
                 <button onClick={openEditModal} style={{ marginTop: "10px" }}>

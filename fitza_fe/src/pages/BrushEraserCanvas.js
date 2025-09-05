@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { toAbsoluteUrl } from "../utils/url.ts";
+import { normalizeAbsoluteUrl } from "../utils/url";
 
 const BrushEraserCanvas = ({ imageUrl, onExport }) => {
   const canvasRef = useRef(null);
@@ -15,7 +15,7 @@ const BrushEraserCanvas = ({ imageUrl, onExport }) => {
     const image = new Image();
     image.crossOrigin = "anonymous";
     //image.src = imageUrl;
-    image.src = toAbsoluteUrl(imageUrl);
+    image.src = normalizeAbsoluteUrl(imageUrl, process.env.REACT_APP_API);
 
     image.onload = () => {
       const maxWidth = 500;
