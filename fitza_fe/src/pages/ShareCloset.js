@@ -246,6 +246,7 @@ function ShareCloset() {
                       return src ? (
                         <img
                           src={src}
+                          crossOrigin="anonymous"
                           alt="profile"
                           onError={(e) => {
                             console.error("프로필 이미지 로딩 실패:", src);
