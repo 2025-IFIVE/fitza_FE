@@ -5,7 +5,7 @@ import TopBar from '../components/TopBar';
 import { useNavigate } from "react-router-dom";
 import smallPlus from '../img/cameraImage.png';
 import backIcon from "../img/backButton.png";
-import { toAbsoluteUrl } from "../utils/url";
+import { toAbsoluteUrl } from "../utils/url.ts";
 
 function ClothesRegistration() {
   const navigate = useNavigate();
