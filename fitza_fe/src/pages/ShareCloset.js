@@ -168,7 +168,7 @@ function ShareCloset() {
 
   /* ================================================================== */
   /* 2. 방문자수 / 네비게이션 */
-  const [showTodayOutfit, setShowTodayOutfit] = useState(false);
+  const [showTodayOutfit, setShowTodayOutfit] = useState(true);
   const [showOutfitList, setShowOutfitList] = useState(false);
   const navigate = useNavigate();
 
