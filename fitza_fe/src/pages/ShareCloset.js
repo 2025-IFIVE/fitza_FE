@@ -219,6 +219,24 @@ function ShareCloset() {
       .catch(err => console.error("오늘의 코디 상세 조회 실패:", err));
   }, [todayCoordi?.calendarId]);
 
+  // 🔸 CalendarDetail에서 기대하는 날짜 포맷과 동일(yyyy.mm.dd)로 변환
+  const formatDateForDisplay = (date) => {
+    const d = new Date(date);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}.${mm}.${dd}`;
+  };
+
+  // 🔹 오늘의 코디 클릭 → CalendarDetail 이동 (state 방식)
+  const openTodayDetail = () => {
+    if (!todayCoordi?.calendarId || !todayCoordi?.date) return;
+    const selectedDate = formatDateForDisplay(todayCoordi.date);
+    navigate("/CalendarDetail", {
+      state: { selectedDate, calendarId: todayCoordi.calendarId },
+    });
+  };
+
   // 공유 코디
   const handleGoToCalendarCreate = () => navigate("/sharecloset2");
 
@@ -234,7 +252,7 @@ function ShareCloset() {
       .catch(error => console.error("공유 코디 불러오기 실패:", error));
   }, []);
 
-  // 🔹 카드 클릭 → state 방식으로 ShareDetail 진입 (옵션 B)
+  // 🔹 공유코디 카드 클릭 → ShareDetail 이동 (state 방식)
   const openShareDetail = (shareId) => {
     if (!shareId) return;
     navigate("/ShareDetail", { state: { shareId } });
@@ -251,7 +269,7 @@ function ShareCloset() {
           <SC.Back onClick={handleBackClick}>
             <img src={backIcon} alt="back" />
           </SC.Back>
-          <SC.Title>옷장 공유</SC.Title>
+        <SC.Title>옷장 공유</SC.Title>
         </SC.Header>
 
         <SC.ContentBox>
@@ -319,7 +337,12 @@ function ShareCloset() {
                   {showTodayOutfit && (
                     <SC.RecentOutfit>
                       {todayCoordi && todayCoordi.items?.length > 0 ? (
-                        <SC.OutfitBox3>
+                        <SC.OutfitBox3
+                          onClick={openTodayDetail}
+                          style={{ cursor: "pointer" }}
+                          role="button"
+                          aria-label="오늘의 코디 상세보기"
+                        >
                           <div>{todayCoordi.title}</div>
                           <SC.RandomBoard>
                             {todayCoordi.items.map((item, idx) => {
