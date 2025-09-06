@@ -140,7 +140,7 @@ const fetchRecommendation = async (min, max) => {
       headers: error.response?.headers,
       url: error.config?.url,
       method: error.config?.method,
-      sentBody: { userId, weather: rangeStr },
+      sentBody: { weather: rangeStr },
     });
     console.error("추천 정보를 가져오는데 실패했습니다:", error);
   }
