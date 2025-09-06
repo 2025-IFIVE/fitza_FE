@@ -111,20 +111,6 @@ const fetchWeather = async (lat, lon) => {
   }
 };
 
-const getUserIdFromToken = () => {
-  const token = localStorage.getItem("authToken");
-  if (!token) return null;
-  try {
-    // JWT payload 디코딩
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    
-    return payload.userId ?? payload.id ?? payload.sub ?? null;
-  } catch (e) {
-    console.error("JWT 파싱 실패:", e);
-    return null;
-  }
-};
-
 const fetchRecommendation = async (min, max) => {
   const getWeatherRangeKey = (min, max) => {
     const avg = (min + max) / 2;
@@ -137,11 +123,9 @@ const fetchRecommendation = async (min, max) => {
 
   const rangeStr = getWeatherRangeKey(min, max);
   const token = localStorage.getItem("authToken");
-  const userId = getUserIdFromToken(); 
 
   try {
     const recRes = await axios.post(`${process.env.REACT_APP_API}/recommend`, {
-      userId: userId,
       weather: rangeStr
     }, {
       headers: { Authorization: `Bearer ${token}` }
