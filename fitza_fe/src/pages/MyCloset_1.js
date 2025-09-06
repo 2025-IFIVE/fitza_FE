@@ -140,7 +140,7 @@ const fetchRecommendation = async (min, max) => {
   const userId = getUserIdFromToken(); 
 
   try {
-    const recRes = await axios.post(`${process.env.REACT_APP_API}/api/recommend`, {
+    const recRes = await axios.post(`${process.env.REACT_APP_API}/recommend`, {
       userId: userId,
       weather: rangeStr
     }, {
@@ -149,7 +149,7 @@ const fetchRecommendation = async (min, max) => {
 
     setRecommendation(recRes.data.data.recommendation);
   } catch (error) {
-    console.error("[/api/recommend] axios error:", {
+    console.error("[/recommend] axios error:", {
       message: error.message,
       status: error.response?.status,
       data: error.response?.data,   
