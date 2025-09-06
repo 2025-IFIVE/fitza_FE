@@ -33,34 +33,27 @@ function CalendarCreate() {
   const [coordiName, setCoordiName] = useState("");
   const [clothingData, setClothingData] = useState([]);
   const [selectedImages, setSelectedImages] = useState({
-    상의: null,
-    하의: null,
-    아우터: null,
-    원피스: null,
-    신발: null,
-    가방: null,
+    상의: null, 하의: null, 아우터: null, 원피스: null, 신발: null, 가방: null,
   });
   const [imageStyles, setImageStyles] = useState({});
   const [dragState, setDragState] = useState({});
   const [resizeState, setResizeState] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const boardRef = useRef(null);
+  const itemRefs = useRef({});           // 각 카테고리 DOM 참조
+  const dragRafId = useRef(null);
+  const resizeRafId = useRef(null);
+  const pendingDrag = useRef(null);      // {cat, left, top}
+  const pendingResize = useRef(null);    // {cat, size}
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const labelToCategory = (label) => {
-    const labelMap = {
-      "20": "상의",
-      "21": "하의",
-      "22": "아우터",
-      "23": "원피스",
-      "24": "신발",
-      "25": "가방",
-    };
+    const labelMap = { "20": "상의", "21": "하의", "22": "아우터", "23": "원피스", "24": "신발", "25": "가방" };
     return labelMap[label] || `기타${label}`;
   };
-
   const categoryList = ["상의", "하의", "아우터", "원피스", "모자", "기타"];
 
   const getRandomStyle = () => ({
@@ -84,7 +77,7 @@ function CalendarCreate() {
     fetchClothing();
   }, []);
 
-  // 편집 모드: 기존 좌표/사이즈/이미지 복원
+  // 편집 모드 복원
   useEffect(() => {
     if (!isEditMode || !location.state) return;
 
@@ -98,7 +91,7 @@ function CalendarCreate() {
 
       for (const item of location.state.items || []) {
         try {
-          const cid = item.clothid || item.clothId; // 보정
+          const cid = item.clothid || item.clothId;
           if (!cid) continue;
           const res = await axios.get(`${process.env.REACT_APP_API}/api/clothing/${cid}`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -106,23 +99,13 @@ function CalendarCreate() {
           const type = res.data?.type;
           if (type) {
             const imagePath = (res.data?.croppedPath || res.data?.imagePath || "").replace(/^\//, "");
-            imagesByCat[type] = {
-              ...item,
-              type,
-              clothid: Number(cid),
-              imagePath,
-            };
-            stylesByCat[type] = {
-              top: `${item.y}%`,
-              left: `${item.x}%`,
-              size: item.size ?? 100,
-            };
+            imagesByCat[type] = { ...item, type, clothid: Number(cid), imagePath };
+            stylesByCat[type] = { top: `${item.y}%`, left: `${item.x}%`, size: item.size ?? 100 };
           }
         } catch (err) {
           console.error("cloth type 불러오기 실패:", err);
         }
       }
-
       setSelectedImages((prev) => ({ ...prev, ...imagesByCat }));
       setImageStyles((prev) => ({ ...prev, ...stylesByCat }));
     };
@@ -130,15 +113,13 @@ function CalendarCreate() {
     fetchTypes();
   }, [isEditMode, location]);
 
-  // 자동 매칭 수신 (CalendarCreate3 → CalendarCreate)
-  // 권장: location.state.matchedIds (실제 DB clothid[])를 함께 전달
+  // 자동 매칭 반영
   useEffect(() => {
-    const matched = location.state?.matchedImages; // URL[]
-    const labels = location.state?.labels;         // "20"~"25"
-    const matchedIds = location.state?.matchedIds; // 실제 clothid[]
+    const matched = location.state?.matchedImages;
+    const labels = location.state?.labels;
+    const matchedIds = location.state?.matchedIds;
 
     if (!matched || !labels || matched.length !== labels.length) return;
-    // matchedIds가 없고 아직 옷장 목록이 비었다면 역매칭 불가 → 대기
     if (!matchedIds && clothingData.length === 0) return;
 
     const findClothIdByUrl = (url) => {
@@ -152,12 +133,10 @@ function CalendarCreate() {
 
     const newImages = {};
     const newStyles = {};
-
     matched.forEach((url, idx) => {
       const cat = labelToCategory(String(labels[idx]));
       const realId = matchedIds?.[idx] ?? findClothIdByUrl(url);
-      if (!realId) return; // clothid 없으면 제외
-
+      if (!realId) return;
       newImages[cat] = {
         imagePath: url.replace(process.env.REACT_APP_API || "", "").replace(/^\//, ""),
         clothid: Number(realId),
@@ -175,9 +154,7 @@ function CalendarCreate() {
   // 바텀시트 열릴 때 스크롤 잠금
   useEffect(() => {
     document.body.style.overflow = isBottomSheetOpen ? "hidden" : "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
+    return () => { document.body.style.overflow = "auto"; };
   }, [isBottomSheetOpen]);
 
   const handleImageSelect = (tab, item) => {
@@ -186,24 +163,19 @@ function CalendarCreate() {
       const currentId = current?.clothid || current?.clothId;
       const newId = item.clothid || item.clothId;
 
-      // 같은 아이템 다시 누르면 제거
       if (current && currentId === newId) {
         const newImages = { ...prev };
         delete newImages[tab];
-
         setImageStyles((prevStyle) => {
           const newStyles = { ...prevStyle };
           delete newStyles[tab];
           return newStyles;
         });
-
         return newImages;
       }
-      // 새 선택
       return { ...prev, [tab]: item };
     });
 
-    // 스타일 기본값
     setImageStyles((prev) => {
       if (prev[tab]) return prev;
       const { top, left } = getRandomStyle();
@@ -211,111 +183,164 @@ function CalendarCreate() {
     });
   };
 
-  const handleMouseDown = (cat, e) => {
+  // ===== Drag (DOM 직접 갱신 + pointer capture + rAF) =====
+  const handlePointerDownDrag = (cat, e) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
     e.preventDefault();
     e.stopPropagation();
+    // 포인터 캡처: 요소 밖으로 나가도 이벤트 유지
+    try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch {}
+
     const boardRect = boardRef.current?.getBoundingClientRect();
     if (!boardRect) return;
 
-    const startX = e.clientX;
-    const startY = e.clientY;
-
     const currentStyle = imageStyles[cat] || { left: "0%", top: "0%" };
-    const currentLeft = parseFloat(currentStyle.left.replace("%", "")) || 0;
-    const currentTop = parseFloat(currentStyle.top.replace("%", "")) || 0;
+    const currentLeft = parseFloat(String(currentStyle.left).replace("%", "")) || 0;
+    const currentTop = parseFloat(String(currentStyle.top).replace("%", "")) || 0;
 
     setDragState({
       isDragging: true,
       category: cat,
-      startX,
-      startY,
+      startX: e.clientX,
+      startY: e.clientY,
       startLeft: currentLeft,
       startTop: currentTop,
+      boardRect,
     });
+    pendingDrag.current = { cat, left: currentLeft, top: currentTop };
   };
 
-  const handleMouseMove = (e) => {
-    if (!dragState.isDragging || !boardRef.current) return;
+  const handlePointerMoveDrag = (e) => {
+    if (!dragState.isDragging) return;
     e.preventDefault();
 
-    const boardRect = boardRef.current.getBoundingClientRect();
+    const rect = dragState.boardRect;
     const deltaX = e.clientX - dragState.startX;
     const deltaY = e.clientY - dragState.startY;
-    const deltaXPercent = (deltaX / boardRect.width) * 100;
-    const deltaYPercent = (deltaY / boardRect.height) * 100;
+    const dxp = (deltaX / rect.width) * 100;
+    const dyp = (deltaY / rect.height) * 100;
 
-    const newLeft = Math.max(0, Math.min(dragState.startLeft + deltaXPercent, 85));
-    const newTop = Math.max(0, Math.min(dragState.startTop + deltaYPercent, 85));
+    const left = Math.max(0, Math.min(dragState.startLeft + dxp, 85));
+    const top  = Math.max(0, Math.min(dragState.startTop  + dyp, 85));
 
-    setImageStyles((prev) => ({
-      ...prev,
-      [dragState.category]: {
-        ...prev[dragState.category],
-        left: `${newLeft}%`,
-        top: `${newTop}%`,
-      },
-    }));
+    // DOM에 직접 적용 (리렌더 X)
+    const el = itemRefs.current[dragState.category];
+    pendingDrag.current = { cat: dragState.category, left, top };
+
+    if (el && dragRafId.current == null) {
+      dragRafId.current = requestAnimationFrame(() => {
+        const p = pendingDrag.current;
+        if (p && itemRefs.current[p.cat]) {
+          itemRefs.current[p.cat].style.left = `${p.left}%`;
+          itemRefs.current[p.cat].style.top  = `${p.top}%`;
+        }
+        dragRafId.current = null;
+      });
+    }
   };
 
-  const handleMouseUp = () => setDragState({});
+  const handlePointerUpDrag = () => {
+    const p = pendingDrag.current;
+    // 최종 상태만 커밋 (리렌더 1회)
+    if (p) {
+      setImageStyles((prev) => ({
+        ...prev,
+        [p.cat]: { ...(prev[p.cat] || {}), left: `${p.left}%`, top: `${p.top}%` },
+      }));
+    }
+    setDragState({});
+    pendingDrag.current = null;
+    if (dragRafId.current) cancelAnimationFrame(dragRafId.current);
+    dragRafId.current = null;
+  };
 
-  const handleResizeMouseDown = (cat, e) => {
+  // ===== Resize (DOM 직접 갱신 + rAF) =====
+  const handlePointerDownResize = (cat, e) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
     e.preventDefault();
     e.stopPropagation();
+    try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch {}
+
     setResizeState({
       isResizing: true,
       category: cat,
       startX: e.clientX,
-      startSize: imageStyles[cat]?.size || 100,
+      startSize: imageStyles[cat]?.size ?? 100,
     });
+    pendingResize.current = { cat, size: imageStyles[cat]?.size ?? 100 };
   };
 
-  const handleResizeMouseMove = (e) => {
+  const handlePointerMoveResize = (e) => {
     if (!resizeState.isResizing) return;
+    e.preventDefault();
+
     const deltaX = e.clientX - resizeState.startX;
-    const newSize = Math.max(30, resizeState.startSize + deltaX * 0.5);
-    setImageStyles((prev) => ({
-      ...prev,
-      [resizeState.category]: {
-        ...prev[resizeState.category],
-        size: newSize,
-      },
-    }));
+    const size = Math.max(30, (resizeState.startSize ?? 100) + deltaX * 0.5);
+
+    const el = itemRefs.current[resizeState.category];
+    pendingResize.current = { cat: resizeState.category, size };
+
+    if (el && resizeRafId.current == null) {
+      resizeRafId.current = requestAnimationFrame(() => {
+        const p = pendingResize.current;
+        if (p && itemRefs.current[p.cat]) {
+          itemRefs.current[p.cat].style.width = `${p.size}%`;
+        }
+        resizeRafId.current = null;
+      });
+    }
   };
 
-  const handleResizeMouseUp = () => setResizeState({});
-
-  useEffect(() => {
-    if (dragState.isDragging) {
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
-      return () => {
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-      };
+  const handlePointerUpResize = () => {
+    const p = pendingResize.current;
+    if (p) {
+      setImageStyles((prev) => ({
+        ...prev,
+        [p.cat]: { ...(prev[p.cat] || {}), size: p.size },
+      }));
     }
+    setResizeState({});
+    pendingResize.current = null;
+    if (resizeRafId.current) cancelAnimationFrame(resizeRafId.current);
+    resizeRafId.current = null;
+  };
+
+  // 문서 백업 리스너 (드문 케이스 대비)
+  useEffect(() => {
+    if (!dragState.isDragging) return;
+    const move = (e) => handlePointerMoveDrag(e);
+    const up = () => handlePointerUpDrag();
+    document.addEventListener("pointermove", move, { passive: false });
+    document.addEventListener("pointerup", up, { passive: true });
+    document.addEventListener("pointercancel", up, { passive: true });
+    return () => {
+      document.removeEventListener("pointermove", move);
+      document.removeEventListener("pointerup", up);
+      document.removeEventListener("pointercancel", up);
+    };
   }, [dragState]);
 
   useEffect(() => {
-    if (resizeState.isResizing) {
-      document.addEventListener("mousemove", handleResizeMouseMove);
-      document.addEventListener("mouseup", handleResizeMouseUp);
-      return () => {
-        document.removeEventListener("mousemove", handleResizeMouseMove);
-        document.removeEventListener("mouseup", handleResizeMouseUp);
-      };
-    }
+    if (!resizeState.isResizing) return;
+    const move = (e) => handlePointerMoveResize(e);
+    const up = () => handlePointerUpResize();
+    document.addEventListener("pointermove", move, { passive: false });
+    document.addEventListener("pointerup", up, { passive: true });
+    document.addEventListener("pointercancel", up, { passive: true });
+    return () => {
+      document.removeEventListener("pointermove", move);
+      document.removeEventListener("pointerup", up);
+      document.removeEventListener("pointercancel", up);
+    };
   }, [resizeState]);
 
   const handleSubmit = async () => {
-    if (isSubmitting) return; // 중복 전송 방지
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     const token = localStorage.getItem("authToken");
-
     const entries = Object.entries(selectedImages).filter(([, item]) => !!item);
 
-    // clothid 누락 카테고리 표시
     const missingCats = entries
       .filter(([, item]) => !(item.clothid || item.clothId))
       .map(([cat]) => cat);
@@ -334,7 +359,6 @@ function CalendarCreate() {
       return { clothId: id, clothid: id, x, y, size: s };
     });
 
-    // 숫자성 검증
     const invalid = items.filter((it) => !Number.isFinite(it.clothid));
     if (invalid.length > 0) {
       alert("일부 아이템의 clothid가 숫자가 아닙니다. 선택을 다시 해주세요.");
@@ -360,8 +384,6 @@ function CalendarCreate() {
       items,
     };
 
-    console.log("[coordination payload]", dataToSend);
-
     try {
       if (isEditMode) {
         await axios.put(`${process.env.REACT_APP_API}/api/coordination/${editCalendarId}`, dataToSend, {
@@ -369,10 +391,7 @@ function CalendarCreate() {
         });
         alert("코디 수정 성공!");
         navigate("/CalendarDetail", {
-          state: {
-            calendarId: editCalendarId,
-            selectedDate: formatDate(selectedDate),
-          },
+          state: { calendarId: editCalendarId, selectedDate: formatDate(selectedDate) },
         });
       } else {
         await axios.post(`${process.env.REACT_APP_API}/api/coordination`, dataToSend, {
@@ -391,9 +410,7 @@ function CalendarCreate() {
 
   return (
     <C.Background>
-      <C.TopBox>
-        <TopBar />
-      </C.TopBox>
+      <C.TopBox><TopBar /></C.TopBox>
 
       <C.Container>
         <C.Header>
@@ -417,9 +434,7 @@ function CalendarCreate() {
           </C.dateContainer>
           <C.RegisterContainer>
             <C.Register>촬영하기</C.Register>
-            <Link to="/CalendarCreate3">
-              <img src={smallPlus} alt="plus" />
-            </Link>
+            <Link to="/CalendarCreate3"><img src={smallPlus} alt="plus" /></Link>
           </C.RegisterContainer>
         </C.TitleBox1>
 
@@ -436,25 +451,33 @@ function CalendarCreate() {
           onChange={(e) => setCoordiName(e.target.value)}
         />
 
-        <C.RandomBoard ref={boardRef}>
+        <C.RandomBoard ref={boardRef} style={{ touchAction: "none" }}>
           {Object.entries(selectedImages)
             .filter(([, item]) => item && (item.croppedPath || item.imagePath))
             .map(([cat, item], index) => {
-              const style = imageStyles[cat] || { top: "0%", left: "0%", size: 100 };
+              const st = imageStyles[cat] || { top: "0%", left: "0%", size: 100 };
               return (
                 <C.RandomItem
                   key={`${cat}-${index}`}
-                  $top={style.top}
-                  $left={style.left}
+                  ref={(el) => { if (el) itemRefs.current[cat] = el; }}
+                  $top={st.top}
+                  $left={st.left}
                   style={{
                     position: "absolute",
-                    width: `${style.size}%`,
+                    width: `${st.size}%`,
                     cursor: dragState.isDragging && dragState.category === cat ? "grabbing" : "grab",
                     zIndex: dragState.category === cat ? 100 : 10 + index,
                     userSelect: "none",
-                    transition: "all 0.1s ease",
+                    touchAction: "none",
+                    willChange: "left, top, width",
+                    transition:
+                      (dragState.isDragging && dragState.category === cat) ||
+                      (resizeState.isResizing && resizeState.category === cat)
+                        ? "none" : "left 60ms ease, top 60ms ease, width 60ms ease",
                   }}
-                  onMouseDown={(e) => handleMouseDown(cat, e)}
+                  onPointerDown={(e) => handlePointerDownDrag(cat, e)}
+                  onPointerMove={handlePointerMoveDrag}
+                  onPointerUp={handlePointerUpDrag}
                 >
                   {(() => {
                     const rawPath = item.croppedPath || item.imagePath || "";
@@ -473,48 +496,35 @@ function CalendarCreate() {
                       <img
                         src={fullPath}
                         alt={cat}
-                        style={{ width: "100%", height: "auto", objectFit: "contain" }}
-                        onError={(e) => {
-                          console.warn("이미지 로드 실패:", fullPath);
-                          e.target.style.display = "none";
-                        }}
+                        style={{ width: "100%", height: "auto", objectFit: "contain", pointerEvents: "none" }}
+                        onError={(e) => { e.target.style.display = "none"; }}
                         draggable={false}
                       />
                     );
                   })()}
 
+                  {/* 삭제 버튼 */}
                   <div
                     onClick={() => handleImageSelect(cat, item)}
                     style={{
-                      position: "absolute",
-                      top: 2,
-                      right: 2,
-                      width: 16,
-                      height: 16,
-                      backgroundColor: "rgba(0,0,0,0.5)",
-                      color: "white",
-                      borderRadius: "50%",
-                      fontSize: 12,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      zIndex: 999,
-                      lineHeight: 1,
+                      position: "absolute", top: 2, right: 2, width: 16, height: 16,
+                      backgroundColor: "rgba(0,0,0,0.5)", color: "white", borderRadius: "50%",
+                      fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center",
+                      cursor: "pointer", zIndex: 999, lineHeight: 1,
                     }}
                   >
                     ×
                   </div>
+
+                  {/* 리사이즈 핸들 */}
                   <div
-                    onMouseDown={(e) => handleResizeMouseDown(cat, e)}
+                    onPointerDown={(e) => handlePointerDownResize(cat, e)}
+                    onPointerMove={handlePointerMoveResize}
+                    onPointerUp={handlePointerUpResize}
                     style={{
-                      width: 10,
-                      height: 10,
-                      backgroundColor: "gray",
-                      position: "absolute",
-                      bottom: 0,
-                      right: 0,
-                      cursor: "nwse-resize",
+                      width: 10, height: 10, backgroundColor: "gray",
+                      position: "absolute", bottom: 0, right: 0,
+                      cursor: "nwse-resize", touchAction: "none",
                     }}
                   />
                 </C.RandomItem>
@@ -561,9 +571,7 @@ function CalendarCreate() {
         )}
       </C.Container>
 
-      <C.BottomBox>
-        <Footer />
-      </C.BottomBox>
+      <C.BottomBox><Footer /></C.BottomBox>
     </C.Background>
   );
 }
