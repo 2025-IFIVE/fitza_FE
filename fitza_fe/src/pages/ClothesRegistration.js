@@ -51,9 +51,12 @@ function ClothesRegistration() {
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error(`업로드 실패: ${response.status}`);
-      }
+      if (!res.ok) {
+    // 서버 에러 메시지 확보
+    const text = await res.text().catch(() => "");
+      console.error("❌ 업로드 실패 상세:", res.status, text);
+      throw new Error(`업로드 실패: ${res.status}`);
+    }
 
       const result = await response.json();
       console.log("✅ 업로드 성공:", result);
