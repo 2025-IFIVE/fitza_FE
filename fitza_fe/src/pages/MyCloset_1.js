@@ -125,7 +125,7 @@ const fetchRecommendation = async (min, max) => {
   const token = localStorage.getItem("authToken");
 
   try {
-    const recRes = await axios.post(`${process.env.REACT_APP_API}/recommend`, {
+    const recRes = await axios.post(`${process.env.REACT_APP_API}/api/recommend`, {
       weather: rangeStr
     }, {
       headers: { Authorization: `Bearer ${token}` }
@@ -133,7 +133,7 @@ const fetchRecommendation = async (min, max) => {
 
     setRecommendation(recRes.data.data.recommendation);
   } catch (error) {
-    console.error("[/recommend] axios error:", {
+    console.error("[/api/recommend] axios error:", {
       message: error.message,
       status: error.response?.status,
       data: error.response?.data,   
