@@ -492,8 +492,13 @@ const handleSingleSelect = (selected, setSelected, item) => {
             <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '80vh', height: '80vh', overflow: 'auto' }}>
               <h3>이미지 수정</h3>
               <div style={{ width: '100%', height: 'calc(100% - 150px)' }}>
-                <BrushEraserCanvas
-                  imageUrl={imageSrc}
+              <BrushEraserCanvas
+                  imageUrl={
+                    // 편집 시에는 무조건 서버에 있는 "원본"을 불러온다
+                    imagePath
+                      ? `${process.env.REACT_APP_API}${imagePath}?t=${Date.now()}`  // 캐시 방지
+                      : (imageSrc || "") // (초기 등록 직후 서버 경로가 없을 때 대비)
+                  }
                   onExport={(maskDataUrl) => {
                     handleMaskSubmit(maskDataUrl);
                     closeEditModal();
