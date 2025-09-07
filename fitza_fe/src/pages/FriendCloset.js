@@ -48,6 +48,11 @@ function FriendCloset() {
             .catch(err => console.error("공유 코디 조회 실패:", err));
     }, [id]);
 
+    const openShareDetail = (shareId) => {
+    if (!shareId) return;
+    navigate("/ShareDetail", { state: { shareId, readOnly: true } });
+    };
+
     return (
         <SC.Background>
             <SC.TopBox><TopBar /></SC.TopBox>
@@ -106,42 +111,47 @@ function FriendCloset() {
                                             </SC.OutfitBox2>
                                         ) : (
                                             sharedCoordis.map((coordi, index) => (
-                                                <SC.OutfitBox2 key={index}>
-                                                    <div>{coordi.title}</div>
-                                                    <SC.RandomBoard style={{ position: 'relative', height: '300px' }}>
-                                                        {coordi.items.map((item, idx) => {
-                                                            const { x = 0, y = 0, size = 30 } = item;
-                                                            const rawPath = item.croppedPath || item.imagePath || "";
-                                                            const fullPath = rawPath.startsWith("http")
-                                                                ? rawPath
-                                                                : `${process.env.REACT_APP_API}/${rawPath.replace(/^\/+/, "")}`;
-                                                            return (
-                                                                <SC.RandomItem
-                                                                    key={idx}
-                                                                    style={{
-                                                                        position: "absolute",
-                                                                        left: `${x}%`,
-                                                                        top: `${y}%`,
-                                                                        width: `${size}%`,
-                                                                        zIndex: 10 + idx,
-                                                                    }}
-                                                                >
-                                                                    <img
-                                                                        src={fullPath}
-                                                                        alt={`item-${idx}`}
-                                                                        style={{
-                                                                            width: "100%",
-                                                                            height: "auto",
-                                                                            objectFit: "contain",
-                                                                            pointerEvents: "none",
-                                                                        }}
-                                                                        draggable={false}
-                                                                    />
-                                                                </SC.RandomItem>
-                                                            );
+                                                <SC.OutfitBox2
+                                                    key={index}
+                                                    onClick={() => openShareDetail(coordi.shareId)}
+                                                    style={{ cursor: "pointer" }}
+                                                    >
+                                                    <div style={{ fontWeight: "bold", marginBottom: 6 }}>{coordi.title}</div>
+                                                    <SC.RandomBoard style={{ position: "relative", height: "300px" }}>
+                                                        {coordi.items?.map((item, idx) => {
+                                                        const { x = 0, y = 0, size = 30 } = item;
+                                                        const rawPath = item.croppedPath || item.imagePath || "";
+                                                        const fullPath = rawPath.startsWith("http")
+                                                            ? rawPath
+                                                            : `${process.env.REACT_APP_API}/${rawPath.replace(/^\/+/, "")}`;
+                                                        return (
+                                                            <SC.RandomItem
+                                                            key={idx}
+                                                            style={{
+                                                                position: "absolute",
+                                                                left: `${x}%`,
+                                                                top: `${y}%`,
+                                                                width: `${size}%`,
+                                                                zIndex: 10 + idx,
+                                                            }}
+                                                            >
+                                                            <img
+                                                                src={fullPath}
+                                                                alt={`item-${idx}`}
+                                                                style={{
+                                                                width: "100%",
+                                                                height: "auto",
+                                                                objectFit: "contain",
+                                                                pointerEvents: "none",
+                                                                }}
+                                                                draggable={false}
+                                                            />
+                                                            </SC.RandomItem>
+                                                        );
                                                         })}
                                                     </SC.RandomBoard>
-                                                </SC.OutfitBox2>
+                                                    </SC.OutfitBox2>
+
                                             ))
                                         )}
                                     </SC.OutfitList>

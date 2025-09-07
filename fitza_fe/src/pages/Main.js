@@ -40,21 +40,21 @@ function Main() {
   const newsItems = [
     { id: 1, 
       image: news1, 
-      title: "클린 걸은 나가주세요, 엉망진창 ‘메시 걸’이 옵니다", 
-      description: "혼란스러움을 사과하지 않는 멋진 여자! 프랑스 <보그> 친구들이 메시 걸을 이렇게 소개하더군요. 2025년, ‘인디 슬리즈’가 고유의 미학을 넘어 새로운 국면으로 돌아왔습니다.",
-      link: "https://www.vogue.co.kr/2025/06/12/%ed%81%b4%eb%a6%b0-%ea%b1%b8%ec%9d%80-%eb%82%98%ea%b0%80%ec%a3%bc%ec%84%b8%ec%9a%94-%ec%97%89%eb%a7%9d%ec%a7%84%ec%b0%bd-%eb%a9%94%ec%8b%9c-%ea%b1%b8%ec%9d%b4-%ec%98%b5%eb%8b%88%eb%8b%a4/"
+      title: "지금 같은 환절기에 활용하기 딱 좋은 스타일링 아이디어 4", 
+      description: "오늘 아침 출근길은 유독 기분이 좋았습니다. 몇 달간 느껴보지 못한 선선한 공기를 느꼈기 때문이죠. 이는 가을이 서서히 우리에게 다가오고 있다는 가장 확실한 신호입니다",
+      link: "https://www.vogue.co.kr/2025/09/02/%ec%a7%80%ea%b8%88-%ea%b0%99%ec%9d%80-%ed%99%98%ec%a0%88%ea%b8%b0%ec%97%90-%ed%99%9c%ec%9a%a9%ed%95%98%ea%b8%b0-%eb%94%b1-%ec%a2%8b%ec%9d%80-%ec%8a%a4%ed%83%80%ec%9d%bc%eb%a7%81-%ec%95%84%ec%9d%b4/"
     },
     { id: 2, 
       image: news2, 
-      title: "방금 코펜하겐에서 돌아왔는데 모두 이 청바지를 입고 출근하더군요", 
-      description: "입소문 난 카페와 바, 오감을 자극하는 편집숍, 이민을 꿈꾸게 하는 근사한 숙소, 그리고 내일 따위 걱정하지 않을 듯한 패션 피플들!",
-      link: "https://www.vogue.co.kr/2025/06/12/%eb%b0%a9%ea%b8%88-%ec%bd%94%ed%8e%9c%ed%95%98%ea%b2%90%ec%97%90%ec%84%9c-%eb%8f%8c%ec%95%84%ec%99%94%eb%8a%94%eb%8d%b0-%eb%aa%a8%eb%91%90-%ec%9d%b4-%ec%b2%ad%eb%b0%94%ec%a7%80%eb%a5%bc-%ec%9e%85/"
+      title: "가을을 불러오는 가장 빠른 방법, 브라운에 ‘이 컬러’ 더하기!", 
+      description: "마음은 이미 가을로 앞서갔건만 햇볕은 아직 여름입니다. 어서 가을 스타일링을 시작하고 싶다면 컬러부터 바꿔보세요. 그중에서도 가을 제철 듀오, 브라운과 레드로요!",
+      link: "https://www.vogue.co.kr/2025/09/02/%ea%b0%80%ec%9d%84%ec%9d%84-%eb%b6%88%eb%9f%ac%ec%98%a4%eb%8a%94-%ea%b0%80%ec%9e%a5-%eb%b9%a0%eb%a5%b8-%eb%b0%a9%eb%b2%95-%eb%b8%8c%eb%9d%bc%ec%9a%b4%ec%97%90-%ec%9d%b4-%ec%bb%ac%eb%9f%ac/"
     },
     { id: 3, 
       image: news3, 
-      title: "버즈 커트 스타일로 시간을 되돌린 브래드 피트", 
-      description: "벤자민 버튼의 시간은 거꾸로 갑니다. 브래드 피트의 시간도 마찬가지일까요? 그가 헤어스타일 변신을 통해 2004년으로 돌아갔습니다.",
-      link: "https://www.vogue.co.kr/2025/06/12/%eb%b2%84%ec%a6%88-%ec%bb%a4%ed%8a%b8-%ec%8a%a4%ed%83%80%ec%9d%bc%eb%a1%9c-%ec%8b%9c%ea%b0%84%ec%9d%84-%eb%90%98%eb%8f%8c%eb%a6%b0-%eb%b8%8c%eb%9e%98%eb%93%9c-%ed%94%bc%ed%8a%b8/"
+      title: "올가을엔 말랑하게 걸어보세요!", 
+      description: "패션 피플이라고 발뒤꿈치가 벗겨지지 않는 건 아닐 겁니다. 제 사이즈에 맞게 신어도, 양말을 갖춰 신어도 신발이 딱딱하면 걸으면서 벗겨지기 일쑤예요.",
+      link: "https://www.vogue.co.kr/2025/09/02/%ec%98%ac%ea%b0%80%ec%9d%84%ec%97%94-%eb%a7%90%eb%9e%91%ed%95%98%ea%b2%8c-%ea%b1%b8%ec%96%b4%eb%b3%b4%ec%84%b8%ec%9a%94/"
     },
   ];
 

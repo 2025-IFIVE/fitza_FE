@@ -27,6 +27,7 @@ import CalendarCreate2 from "./pages/CalendarCreate2";
 import CalendarCreate3 from "./pages/CalendarCreate3";
 import CalendarCreate4 from "./pages/CalendarCreate4";
 import ShoesHats from "./pages/ShoesHats";
+import ShareDetail from "./pages/ShareDetail";
 
 function App() {
   return (
@@ -58,6 +59,8 @@ function App() {
         <Route exact path="/shoeshats" element={<ShoesHats />} />
         <Route exact path="/calendarcreate3" element={<CalendarCreate3 />} />
         <Route exact path="/calendarcreate4" element={<CalendarCreate4 />} />
+
+        <Route path="/ShareDetail" element={<ShareDetail />} />
       </Routes>
     </div>
   );
